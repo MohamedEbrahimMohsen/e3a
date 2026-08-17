@@ -1,0 +1,46 @@
+# CodeRabbit configuration — e3a pipeline
+#
+# The `path_instructions` below mirror ACTIVE rules from .e3a/conventions.md.
+# Keeping them in sync is part of the loop: when triage escalates a comment and
+# the human's answer creates a new E3A-nnn rule, that rule is appended to the
+# ledger AND mirrored here, so CodeRabbit stops raising it at the source.
+#
+# A rule that is active in the ledger but missing here means the loop will keep
+# filtering the same comment forever instead of eliminating it.
+#
+# Reference: https://docs.coderabbit.ai/getting-started/configure-coderabbit
+
+language: en-US
+early_access: false
+
+reviews:
+  profile: chill
+  request_changes_workflow: false
+  high_level_summary: true
+  review_status: true
+  collapse_walkthrough: false
+
+  auto_review:
+    enabled: true
+    drafts: false
+
+  path_instructions:
+    - path: "**/*"
+      instructions: |
+        This repository maintains an explicit conventions ledger at
+        .e3a/conventions.md. Rules below are mirrored from it.
+
+        E3A-003: Do not suggest changes to public behaviour — HTTP status codes,
+        wire contracts, database schemas, or auth semantics — as ordinary review
+        feedback. If you believe one is wrong, state it as a question about
+        intent rather than a change request.
+
+        E3A-004: Do not suggest asserting on private methods, internal call
+        counts, or mock verifications. Tests here assert observable behaviour.
+
+        Do not raise stylistic or formatting preferences that carry no
+        demonstrated failure. Every finding should name a concrete scenario:
+        given these inputs or this state, the code does X and should do Y.
+
+chat:
+  auto_reply: true

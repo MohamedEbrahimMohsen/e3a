@@ -1,0 +1,8 @@
+# Loop state is per-machine, not shared
+.e3a/state/
+
+# Specs, reviews and triage records ARE committed — they are the audit trail
+# of how each feature was decided. Remove these lines if you'd rather not.
+
+.claude/settings.local.json
+*.e3a-backup
