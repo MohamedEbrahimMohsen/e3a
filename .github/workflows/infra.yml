@@ -1,0 +1,32 @@
+name: infra
+
+on:
+  push:
+    branches: [main]
+    paths: ['infra/**']
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Deploy Bicep
+        run: |
+          az deployment sub create \
+            --name e3a-${{ github.run_number }} \
+            --location westeurope \
+            --template-file infra/main.bicep \
+            --parameters infra/main.bicepparam \
+            --parameters sqlAdminPassword='${{ secrets.SQL_ADMIN_PASSWORD }}'

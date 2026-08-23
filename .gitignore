@@ -1,8 +1,22 @@
-# Loop state is per-machine, not shared
-.e3a/state/
+# .NET
+bin/
+obj/
+*.user
+.vs/
 
-# Specs, reviews and triage records ARE committed — they are the audit trail
-# of how each feature was decided. Remove these lines if you'd rather not.
+# Node
+node_modules/
+dist/
+*.local
 
-.claude/settings.local.json
-*.e3a-backup
+# Azure Functions local secrets
+local.settings.json
+
+# OS / editor
+.DS_Store
+Thumbs.db
+
+# Build artifacts
+publish/
+*.zip
+/api/src/E3a.Functions/appsettings.json

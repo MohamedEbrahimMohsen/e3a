@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/E3a.Core/E3a.Core.csproj" />
+    <Project Path="src/E3a.Functions/E3a.Functions.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/E3a.Core.Tests/E3a.Core.Tests.csproj" />
+  </Folder>
+</Solution>

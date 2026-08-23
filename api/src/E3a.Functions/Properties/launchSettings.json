@@ -1,0 +1,9 @@
+{
+  "profiles": {
+    "E3a.Functions": {
+      "commandName": "Project",
+      "commandLineArgs": "--port 7105",
+      "launchBrowser": false
+    }
+  }
+}
