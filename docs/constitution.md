@@ -96,7 +96,7 @@ public sealed class PublishingOptions
 
 - Bound in the layer's `DependencyInjection.cs` (`E3A.Application` / `E3A.Infrastructure`) — the ONLY registration points.
 - Injected as `IOptions<PublishingOptions>` via primary constructor; read `.Value` once into a field/local.
-- `appsettings.json` (committed, non-secret defaults) → Azure App Configuration + Container Apps settings per environment → user-secrets/`appsettings.Development.json` (gitignored) for local secrets.
+- **Config is deploy-time only (dev decision 2026-08-27):** `appsettings.json` is git-ignored — no configuration file is committed. Every environment supplies the full configuration externally: local machines keep their own `appsettings.json` on disk; deployed environments use Azure App Configuration + Container Apps settings. Consequence to remember: CI and fresh clones have NO defaults (options bind to 0/empty), so integration-style runs must provide config explicitly. New options sections must be announced to the dev so he can mirror them into his environments.
 - Tests construct options directly: `Options.Create(new PublishingOptions { ... })` — test values mirror the committed defaults unless the test targets a limit.
 
 ---

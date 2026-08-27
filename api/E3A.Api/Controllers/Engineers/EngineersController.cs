@@ -1,9 +1,11 @@
 using E3A.Application.Engineers.CreateEngineer;
 using E3A.Application.Engineers.DeleteEngineer;
 using E3A.Application.Engineers.GetEngineer;
+using E3A.Application.Engineers.GetImportManifest;
 using E3A.Application.Engineers.ListEngineers;
 using E3A.Application.Engineers.ListMyEngineers;
 using E3A.Application.Engineers.UpdateEngineer;
+using E3A.Application.Engineers.UploadEngineerDraft;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -49,6 +51,20 @@ public class EngineersController(IMediator mediator) : ControllerBase
     public async Task<ActionResult> UpdateEngineer([FromRoute] Guid engineerId, [FromBody] UpdateEngineerRequest request, CancellationToken cancellationToken)
     {
         var result = await mediator.Send(new UpdateEngineerCommand(engineerId, request.DisplayName, request.Description, request.Tags ?? []), cancellationToken);
+        return Ok(result);
+    }
+
+    [HttpPost("{engineerId:guid}/upload")]
+    public async Task<ActionResult> UploadEngineerDraft([FromRoute] Guid engineerId, [FromForm] IFormFile file, CancellationToken cancellationToken)
+    {
+        var result = await mediator.Send(new UploadEngineerDraftCommand(engineerId, file), cancellationToken);
+        return Ok(result);
+    }
+
+    [HttpGet("{engineerId:guid}/import-manifest")]
+    public async Task<ActionResult> GetImportManifest([FromRoute] Guid engineerId, CancellationToken cancellationToken)
+    {
+        var result = await mediator.Send(new GetImportManifestQuery(engineerId), cancellationToken);
         return Ok(result);
     }
 

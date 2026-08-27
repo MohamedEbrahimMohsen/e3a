@@ -12,6 +12,8 @@ public static class DependencyInjection
         services.AddMediatR(mediatRConfiguration => mediatRConfiguration.RegisterServicesFromAssembly(typeof(DependencyInjection).Assembly));
         services.AddValidatorsFromAssembly(typeof(DependencyInjection).Assembly);
         services.Configure<EngineersOptions>(configuration.GetSection(EngineersOptions.SectionName));
+        services.Configure<UploadsOptions>(configuration.GetSection(UploadsOptions.SectionName));
+        services.Configure<AzureOptions>(configuration.GetSection(AzureOptions.SectionName));
 
         return services;
     }

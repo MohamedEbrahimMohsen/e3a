@@ -45,4 +45,40 @@
   <data name="ENGINEER_TAG_TOO_LONG" xml:space="preserve">
     <value>يجب الا يتجاوز الوسم 30 حرفا.</value>
   </data>
+  <data name="ENGINEER_DRAFT_NOT_UPLOADED" xml:space="preserve">
+    <value>لم يتم رفع مسودة لهذا المهندس بعد.</value>
+  </data>
+  <data name="UPLOAD_FILE_REQUIRED" xml:space="preserve">
+    <value>ملف الرفع مطلوب.</value>
+  </data>
+  <data name="UPLOAD_FILE_MUST_BE_ZIP" xml:space="preserve">
+    <value>يجب ان يكون الملف المرفوع بصيغة zip.</value>
+  </data>
+  <data name="UPLOAD_FILE_TOO_LARGE" xml:space="preserve">
+    <value>يتجاوز الملف المرفوع الحد الاقصى المسموح به.</value>
+  </data>
+  <data name="UPLOAD_ZIP_INVALID" xml:space="preserve">
+    <value>الملف المرفوع ليس ملف zip صالحا.</value>
+  </data>
+  <data name="UPLOAD_TOO_MANY_FILES" xml:space="preserve">
+    <value>يحتوي الملف المرفوع على اكثر من {limit} ملفا.</value>
+  </data>
+  <data name="UPLOAD_UNCOMPRESSED_TOO_LARGE" xml:space="preserve">
+    <value>يتجاوز حجم المحتوى بعد فك الضغط الحد المسموح {limit} بايت.</value>
+  </data>
+  <data name="UPLOAD_UNSAFE_PATH" xml:space="preserve">
+    <value>يحتوي الملف المرفوع على مسار غير امن: {path}.</value>
+  </data>
+  <data name="UPLOAD_SYMLINK_NOT_ALLOWED" xml:space="preserve">
+    <value>الروابط الرمزية غير مسموح بها: {path}.</value>
+  </data>
+  <data name="UPLOAD_FILE_TYPE_NOT_ALLOWED" xml:space="preserve">
+    <value>يحتوي الملف المرفوع على نوع ملف غير مسموح به: {path}.</value>
+  </data>
+  <data name="UPLOAD_DUPLICATE_PATH" xml:space="preserve">
+    <value>يحتوي الملف المرفوع على مدخلات مكررة لنفس المسار: {path}.</value>
+  </data>
+  <data name="UPLOAD_EMPTY" xml:space="preserve">
+    <value>لا يحتوي الملف المرفوع على ملفات قابلة للاستخدام.</value>
+  </data>
 </root>
