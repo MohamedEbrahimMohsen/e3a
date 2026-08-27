@@ -95,6 +95,27 @@ public sealed class EngineerTests
     }
 
     [Fact]
+    public void ReplaceDraftManifest_ShouldStoreManifestJson_WhenCalled()
+    {
+        var engineer = EngineerFactory.Draft(Guid.NewGuid());
+
+        engineer.ReplaceDraftManifest("""{"imported":[]}""");
+
+        engineer.DraftManifestJson.Should().Be("""{"imported":[]}""");
+    }
+
+    [Fact]
+    public void ReplaceDraftManifest_ShouldAdvanceUpdationDate_WhenCalled()
+    {
+        var engineer = EngineerFactory.Draft(Guid.NewGuid());
+        var before = DateTimeOffset.UtcNow;
+
+        engineer.ReplaceDraftManifest("""{"imported":[]}""");
+
+        engineer.UpdationDate.Should().BeOnOrAfter(before);
+    }
+
+    [Fact]
     public void Delete_ShouldMarkDeletedAndSoftDeleted_WhenCalled()
     {
         var engineer = EngineerFactory.Draft(Guid.NewGuid());

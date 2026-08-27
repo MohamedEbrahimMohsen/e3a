@@ -45,4 +45,40 @@
   <data name="ENGINEER_TAG_TOO_LONG" xml:space="preserve">
     <value>A tag must not exceed 30 characters.</value>
   </data>
+  <data name="ENGINEER_DRAFT_NOT_UPLOADED" xml:space="preserve">
+    <value>No draft has been uploaded for this engineer yet.</value>
+  </data>
+  <data name="UPLOAD_FILE_REQUIRED" xml:space="preserve">
+    <value>An upload file is required.</value>
+  </data>
+  <data name="UPLOAD_FILE_MUST_BE_ZIP" xml:space="preserve">
+    <value>The upload must be a zip file.</value>
+  </data>
+  <data name="UPLOAD_FILE_TOO_LARGE" xml:space="preserve">
+    <value>The uploaded file exceeds the maximum allowed size.</value>
+  </data>
+  <data name="UPLOAD_ZIP_INVALID" xml:space="preserve">
+    <value>The uploaded file is not a valid zip archive.</value>
+  </data>
+  <data name="UPLOAD_TOO_MANY_FILES" xml:space="preserve">
+    <value>The upload contains more than {limit} files.</value>
+  </data>
+  <data name="UPLOAD_UNCOMPRESSED_TOO_LARGE" xml:space="preserve">
+    <value>The upload expands beyond the allowed size of {limit} bytes.</value>
+  </data>
+  <data name="UPLOAD_UNSAFE_PATH" xml:space="preserve">
+    <value>The upload contains an unsafe file path: {path}.</value>
+  </data>
+  <data name="UPLOAD_SYMLINK_NOT_ALLOWED" xml:space="preserve">
+    <value>Symbolic links are not allowed in uploads: {path}.</value>
+  </data>
+  <data name="UPLOAD_FILE_TYPE_NOT_ALLOWED" xml:space="preserve">
+    <value>The upload contains a file type that is not allowed: {path}.</value>
+  </data>
+  <data name="UPLOAD_DUPLICATE_PATH" xml:space="preserve">
+    <value>The upload contains duplicate entries for the same path: {path}.</value>
+  </data>
+  <data name="UPLOAD_EMPTY" xml:space="preserve">
+    <value>The upload contains no usable files.</value>
+  </data>
 </root>
