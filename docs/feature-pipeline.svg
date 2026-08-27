@@ -1,6 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="680" viewBox="0 0 680 706" role="img" font-family="Segoe UI, Inter, system-ui, sans-serif">
-  <title>The /feature three-stage pipeline</title>
-  <desc>Feature request flows through a Fable 5 planner, a dev approval gate, an Opus 5 implementer, and a Fable 5 reviewer; changes loop back once, a second failure stops the pipeline for re-planning.</desc>
+<svg xmlns="http://www.w3.org/2000/svg" width="680" viewBox="0 0 680 940" role="img" font-family="Segoe UI, Inter, system-ui, sans-serif">
+  <title>The /feature pipeline with external CodeRabbit review</title>
+  <desc>Feature request flows through a Fable 5 planner, a dev approval gate, an Opus 5 implementer, and a Fable 5 reviewer; on approval a PR is opened, CodeRabbit reviews it externally, Fable 5 triages the comments (critical must-fix, the rest its call), Opus 5 fixes and Fable 5 verifies, looping at most twice before reporting to the dev.</desc>
   <style>
     .t1{font-size:14px;font-weight:600}.t2{font-size:12px}.mdl{font-size:13px;font-weight:800;letter-spacing:0.02em}
     .purple rect{fill:#EEEDFE;stroke:#534AB7}.purple .t1{fill:#3C3489}.purple .t2{fill:#534AB7}.purple .mdl{fill:#26215C}
@@ -20,7 +20,7 @@
   </style>
   <defs><marker id="ah" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M1,1 L7,4 L1,7" fill="none" stroke="#888780" stroke-width="1.5"/></marker></defs>
 
-  <g class="gray"><rect x="210" y="40" width="260" height="52" rx="6"/><text class="t1" x="340" y="62" text-anchor="middle">/feature &lt;request&gt;</text><text class="t2" x="340" y="80" text-anchor="middle">orchestrator gates — never codes</text></g>
+  <g class="gray"><rect x="210" y="40" width="260" height="52" rx="6"/><text class="t1" x="340" y="62" text-anchor="middle">/feature &lt;request&gt;</text><text class="t2" x="340" y="80" text-anchor="middle">pre-flight: git clean · orchestrator gates</text></g>
   <line class="arr" x1="340" y1="92" x2="340" y2="108"/>
   <g class="gray"><rect x="210" y="112" width="260" height="36" rx="6"/><text class="t1" x="340" y="135" text-anchor="middle">create .process/&lt;slug&gt;/</text></g>
   <line class="arr" x1="340" y1="148" x2="340" y2="172"/>
@@ -36,7 +36,7 @@
   <polyline class="leader" points="210,300 192,300 192,225 208,225"/>
   <text class="lbl" x="148" y="268" text-anchor="start">revise</text>
   <line class="arr" x1="340" y1="326" x2="340" y2="354"/>
-  <text class="lbl" x="350" y="346" text-anchor="start">approve</text>
+  <text class="lbl" x="350" y="346" text-anchor="start">approve · branch from main</text>
 
   <g class="purple"><rect x="210" y="358" width="260" height="66" rx="6"/><text class="t1" x="340" y="380" text-anchor="middle">Stage 2 — implement</text><text class="t2" x="340" y="397" text-anchor="middle">feature-implementer · code + tests</text><text class="mdl" x="340" y="415" text-anchor="middle">OPUS 5</text></g>
   <g class="gray"><rect x="40" y="375" width="130" height="32" rx="6"/><text class="t2" x="105" y="395" text-anchor="middle">02-implementation.md</text></g>
@@ -50,14 +50,31 @@
   <g class="amber"><rect x="480" y="463" width="160" height="52" rx="6"/><text class="t1" x="560" y="485" text-anchor="middle">Changes requested</text><text class="t2" x="560" y="503" text-anchor="middle">max 2 rounds</text></g>
   <polyline class="arr" points="560,463 560,391 474,391"/>
   <text class="lbl" x="552" y="430" text-anchor="end">rework · fresh reviewer</text>
-  <line class="arr" x1="560" y1="515" x2="560" y2="592"/>
-  <g class="amber"><rect x="480" y="596" width="160" height="56" rx="6"/><text class="t1" x="560" y="618" text-anchor="middle">2nd fail — stop</text><text class="t2" x="560" y="636" text-anchor="middle">re-plan with the dev</text></g>
-  <line class="arr" x1="340" y1="522" x2="340" y2="592"/>
-  <text class="lbl" x="350" y="560" text-anchor="start">approved</text>
-  <g class="teal"><rect x="210" y="596" width="260" height="56" rx="6"/><text class="t1" x="340" y="618" text-anchor="middle">Report to the dev</text><text class="t2" x="340" y="636" text-anchor="middle">files · deviations · tests really run</text></g>
+  <line class="arr" x1="560" y1="515" x2="560" y2="552"/>
+  <g class="amber"><rect x="480" y="556" width="160" height="52" rx="6"/><text class="t1" x="560" y="578" text-anchor="middle">2nd fail — stop</text><text class="t2" x="560" y="596" text-anchor="middle">re-plan with the dev</text></g>
 
-  <g class="purple"><rect x="60" y="680" width="10" height="10" rx="2"/></g><text class="lbl" x="76" y="689" text-anchor="start">agent stage</text>
-  <g class="amber"><rect x="180" y="680" width="10" height="10" rx="2"/></g><text class="lbl" x="196" y="689" text-anchor="start">dev decides</text>
-  <g class="teal"><rect x="310" y="680" width="10" height="10" rx="2"/></g><text class="lbl" x="326" y="689" text-anchor="start">done</text>
-  <g class="gray"><rect x="400" y="680" width="10" height="10" rx="2"/></g><text class="lbl" x="416" y="689" text-anchor="start">flow / artifacts</text>
+  <line class="arr" x1="340" y1="522" x2="340" y2="552"/>
+  <text class="lbl" x="350" y="542" text-anchor="start">approved</text>
+  <g class="gray"><rect x="210" y="556" width="260" height="48" rx="6"/><text class="t1" x="340" y="576" text-anchor="middle">Commit · push · open PR</text><text class="t2" x="340" y="594" text-anchor="middle">external review begins</text></g>
+  <line class="arr" x1="340" y1="604" x2="340" y2="632"/>
+
+  <g class="gray"><rect x="210" y="636" width="260" height="48" rx="6"/><text class="t1" x="340" y="656" text-anchor="middle">CodeRabbit reviews</text><text class="t2" x="340" y="674" text-anchor="middle">external · comments pulled to 05-…md</text></g>
+  <line class="arr" x1="340" y1="684" x2="340" y2="712"/>
+
+  <g class="purple"><rect x="210" y="716" width="260" height="66" rx="6"/><text class="t1" x="340" y="738" text-anchor="middle">Stage 4 — triage</text><text class="t2" x="340" y="755" text-anchor="middle">critical must-fix · major/minor its call</text><text class="mdl" x="340" y="773" text-anchor="middle">FABLE 5</text></g>
+  <g class="gray"><rect x="40" y="733" width="130" height="32" rx="6"/><text class="t2" x="105" y="753" text-anchor="middle">06-triage · 07 · 08</text></g>
+  <line class="leader" x1="170" y1="749" x2="208" y2="749"/>
+  <line class="arr" x1="470" y1="749" x2="476" y2="749"/>
+  <g class="purple"><rect x="480" y="716" width="160" height="66" rx="6"/><text class="t1" x="560" y="738" text-anchor="middle">Fix &amp; verify</text><text class="t2" x="560" y="755" text-anchor="middle">fix → verify · push</text><text class="mdl" x="560" y="773" text-anchor="middle">OPUS 5 → FABLE 5</text></g>
+  <polyline class="arr" points="560,716 560,660 474,660"/>
+  <text class="lbl" x="552" y="700" text-anchor="end">new comments · ≤2 cycles</text>
+
+  <line class="arr" x1="340" y1="782" x2="340" y2="850"/>
+  <text class="lbl" x="350" y="820" text-anchor="start">0 to implement / verified</text>
+  <g class="teal"><rect x="210" y="854" width="260" height="56" rx="6"/><text class="t1" x="340" y="876" text-anchor="middle">Report to the dev</text><text class="t2" x="340" y="894" text-anchor="middle">verdict · disposition · metrics · branch</text></g>
+
+  <g class="purple"><rect x="60" y="918" width="10" height="10" rx="2"/></g><text class="lbl" x="76" y="927" text-anchor="start">agent stage</text>
+  <g class="amber"><rect x="180" y="918" width="10" height="10" rx="2"/></g><text class="lbl" x="196" y="927" text-anchor="start">dev decides</text>
+  <g class="teal"><rect x="310" y="918" width="10" height="10" rx="2"/></g><text class="lbl" x="326" y="927" text-anchor="start">done</text>
+  <g class="gray"><rect x="400" y="918" width="10" height="10" rx="2"/></g><text class="lbl" x="416" y="927" text-anchor="start">flow / external / artifacts</text>
 </svg>

@@ -15,6 +15,7 @@ public static class SettingsJsonImporter
     public const string StatuslineSkippedReason = "Statusline has no plugin equivalent.";
     public const string NoPluginEquivalentReason = "No plugin equivalent.";
     public const string HooksAlreadyUploadedReason = "The upload already contains hooks/hooks.json; the settings.json hooks section was not converted.";
+    public const string HooksNotConvertibleReason = "The settings.json hooks section must be a JSON object; it was not converted.";
 
     // Claude settings key names and the plugin hooks file path are format contracts (docs/plugin-spec.md).
     private const string HooksKey = "hooks";
@@ -47,9 +48,9 @@ public static class SettingsJsonImporter
         {
             var isHooksSection = property.Name.Equals(HooksKey, StringComparison.OrdinalIgnoreCase);
 
-            if (!isHooksSection || hooksFileAlreadyUploaded)
+            if (!isHooksSection || hooksFileAlreadyUploaded || property.Value.ValueKind != JsonValueKind.Object)
             {
-                skipped.Add(new SkippedItemResult($"{settingsFile.Path}#{property.Name}", isHooksSection ? HooksAlreadyUploadedReason : ReasonFor(property.Name)));
+                skipped.Add(new SkippedItemResult($"{settingsFile.Path}#{property.Name}", SkipReasonFor(property.Name, isHooksSection, hooksFileAlreadyUploaded)));
                 continue;
             }
 
@@ -59,6 +60,16 @@ public static class SettingsJsonImporter
         }
 
         return new SettingsImport(hooksFile, warnings, skipped);
+    }
+
+    private static string SkipReasonFor(string key, bool isHooksSection, bool hooksFileAlreadyUploaded)
+    {
+        return (isHooksSection, hooksFileAlreadyUploaded) switch
+        {
+            (true, true) => HooksAlreadyUploadedReason,
+            (true, false) => HooksNotConvertibleReason,
+            _ => ReasonFor(key),
+        };
     }
 
     private static string ReasonFor(string key)

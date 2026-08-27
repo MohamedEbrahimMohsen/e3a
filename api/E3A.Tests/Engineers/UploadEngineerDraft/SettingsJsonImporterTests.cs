@@ -70,6 +70,18 @@ public sealed class SettingsJsonImporterTests
         import.Skipped.Should().ContainSingle().Which.Should().Be(new SkippedItemResult("settings.json#hooks", SettingsJsonImporter.HooksAlreadyUploadedReason));
     }
 
+    [Fact]
+    public void Import_ShouldSkipHooksSection_WhenHooksValueIsNotAnObject()
+    {
+        var settings = Settings("""{"hooks":"x"}""");
+
+        var import = SettingsJsonImporter.Import(settings, hooksFileAlreadyUploaded: false);
+
+        import.HooksFile.Should().BeNull();
+        import.HookWarnings.Should().BeEmpty();
+        import.Skipped.Should().ContainSingle().Which.Should().Be(new SkippedItemResult("settings.json#hooks", SettingsJsonImporter.HooksNotConvertibleReason));
+    }
+
     private static UploadedFile Settings(string content)
     {
         return new UploadedFile("settings.json", Encoding.UTF8.GetBytes(content));
