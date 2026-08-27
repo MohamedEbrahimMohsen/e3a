@@ -1,36 +1,82 @@
 # e3a Plugin Spec
 
+> Revised 2026-08-23: engineer creation is **upload-only** — a creator uploads their whole
+> `.claude` folder (as folder or zip, optionally including the repo-root `CLAUDE.md`), and
+> e3a normalizes it into a Claude Code plugin. The earlier skill-picking composer is
+> deferred; this reflects reality: real environments are heterogeneous (skills, agents,
+> hooks, rules/, conventions/, settings) and the working setup itself is the artifact.
+
 ## Naming
 
 Plugin name: `e3a-{githublogin}-{item-slug}` — globally unique, attributable.
 
-## Engineer plugin layout
+## Ingestion: the `.claude` → plugin mapping
+
+Verified against official Claude Code plugin docs. Every upload produces an **import
+manifest** shown to the creator before publish — three columns, nothing silently dropped:
+
+**Imported (1:1):**
+
+| From upload | To plugin |
+|---|---|
+| `skills/` | `skills/` |
+| `agents/` | `agents/` |
+| `commands/` | `commands/` |
+| hooks (settings.json `hooks` section + script files) | `hooks/hooks.json` + scripts (identical format) |
+| `.mcp.json` | `.mcp.json` |
+| `.lsp.json` | `.lsp.json` |
+| `output-styles/` | `output-styles/` |
+| monitors / `bin/` executables / themes | `monitors/` / `bin/` / `themes/` |
+
+**Converted:**
+
+- `CLAUDE.md` + freeform `rules/`, `conventions/`, `docs/` folders → a generated
+  **`house-rules` skill** with a strong trigger description (plugins cannot inject
+  always-on instructions), plus a **CLAUDE.md snippet** surfaced on the detail page as an
+  optional install step ("add this line to your project's CLAUDE.md") to restore
+  always-on semantics.
+
+**Skipped (listed in manifest with reasons):**
+
+- `settings.json` permissions / env vars / model selection / statusline — no plugin
+  equivalent; permissions are shown on the detail page as recommended settings.
+- Path-scoped rules' auto-scoping (content still converts to skills; scoping is lost).
+- `settings.local.json`, auto-memory, session state — machine-local; auto-stripped by the
+  sanitize step (never uploaded to storage).
+
+## Hooks policy (v0.1)
+
+Hooks ARE imported — they map format-identically — but under the strictest handling:
+
+1. Hook scripts get the **script-tier security scan** (see docs/security-scan.md), not
+   just the markdown rules. Any Block finding rejects the publish.
+2. The catalog detail page shows a prominent warning: "⚠ includes N hooks that run
+   automatically" with the hook events and commands listed for inspection.
+3. The import manifest lists every hook with its trigger event before the creator publishes.
+
+## Engineer plugin layout (generated)
 
 ```
-.claude-plugin/plugin.json    # name, version, description, author { name: "@login", url }
-agents/{engineer}.md          # persona (creator-authored or generated default)
-skills/{skill-slug}/SKILL.md  # + subsidiary files
-commands/{engineer}.md        # thin dispatch command for the engineer agent
+.claude-plugin/plugin.json     # name, version, description, author { name: "@login", url }
+agents/…                       # uploaded agents (a default persona is generated only if none exist)
+skills/…                       # uploaded skills + generated house-rules skill
+commands/…                     # uploaded commands
+hooks/hooks.json (+ scripts)   # when present in the upload
+.mcp.json / .lsp.json / output-styles/ / monitors/ / bin/ / themes/   # when present
 ```
 
 ## Team plugin layout
 
-One plugin bundling member engineers at their **pinned versions** (snapshots taken at
-engineer publish time — teams are immutable until the team owner republishes):
+One plugin bundling member engineers at **pinned versions** (snapshots taken at engineer
+publish time — teams are immutable until the team owner republishes). Merge rules:
 
-```
-.claude-plugin/plugin.json
-agents/{member-slug}.md                       # one per member
-skills/{member-slug}--{skill-slug}/SKILL.md   # double-hyphen namespacing avoids collisions
-commands/{teamslug}.md                        # team overview/dispatch
-```
-
-## Skill normalization
-
-All ingestion paths (upload, GitHub link, catalog reference) converge to: folder with
-`SKILL.md` at root; frontmatter `name`/`description` validated or injected; kebab-case
-slug; caps: 5 MB per skill, 40 files, text + png/jpg/svg only; zip extraction is
-path-traversal-safe; no symlinks, no binaries.
+- `agents/`, `commands/`: merged; file names prefixed `{member-slug}--` on collision.
+- `skills/`: merged as `skills/{member-slug}--{skill-slug}/` (double-hyphen namespacing).
+- hooks: concatenated into one `hooks/hooks.json`; the team page carries the combined
+  hook warning listing which member each hook came from.
+- `.mcp.json` / `.lsp.json`: merged by server name; name collisions are prefixed with the
+  member slug.
+- Settings-derived items are never merged (they were never imported).
 
 ## marketplace.json
 
@@ -41,16 +87,23 @@ Regenerated in full from the DB on every publish; written atomically to Blob. En
   "name": "e3a-mohamed-dive-backend-engineer",
   "description": "…",
   "version": "3.0.0",
-  "author": { "name": "@mohamed", "url": "https://github.com/mohamed" },
+  "author": { "name": "@mohamed-dive", "url": "https://github.com/mohamed-dive" },
   "keywords": ["backend", "dotnet"],
   "source": {
-    "type": "archive",
+    "source": "archive",
     "url": "https://<domain>/z/e3a-mohamed-dive-backend-engineer/3.0.0.zip",
     "sha256": "<hex>"
   }
 }
 ```
 
-Only latest published versions are listed; older zips remain at their immutable URLs.
-`archive` sources are used because relative paths do not resolve for URL-added
-marketplaces (per Claude Code docs).
+Only latest published versions are listed; older zips remain at immutable URLs, and each
+version also gets a pinned single-plugin marketplace at `/m/{plugin}/{version}/marketplace.json`.
+`archive` sources are used because relative paths do not resolve for URL-added marketplaces.
+
+## Upload constraints
+
+Zip or folder upload; sanitize step strips `settings.local.json`, `.env*`, memory/session
+files, and OS junk before storage. Caps: 20 MB per upload, 400 files; text +
+png/jpg/svg + hook scripts (`.sh`, `.ps1`, `.js`, `.py`) only; path-traversal-safe
+extraction; no symlinks.

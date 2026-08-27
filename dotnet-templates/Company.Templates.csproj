@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageType>Template</PackageType>
+    <PackageId>Company.Templates</PackageId>
+    <Title>Company .NET templates</Title>
+    <Description>Solution template (DDD + CQRS over the shared Core libraries) and CQRS item templates.</Description>
+    <PackageVersion>1.0.0</PackageVersion>
+    <Authors>Company</Authors>
+    <TargetFramework>net10.0</TargetFramework>
+    <IncludeContentInPack>true</IncludeContentInPack>
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <ContentTargetFolders>content</ContentTargetFolders>
+    <NoWarn>$(NoWarn);NU5128</NoWarn>
+    <NoDefaultExcludes>true</NoDefaultExcludes>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="solution/**;cqrs-command/**;cqrs-query/**" Exclude="**/bin/**;**/obj/**;**/.vs/**;**/Directory.Build.local.props.example;**/Directory.Build.local.props" />
+    <Compile Remove="**/*" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <PackageReference Include="MediatR" />
+    <PackageReference Include="Microsoft.Extensions.Identity.Core" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../core-libraries/Core.Auditing/Core.Auditing.csproj" />
+    <ProjectReference Include="../core-libraries/Core.Azure/Core.Azure.csproj" />
+    <ProjectReference Include="../core-libraries/Core.Identity/Core.Identity.csproj" />
+    <ProjectReference Include="../core-libraries/Core.Localization/Core.Localization.csproj" />
+    <ProjectReference Include="../core-libraries/Core.Notifications/Core.Notifications.csproj" />
+    <ProjectReference Include="../core-libraries/Core.OTP/Core.OTP.csproj" />
+    <ProjectReference Include="../core-libraries/Core.Utilities/Core.Utilities.csproj" />
+    <ProjectReference Include="../core-libraries/Core.Validation/Core.Validation.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../AppTemplate.Domain/AppTemplate.Domain.csproj" />
+  </ItemGroup>
+
+</Project>

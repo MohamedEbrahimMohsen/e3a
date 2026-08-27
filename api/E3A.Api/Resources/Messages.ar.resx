@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter</value></resheader>
+
+  <!-- Placeholders must match the English file exactly, name for name. -->
+  <data name="USER_NOT_AUTHENTICATED" xml:space="preserve">
+    <value>يجب تسجيل الدخول للمتابعة.</value>
+  </data>
+  <data name="USER_NOT_FOUND" xml:space="preserve">
+    <value>لم نتمكن من العثور على هذا الحساب.</value>
+  </data>
+  <data name="ENGINEER_NOT_FOUND" xml:space="preserve">
+    <value>لم نتمكن من العثور على هذا المهندس.</value>
+  </data>
+  <data name="ENGINEER_NOT_OWNED" xml:space="preserve">
+    <value>هذا المهندس يخص منشئا اخر.</value>
+  </data>
+  <data name="ENGINEER_LIMIT_REACHED" xml:space="preserve">
+    <value>لقد وصلت الى الحد الاقصى وهو {limit} مهندس.</value>
+  </data>
+  <data name="ENGINEER_ID_REQUIRED" xml:space="preserve">
+    <value>معرف المهندس مطلوب.</value>
+  </data>
+  <data name="ENGINEER_DISPLAY_NAME_REQUIRED" xml:space="preserve">
+    <value>اسم العرض مطلوب.</value>
+  </data>
+  <data name="ENGINEER_DISPLAY_NAME_TOO_LONG" xml:space="preserve">
+    <value>يجب الا يتجاوز اسم العرض 100 حرف.</value>
+  </data>
+  <data name="ENGINEER_DISPLAY_NAME_INVALID" xml:space="preserve">
+    <value>يجب ان يحتوي اسم العرض على حرف انجليزي او رقم واحد على الاقل.</value>
+  </data>
+  <data name="ENGINEER_DESCRIPTION_TOO_LONG" xml:space="preserve">
+    <value>يجب الا يتجاوز الوصف 500 حرف.</value>
+  </data>
+  <data name="ENGINEER_TOO_MANY_TAGS" xml:space="preserve">
+    <value>يجب الا يزيد عدد الوسوم عن 10 وسوم.</value>
+  </data>
+  <data name="ENGINEER_TAG_REQUIRED" xml:space="preserve">
+    <value>الوسم لا يمكن ان يكون فارغا.</value>
+  </data>
+  <data name="ENGINEER_TAG_TOO_LONG" xml:space="preserve">
+    <value>يجب الا يتجاوز الوسم 30 حرفا.</value>
+  </data>
+</root>

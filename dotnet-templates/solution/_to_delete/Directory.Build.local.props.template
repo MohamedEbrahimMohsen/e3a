@@ -1,0 +1,9 @@
+<!--
+  Machine-specific, gitignored. Written at generation time from --corePath.
+  Each developer sets their own; nothing machine-specific is ever committed.
+-->
+<Project>
+  <PropertyGroup>
+    <CoreRepoPath>CORE_PATH</CoreRepoPath>
+  </PropertyGroup>
+</Project>

@@ -4,6 +4,15 @@ Every publish runs a rule-based scan over all text files in the composed plugin
 **before** anything becomes downloadable. Context: independent research (Snyk
 ToxicSkills, 2026) found prompt injection in ~36% of publicly shared agent skills.
 
+> Since the upload-only pivot (2026-08-23), uploads may include **hook scripts**
+> (`.sh`, `.ps1`, `.js`, `.py`) that Claude Code executes automatically. These get a
+> dedicated **script tier**: all markdown-tier rules plus script-specific rules
+> (network calls to non-allowlisted hosts, credential-file reads, encoded payload
+> execution, process/persistence manipulation), a lower Block threshold, and a
+> mandatory "includes N auto-running hooks" warning on the catalog detail page even
+> when the scan passes. The sanitize step strips `settings.local.json`, `.env*`,
+> memory/session files before anything reaches storage.
+
 ## Rule categories
 
 1. **Credential exfiltration** — reads of `~/.ssh`, `~/.aws/credentials`, `.env`,

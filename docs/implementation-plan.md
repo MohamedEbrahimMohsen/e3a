@@ -6,9 +6,9 @@ e3a is a free community product + portfolio piece for a solo senior .NET/Azure e
 
 **Verified Claude Code facts the design relies on** (official docs): `/plugin marketplace add <https-URL-to-marketplace.json>` is natively supported; plugin `source` type `archive` (HTTPS zip + sha256) works with URL-added marketplaces (relative paths do NOT); per-entry `version` field drives update propagation.
 
-**Locked scope (v0.1)**: engineer composer (skills from catalog / GitHub links / upload), team composer (pinned snapshots), publish + version-on-Publish-only (limits: 50 engineers, 10 teams per creator, 50 versions per item), anonymous public catalog with likes (login to vote) + report button + copy-install commands. **Out**: workflow builder (v0.2), private items, export-to-my-GitHub, MCP server, eval scoring.
+**Locked scope (v0.1)**: engineer creation is **UPLOAD-ONLY** (revised 2026-08-23 — creator uploads their whole `.claude` folder; e3a sanitizes, scans, and normalizes it into a plugin with an import manifest showing imported/converted/skipped items — see docs/plugin-spec.md); team composer (pinned snapshots, merge rules in plugin-spec); publish + version-on-Publish-only (limits: 50 engineers, 10 teams per creator, 50 versions per item); anonymous public catalog with install counts (progressive sparkline) + report button + copy-install commands + per-version pinned marketplaces. Hooks are imported with warnings (script-tier scan + loud detail-page warning). **Out**: workflow builder (v0.2), skill-picking composer (deferred), GitHub-URL import (deferred), private items, export-to-my-GitHub, MCP server, eval scoring, likes (replaced by install counts).
 
-**Locked stack**: React 18 + TS + Vite on Azure Static Web Apps (free) · .NET 10 isolated Azure Functions (consumption) · Azure Blob + Storage Queue · Azure SQL Basic (~$5/mo) + EF Core · GitHub OAuth (creators only) · Cloudflare CDN/cache/rate-limit. Total ≈ $5–7/mo.
+**Locked stack (revised 2026-08-27)**: React 18 + TS + Vite on Azure Static Web Apps (free) · **E3A ASP.NET Core API (.NET 10, AppTemplate scaffold + vendored core-libraries, MediatR 14, controllers) on Azure Container Apps scale-to-zero** · publish pipeline as a BackgroundService reading Storage Queue · Azure Blob · Azure SQL Basic (~$5/mo) + EF Core · GitHub OAuth (creators only) · Cloudflare CDN/cache/rate-limit. Total ≈ $5–8/mo. The Functions-only design (§2.1–2.2 below) is SUPERSEDED — kept for history; the engine components (PluginBuilder, scanner, composer, generator) await recreation inside the new solution. Backend patterns: `.claude/skills/dotnet-feature/SKILL.md`; features go through the feature pipeline with artifacts in `.process/`.
 
 ## Key architecture decisions
 
@@ -31,20 +31,20 @@ docs/           architecture.md, plugin-spec.md, security-scan.md
 ## Data model (SQL, EF Core)
 
 - `users`: Id, GitHubId (unique), GitHubLogin, DisplayName, AvatarUrl, IsBlocked
-- `engineers` / `teams` (separate tables, same shape): Id, OwnerUserId, Slug (unique `{githublogin}-{name}`), DisplayName, Description, Tags(json), Status(Draft|Published|Removed), DraftManifestJson, LatestVersionId, LikeCount, DislikeCount
+- `engineers` / `teams` (separate tables, same shape): Id, OwnerUserId, Slug (unique, kebab-case of DisplayName, auto-suffixed via IGenerator on collision; the `{githublogin}` segment lives in the plugin name `e3a-{githublogin}-{item-slug}`, not in the row), DisplayName, Description, Tags(json), Status(Draft|Published|Deleted), DraftManifestJson, LatestVersionId, InstallCount. Schema/business caps (lengths, tag counts, per-creator limits) live in `[Area]Options` bound from appsettings — never as entity constants.
 - `team_members`: (TeamId, EngineerId) PK, PinnedVersionId, SortOrder
 - `versions`: Id, ItemType, ItemId, VersionNumber, SemVer, FrozenManifestJson, ZipBlobPath, ZipSha256, SizeBytes, Status(Queued|Building|Published|Rejected|Failed), ScanReportJson; unique (ItemType, ItemId, VersionNumber)
 - `likes`: (UserId, ItemType, ItemId) PK, Value ±1
 - `reports`: Id, ItemType, ItemId, ReporterUserId?, Reason, Details, Status
 
-Limits enforced in handlers: ≤50 published engineers, ≤10 teams/user, ≤50 versions/item. Drafts reference assets in private blob `drafts/{userId}/{itemId}/...`; Publish freezes into `FrozenManifestJson`.
+Limits enforced in handlers: ≤50 engineers per creator (any status, non-deleted), ≤10 teams/user, ≤50 versions/item. Drafts reference assets in private blob `drafts/{userId}/{itemId}/...`; Publish freezes into `FrozenManifestJson`.
 
 ## Plugin build spec
 
 - **Naming**: `e3a-{githublogin}-{engineer-slug}` — unique + attributable.
 - **Engineer zip**: `.claude-plugin/plugin.json` (author = @login + GitHub URL), `agents/{engineer}.md` (persona; default generated if omitted), `skills/{slug}/SKILL.md`, `commands/{engineer}.md`.
 - **Team zip**: one plugin; each member materialized as `agents/{member-slug}.md` + `skills/{member-slug}--{skill-slug}/` (double-hyphen namespacing). Built from **snapshots** stored at engineer-publish time — never live drafts → immutable teams; republish team to adopt newer member versions.
-- **Skill normalization** (upload / GitHub tarball fetch / catalog reference all converge): `SKILL.md` at root with validated frontmatter; kebab-case slugs; caps 5 MB/skill, 40 files, text+images only; path-traversal-safe extraction.
+- **Upload normalization** (upload-only since 2026-08-23): whole `.claude` folder → sanitize (strip settings.local.json/.env/memory) → map per the imported/converted/skipped table in docs/plugin-spec.md (CLAUDE.md+rules → generated house-rules skill + CLAUDE.md snippet; hooks imported with script-tier scan + warnings); skills keep `SKILL.md`-at-root validation, kebab-case slugs; path-traversal-safe extraction.
 - **marketplace.json**: regenerated whole from DB each publish, atomic Blob write; entries use `source: {type: "archive", url: "https://<domain>/z/{name}/{semver}.zip", sha256}` with `version` bumped per release; only latest versions listed, old zips stay at immutable URLs.
 
 ## Security scan (publish pipeline)
@@ -53,7 +53,7 @@ Regex rule engine over all text files, categories: credential exfiltration (read
 
 ## API surface (`/api/*`)
 
-Auth: `GET login`, `GET callback` (code→JWT), `GET me`. Catalog (anon): `GET /catalog?type&q&tag&sort&page`, `GET /catalog/{slug}`. Engineers [auth/owner]: CRUD + `skills/upload|from-github|from-catalog` + `POST {id}/publish → 202`. Teams: mirror + members with pinned versions. `GET /publish/{versionId}/status` (poll). Social: `PUT vote` [auth], `POST report` (anon OK). Worker: queue trigger `publish-jobs`.
+Auth: `GET login`, `GET callback` (code→JWT), `GET me`. Catalog (anon): `GET /catalog?type&q&tag&sort&page`, `GET /catalog/{slug}`. Engineers: **GET reads are anonymous** — `GET /api/engineers` (published only) and `GET /api/engineers/{id}` (published to anyone; drafts owner-only: 401 anonymous / 403 non-owner) — while `GET /api/engineers/mine` and all mutations are [auth/owner]: CRUD + upload + `POST {id}/publish → 202`. Teams: mirror + members with pinned versions. `GET /publish/{versionId}/status` (poll). Social: `POST report` (anon OK). Worker: queue `publish-jobs`.
 
 **Publish pipeline**: dequeue → Building → assemble tree (draft assets or member snapshots) → validate structure → security scan (fail = Rejected + report) → deterministic zip + sha256 → upload `public/z/...` + snapshot assets → Published + LatestVersionId → regenerate marketplace.json → purge Cloudflare. Poison queue after 3 retries → Failed.
 
@@ -61,7 +61,7 @@ Auth: `GET login`, `GET callback` (code→JWT), `GET me`. Catalog (anon): `GET /
 
 - **P0 Skeleton (2–3 eve)**: monorepo scaffold, Bicep (RG/Storage/SQL/Functions/SWA), 3 OIDC workflows. ✅ push-to-main deploys hello SPA + `/api/ping`.
 - **P1 Marketplace proof (1–2 eve, BEFORE any product code)**: hand-built engineer zip + hand-written marketplace.json in Blob + Cloudflare Worker + domain. ✅ real Claude Code session: marketplace add → install → agent/skills load; version bump propagates.
-- **P2 Auth + engineer composer (~1 wk)**: OAuth+JWT, EF model/migrations, draft CRUD, 3 skill-ingestion paths, composer UI with structure preview. ✅ draft with uploaded + GitHub-fetched skill; anonymous rejected on gated endpoints.
+- **P2 Auth + upload pipeline (~1 wk)**: OAuth+JWT, EF model/migrations, draft CRUD, `.claude`-folder upload with sanitize step + normalizer (mapping table in plugin-spec) + import-manifest UI. ✅ upload a real .claude folder; manifest shows imported/converted/skipped; local files stripped; anonymous rejected on gated endpoints.
 - **P3 Publish pipeline (~1 wk)**: queue worker, validator, scanner+fixtures, PluginBuilder, MarketplaceGenerator, purge, status-poll UI. ✅ end-to-end publish → install in Claude Code; malicious fixture rejected with readable report.
 - **P4 Public catalog (~4–5 d)**: anon browse/search/detail (contents tree, versions, attribution, copy-command buttons), votes, report modal. ✅ incognito → copy commands → install works.
 - **P5 Teams (~4–5 d)**: team CRUD, member picker w/ pinned versions, namespaced team compile from snapshots, "newer member versions" republish flow. ✅ 3-engineer team installs, 3 agents resolve; member republish doesn't mutate published team.

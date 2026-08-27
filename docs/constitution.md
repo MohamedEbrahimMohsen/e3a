@@ -1,6 +1,6 @@
 # e3a Constitution
 
-The rules for ALL implementation work in this repo. Adapted from Mohamed's Morabh handbook to e3a's stack (**.NET 10 isolated Azure Functions · no MediatR · React 18 + TS · Bicep**). When a rule here conflicts with a generic "best practice", this file wins. New code must be indistinguishable from existing code.
+The rules for ALL implementation work in this repo. e3a's stack (revised 2026-08-27): **.NET 10 · ASP.NET Core API (controllers) · MediatR 14 + FluentValidation 12 via vendored `api/core-libraries` (Core.DDD, Core.CQRS, Core.EntityFrameworkCore, Core.Errors, …) · EF Core 10 + Azure SQL · Azure Container Apps hosting · React 18 + TS · Bicep**. Backend patterns are detailed in `.claude/skills/dotnet-feature/SKILL.md`; the feature pipeline (`feature-planner` → `feature-implementer` → `feature-reviewer`, artifacts in `.process/`) is the standard way features are built. When a rule here conflicts with a generic "best practice", this file wins. New code must be indistinguishable from existing code.
 
 ---
 
@@ -94,9 +94,9 @@ public sealed class PublishingOptions
 }
 ```
 
-- Bound in `DependencyInjection.AddE3aCore(this IServiceCollection services, IConfiguration configuration)` — the ONLY place services and options are registered.
+- Bound in the layer's `DependencyInjection.cs` (`E3A.Application` / `E3A.Infrastructure`) — the ONLY registration points.
 - Injected as `IOptions<PublishingOptions>` via primary constructor; read `.Value` once into a field/local.
-- `appsettings.json` (committed, non-secret defaults) → Azure app settings override per environment → `local.settings.json` for local secrets.
+- `appsettings.json` (committed, non-secret defaults) → Azure App Configuration + Container Apps settings per environment → user-secrets/`appsettings.Development.json` (gitignored) for local secrets.
 - Tests construct options directly: `Options.Create(new PublishingOptions { ... })` — test values mirror the committed defaults unless the test targets a limit.
 
 ---
@@ -105,14 +105,14 @@ public sealed class PublishingOptions
 
 | Thing | Convention | Example |
 |---|---|---|
-| Use-case slice | `Features/<Area>/<UseCase>/{Command\|Query, Handler, Validator, Result}` | `Features/Engineers/PublishEngineer/` |
-| Command / Query | `[Verb][Noun]Command` / `Get[Noun]Query`, `List[Nouns]Query` | `PublishEngineerCommand`, `ListCatalogQuery` |
+| Use-case slice | `E3A.Application/{Area}/{UseCase}/{Command\|Query, Handler, Validator, Result}` | `Engineers/PublishEngineer/` |
+| Command / Query | `[Verb][Noun]Command` / `Get[Noun]Query`, `List[Nouns]Query` | `PublishEngineerCommand`, `ListEngineersQuery` |
 | Handler | `[Name minus Command]Handler` / `[QueryName]Handler` | `PublishEngineerHandler` |
-| Result | `[Feature]Result`, colocated | `PublishEngineerResult` |
-| Options | `[Topic]Options` + `SectionName` const, in `E3a.Core/Options/` | `PublishingOptions` |
-| Azure Function class | `[Noun]Function`, method `Run` | `PingFunction` |
-| Infrastructure service | `I[Noun]` + impl, in `Infrastructure/<Area>/` | `PluginBuilder`, `SecurityScanner` |
-| Domain model | Noun record/class in `Domain/` | `PluginPackage`, `EngineerManifest` |
+| Result | `[Noun]Result` (+ `[Noun]ResultGenerator` when non-trivial), area `Shared/` when reused | `EngineerResult` |
+| Options | `[Topic]Options` + `SectionName` const | `PublishingOptions` |
+| Controller | `[Nouns]Controller` in `E3A.Api/Controllers/{Area}/`, kebab-case plural routes | `EngineersController`, `api/engineers` |
+| Entity + repo interface | aggregate folder `E3A.Domain/{Area}/` | `Engineer`, `IEngineerRepository` |
+| Repo implementation | `E3A.Infrastructure/{Area}/` | `EngineerRepository` |
 
 **PROHIBITED names:** `DTO`, `Response` (for internal results), `Model`, `Manager`, `Helper`, `Utils`.
 
@@ -122,11 +122,13 @@ public sealed class PublishingOptions
 
 ## 4. Layer Rules
 
-- **`E3a.Functions`** — thin triggers only: deserialize → validate → call Core → map to HTTP. No business logic, no storage access.
-- **`E3a.Core`** — everything else: `Features/` (vertical slices), `Domain/` (manifests, packages, invariants), `Infrastructure/` (EF Core, Blob, Queue, GitHub client, scanner, builder, generator), `Options/`.
-- **`E3a.Core.Tests`** — xUnit; heaviest coverage on the core engine (§0.5); fixtures for every scanner rule.
-- Errors: handlers return typed results or throw; Functions map to status codes. No `try/catch` swallowing; let the platform log.
-- One `SaveChangesAsync` per handler, at the end (once EF lands).
+- **`E3A.Api`** — thin controllers only: map Request → Command/Query → `mediator.Send` → `Ok(result)`. No business logic. Resources (`Messages.ar/en.resx`) live here.
+- **`E3A.Application`** — vertical slices `{Area}/{UseCase}/`, `Exceptions/ErrorCodes.cs`, options, MediatR pipeline behaviors from `Core.CQRS`.
+- **`E3A.Domain`** — aggregates (Core.DDD bases: private ctor + `Create` factory, guarded domain methods setting `UpdationDate`), enums + extensions, repository interfaces in aggregate folders.
+- **`E3A.Infrastructure`** — ONE `AppDbContext` (named private config methods, global soft-delete filters, no `ApplyConfigurationsFromAssembly`), repositories (`Repository<T>` base, never saving), Azure clients.
+- **`E3A.Tests`** — xUnit + NSubstitute + FluentAssertions per `conventions/dotnet-testing.md`: entity branches, every handler branch, every validator rule; repos/controllers out of scope.
+- Errors: no `try`/`catch` in handlers — throw `Core.Errors` exceptions; `Core.Exceptions` middleware formats responses. Never invent an exception type for a covered status code.
+- One `SaveChangesAsync` per handler, at the end. Full backend detail: `.claude/skills/dotnet-feature/SKILL.md`.
 
 ---
 
@@ -145,4 +147,8 @@ public sealed class PublishingOptions
 - `dotnet build` clean — zero new warnings. `dotnet test` green.
 - Core-engine changes carry tests (§0.5).
 - No secrets in the diff (§0.4).
-- Docs updated when behavior changes (`docs/plugin-spec.md`, `docs/security-scan.md`).
+- **Docs sync** (full rule: `.claude/rules/docs-sync.md`): a change that alters business
+  logic, scope, architecture, policies, or contracts must update the owning doc in `/docs`
+  in the same change — implementation and docs may never give two different answers to the
+  same question. Incompleteness is fine (plan says 10 features, 6 built — normal);
+  divergence is a blocking finding. Reviewers must check this distinction explicitly.

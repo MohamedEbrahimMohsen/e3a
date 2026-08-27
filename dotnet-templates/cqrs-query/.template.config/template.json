@@ -1,0 +1,38 @@
+{
+  "$schema": "http://json.schemastore.org/template",
+  "author": "CoreOrg",
+  "classifications": [ "CQRS", "Query", "MediatR", "FluentValidation" ],
+  "identity": "CoreOrg.Templates.CqrsQuery",
+  "groupIdentity": "CoreOrg.Templates.Cqrs.Query",
+  "name": "CQRS Query",
+  "shortName": "cqrs-query",
+  "sourceName": "PlaceHolder",
+  "preferNameDirectory": true,
+  "tags": { "language": "C#", "type": "item" },
+  "symbols": {
+    "rootnamespace": {
+      "type": "bind",
+      "binding": "msbuild:RootNamespace",
+      "defaultValue": "Application",
+      "replaces": "$rootnamespace$"
+    },
+    "feature": {
+      "type": "parameter",
+      "datatype": "string",
+      "longName": "feature",
+      "description": "Area/module name (for example, Orders).",
+      "defaultValue": ""
+    },
+    "queryNamespace": {
+      "type": "generated",
+      "generator": "join",
+      "datatype": "string",
+      "parameters": {
+        "separator": ".",
+        "removeEmptyValues": true,
+        "symbols": [ { "type": "ref", "value": "feature" }, { "type": "ref", "value": "name" } ]
+      },
+      "replaces": "$queryNamespace$"
+    }
+  }
+}

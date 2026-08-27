@@ -20,3 +20,4 @@ Thumbs.db
 publish/
 *.zip
 /api/src/E3a.Functions/appsettings.json
+/api/E3A.Api/appsettings.json

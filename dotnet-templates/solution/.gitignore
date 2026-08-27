@@ -1,0 +1,14 @@
+bin/
+obj/
+artifacts/
+.vs/
+.vscode/
+*.user
+*.suo
+appsettings.*.local.json
+local.settings.json
+.env
+*.pfx
+coverage*.xml
+TestResults/
+Directory.Build.local.props

@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.3.9" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.5" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="10.0.5" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Core.Auditing\Core.Auditing.csproj" />
+    <ProjectReference Include="..\Core.DDD\Core.DDD.csproj" />
+    <ProjectReference Include="..\Core.Notifications\Core.Notifications.csproj" />
+    <ProjectReference Include="..\Core.OTP\Core.OTP.csproj" />
+  </ItemGroup>
+
+</Project>

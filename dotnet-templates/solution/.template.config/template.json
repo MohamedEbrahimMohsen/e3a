@@ -1,0 +1,79 @@
+{
+  "$schema": "http://json.schemastore.org/template",
+  "author": "Company",
+  "classifications": [
+    "Web",
+    "API",
+    "DDD",
+    "CQRS"
+  ],
+  "identity": "Company.Templates.Api",
+  "groupIdentity": "Company.Templates.Api",
+  "name": "Company API (DDD + CQRS over Core libraries)",
+  "shortName": "company-api",
+  "sourceName": "AppTemplate",
+  "preferNameDirectory": true,
+  "defaultName": "MyService",
+  "tags": {
+    "language": "C#",
+    "type": "solution"
+  },
+  "symbols": {
+    "jobs": {
+      "type": "parameter",
+      "datatype": "bool",
+      "description": "Include the background jobs host.",
+      "defaultValue": "true"
+    },
+    "sample": {
+      "type": "parameter",
+      "datatype": "bool",
+      "description": "Include one throwaway sample slice as a live convention reference.",
+      "defaultValue": "false"
+    }
+  },
+  "sources": [
+    {
+      "modifiers": [
+        {
+          "condition": "(!jobs)",
+          "exclude": [
+            "AppTemplate.Jobs/**"
+          ]
+        },
+        {
+          "condition": "(!sample)",
+          "exclude": [
+            "AppTemplate.Domain/Samples/**",
+            "AppTemplate.Application/Samples/**",
+            "AppTemplate.Infrastructure/Samples/**",
+            "AppTemplate.Api/Controllers/Samples/**",
+            "AppTemplate.Tests/Samples/**"
+          ]
+        }
+      ],
+      "exclude": [
+        "**/bin/**",
+        "**/obj/**",
+        "**/.vs/**",
+        "_to_delete/**",
+        "**/.template.config/**",
+        "**/*.user",
+        "**/*.lock.json",
+        "**/*.filelist"
+      ]
+    }
+  ],
+  "postActions": [
+    {
+      "description": "Restore local tools",
+      "manualInstructions": [
+        {
+          "text": "Run 'dotnet tool restore'"
+        }
+      ],
+      "actionId": "3A7C4B45-1F5D-4A30-959A-51B88E82B5D2",
+      "continueOnError": true
+    }
+  ]
+}

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter</value></resheader>
+
+  <!-- The key IS the error code. Every key here must also exist in every other language file. -->
+  <data name="USER_NOT_AUTHENTICATED" xml:space="preserve">
+    <value>You need to sign in to continue.</value>
+  </data>
+  <data name="USER_NOT_FOUND" xml:space="preserve">
+    <value>We couldn't find that account.</value>
+  </data>
+  <data name="ENGINEER_NOT_FOUND" xml:space="preserve">
+    <value>We couldn't find that engineer.</value>
+  </data>
+  <data name="ENGINEER_NOT_OWNED" xml:space="preserve">
+    <value>This engineer belongs to another creator.</value>
+  </data>
+  <data name="ENGINEER_LIMIT_REACHED" xml:space="preserve">
+    <value>You have reached the limit of {limit} engineers.</value>
+  </data>
+  <data name="ENGINEER_ID_REQUIRED" xml:space="preserve">
+    <value>An engineer identifier is required.</value>
+  </data>
+  <data name="ENGINEER_DISPLAY_NAME_REQUIRED" xml:space="preserve">
+    <value>A display name is required.</value>
+  </data>
+  <data name="ENGINEER_DISPLAY_NAME_TOO_LONG" xml:space="preserve">
+    <value>A display name must not exceed 100 characters.</value>
+  </data>
+  <data name="ENGINEER_DISPLAY_NAME_INVALID" xml:space="preserve">
+    <value>A display name must contain at least one English letter or digit.</value>
+  </data>
+  <data name="ENGINEER_DESCRIPTION_TOO_LONG" xml:space="preserve">
+    <value>A description must not exceed 500 characters.</value>
+  </data>
+  <data name="ENGINEER_TOO_MANY_TAGS" xml:space="preserve">
+    <value>An engineer must not have more than 10 tags.</value>
+  </data>
+  <data name="ENGINEER_TAG_REQUIRED" xml:space="preserve">
+    <value>A tag must not be empty.</value>
+  </data>
+  <data name="ENGINEER_TAG_TOO_LONG" xml:space="preserve">
+    <value>A tag must not exceed 30 characters.</value>
+  </data>
+</root>

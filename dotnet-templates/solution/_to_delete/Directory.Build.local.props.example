@@ -1,0 +1,10 @@
+<!--
+  Copy to Directory.Build.local.props (gitignored) and set the path to your
+  local Core checkout. Each developer sets their own; nothing machine-specific
+  is ever committed.
+-->
+<Project>
+  <PropertyGroup>
+    <CoreRepoPath>D:\Personal\Process\engineering-kit\engineering-kit\core-libraries</CoreRepoPath>
+  </PropertyGroup>
+</Project>

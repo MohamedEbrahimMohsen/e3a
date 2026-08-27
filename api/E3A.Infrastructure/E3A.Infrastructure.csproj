@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design">
+  <PrivateAssets>all</PrivateAssets>
+  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools">
+  <PrivateAssets>all</PrivateAssets>
+  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../core-libraries/Core.EntityFrameworkCore/Core.EntityFrameworkCore.csproj" />
+    <ProjectReference Include="../core-libraries/Core.Notifications/Core.Notifications.csproj" />
+    <ProjectReference Include="../core-libraries/Core.OTP/Core.OTP.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../E3A.Application/E3A.Application.csproj" />
+    <ProjectReference Include="../E3A.Domain/E3A.Domain.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,10 @@
+<Project>
+  <PropertyGroup>
+    <!--
+      Core pins its package versions inline. This stops a consuming solution's
+      central package management from reaching these projects, which would
+      otherwise fail the build with NU1008.
+    -->
+    <ManagePackageVersionsCentrally>false</ManagePackageVersionsCentrally>
+  </PropertyGroup>
+</Project>

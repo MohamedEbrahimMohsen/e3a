@@ -1,0 +1,43 @@
+<Project>
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <AnalysisLevel>latest-recommended</AnalysisLevel>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+
+    <!--
+      Warnings are errors, but a transitive advisory must not break an unrelated
+      build. The vulnerable-packages gate reports these deterministically, with
+      the package named, which is more useful than a failed compile.
+    -->
+    <NoWarn>$(NoWarn);NU1903</NoWarn>
+  </PropertyGroup>
+
+  <!--
+    The Core libraries are vendored into this solution at ./core-libraries and
+    referenced as projects. There is no feed and nothing to configure.
+
+    Moving to packages later is a real change, not a switch: the projects get
+    PackageReference lines, core-libraries is deleted, and a feed is added to
+    nuget.config. Doing it now would mean carrying a second, untested code path
+    for a feed that does not exist yet.
+  -->
+  <Target Name="VerifyCoreLibraries" BeforeTargets="CollectPackageReferences">
+    <Error Condition="!Exists('$(MSBuildThisFileDirectory)core-libraries/Core.DDD/Core.DDD.csproj')"
+           Text="The vendored Core libraries are missing from ./core-libraries. Restore them with sync-core.ps1." />
+  </Target>
+
+  <!-- Sonar rules as a Roslyn analyzer: same rules, no server, no Docker. -->
+  <ItemGroup Condition="'$(MSBuildProjectExtension)' == '.csproj'">
+    <PackageReference Include="SonarAnalyzer.CSharp">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+</Project>

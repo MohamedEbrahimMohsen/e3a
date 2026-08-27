@@ -1,9 +1,32 @@
 <Solution>
-  <Folder Name="/src/">
-    <Project Path="src/E3a.Core/E3a.Core.csproj" />
-    <Project Path="src/E3a.Functions/E3a.Functions.csproj" />
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
+    <File Path="Directory.Build.props" />
+    <File Path="Directory.Packages.props" />
+    <File Path="nuget.config" />
+    <File Path="README.md" />
   </Folder>
-  <Folder Name="/tests/">
-    <Project Path="tests/E3a.Core.Tests/E3a.Core.Tests.csproj" />
+  <Folder Name="/Core/">
+    <Project Path="core-libraries/Core.Auditing/Core.Auditing.csproj" />
+    <Project Path="core-libraries/Core.Azure/Core.Azure.csproj" />
+    <Project Path="core-libraries/Core.CQRS/Core.CQRS.csproj" />
+    <Project Path="core-libraries/Core.Cache/Core.Cache.csproj" />
+    <Project Path="core-libraries/Core.DDD/Core.DDD.csproj" />
+    <Project Path="core-libraries/Core.EntityFrameworkCore/Core.EntityFrameworkCore.csproj" />
+    <Project Path="core-libraries/Core.Errors/Core.Errors.csproj" />
+    <Project Path="core-libraries/Core.Exceptions/Core.Exceptions.csproj" />
+    <Project Path="core-libraries/Core.Identity/Core.Identity.csproj" />
+    <Project Path="core-libraries/Core.Localization/Core.Localization.csproj" />
+    <Project Path="core-libraries/Core.Logging/Core.Logging.csproj" />
+    <Project Path="core-libraries/Core.Notifications/Core.Notifications.csproj" />
+    <Project Path="core-libraries/Core.OTP/Core.OTP.csproj" />
+    <Project Path="core-libraries/Core.Queues/Core.Queues.csproj" />
+    <Project Path="core-libraries/Core.Utilities/Core.Utilities.csproj" />
+    <Project Path="core-libraries/Core.Validation/Core.Validation.csproj" />
   </Folder>
+  <Project Path="E3A.Api/E3A.Api.csproj" />
+  <Project Path="E3A.Application/E3A.Application.csproj" />
+  <Project Path="E3A.Domain/E3A.Domain.csproj" />
+  <Project Path="E3A.Infrastructure/E3A.Infrastructure.csproj" />
+  <Project Path="E3A.Tests/E3A.Tests.csproj" />
 </Solution>

@@ -1,0 +1,33 @@
+<Project>
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
+  <!-- Packaging. Only used when packing; harmless during an ordinary build. -->
+  <PropertyGroup>
+    <PackageIdPrefix>Company</PackageIdPrefix>
+    <PackageId>$(PackageIdPrefix).$(MSBuildProjectName)</PackageId>
+    <Authors>$(PackageIdPrefix)</Authors>
+    <VersionPrefix>1.0.0</VersionPrefix>
+
+    <!--
+      Every LOCAL pack must produce a unique version. A rebuilt package with an
+      unchanged version is served from the global cache, not from the feed, and
+      your changes silently do not apply. CI sets CI=true and packs a clean version.
+    -->
+    <VersionSuffix Condition="'$(CI)' == ''">local$([System.DateTime]::Now.ToString(yyyyMMddHHmm))</VersionSuffix>
+  </PropertyGroup>
+
+  <!-- Symbols and sources ride inside the package, so F12 still steps into Core. -->
+  <PropertyGroup>
+    <DebugType>embedded</DebugType>
+    <EmbedAllSources>true</EmbedAllSources>
+    <IncludeSymbols>false</IncludeSymbols>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+  </PropertyGroup>
+
+</Project>

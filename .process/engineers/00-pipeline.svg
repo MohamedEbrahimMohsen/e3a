@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="680" viewBox="0 0 680 706" role="img" font-family="Segoe UI, Inter, system-ui, sans-serif">
+  <title>The /feature three-stage pipeline</title>
+  <desc>Feature request flows through a Fable 5 planner, a dev approval gate, an Opus 5 implementer, and a Fable 5 reviewer; changes loop back once, a second failure stops the pipeline for re-planning.</desc>
+  <style>
+    .t1{font-size:14px;font-weight:600}.t2{font-size:12px}.mdl{font-size:13px;font-weight:800;letter-spacing:0.02em}
+    .purple rect{fill:#EEEDFE;stroke:#534AB7}.purple .t1{fill:#3C3489}.purple .t2{fill:#534AB7}.purple .mdl{fill:#26215C}
+    .amber rect{fill:#FAEEDA;stroke:#854F0B}.amber .t1{fill:#633806}.amber .t2{fill:#854F0B}
+    .teal rect{fill:#E1F5EE;stroke:#0F6E56}.teal .t1{fill:#085041}.teal .t2{fill:#0F6E56}
+    .gray rect{fill:#F1EFE8;stroke:#5F5E5A}.gray .t1{fill:#444441}.gray .t2{fill:#5F5E5A}
+    .arr{stroke:#888780;stroke-width:1.5;fill:none;marker-end:url(#ah)}
+    .leader{stroke:#B4B2A9;stroke-width:1;fill:none;stroke-dasharray:4 3}
+    .lbl{font-size:12px;fill:#5F5E5A}
+    @media (prefers-color-scheme: dark){
+      .purple rect{fill:#3C3489;stroke:#AFA9EC}.purple .t1{fill:#EEEDFE}.purple .t2{fill:#CECBF6}.purple .mdl{fill:#FFFFFF}
+      .amber rect{fill:#633806;stroke:#FAC775}.amber .t1{fill:#FAEEDA}.amber .t2{fill:#FAC775}
+      .teal rect{fill:#085041;stroke:#5DCAA5}.teal .t1{fill:#E1F5EE}.teal .t2{fill:#9FE1CB}
+      .gray rect{fill:#444441;stroke:#B4B2A9}.gray .t1{fill:#F1EFE8}.gray .t2{fill:#D3D1C7}
+      .lbl{fill:#B4B2A9}.arr{stroke:#888780}
+    }
+  </style>
+  <defs><marker id="ah" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M1,1 L7,4 L1,7" fill="none" stroke="#888780" stroke-width="1.5"/></marker></defs>
+
+  <g class="gray"><rect x="210" y="40" width="260" height="52" rx="6"/><text class="t1" x="340" y="62" text-anchor="middle">/feature &lt;request&gt;</text><text class="t2" x="340" y="80" text-anchor="middle">orchestrator gates — never codes</text></g>
+  <line class="arr" x1="340" y1="92" x2="340" y2="108"/>
+  <g class="gray"><rect x="210" y="112" width="260" height="36" rx="6"/><text class="t1" x="340" y="135" text-anchor="middle">create .process/&lt;slug&gt;/</text></g>
+  <line class="arr" x1="340" y1="148" x2="340" y2="172"/>
+
+  <g class="purple"><rect x="210" y="176" width="260" height="66" rx="6"/><text class="t1" x="340" y="198" text-anchor="middle">Stage 1 — plan</text><text class="t2" x="340" y="215" text-anchor="middle">feature-planner</text><text class="mdl" x="340" y="233" text-anchor="middle">FABLE 5</text></g>
+  <g class="gray"><rect x="40" y="193" width="130" height="32" rx="6"/><text class="t2" x="105" y="213" text-anchor="middle">01-plan.md</text></g>
+  <line class="leader" x1="170" y1="209" x2="208" y2="209"/>
+  <line class="arr" x1="470" y1="209" x2="496" y2="209"/>
+  <g class="amber"><rect x="500" y="185" width="140" height="48" rx="6"/><text class="t1" x="570" y="205" text-anchor="middle">Blocked — stop</text><text class="t2" x="570" y="223" text-anchor="middle">needs a decision</text></g>
+  <line class="arr" x1="340" y1="242" x2="340" y2="270"/>
+
+  <g class="amber"><rect x="210" y="274" width="260" height="52" rx="6"/><text class="t1" x="340" y="296" text-anchor="middle">Approval gate</text><text class="t2" x="340" y="314" text-anchor="middle">the dev reviews the plan</text></g>
+  <polyline class="leader" points="210,300 192,300 192,225 208,225"/>
+  <text class="lbl" x="148" y="268" text-anchor="start">revise</text>
+  <line class="arr" x1="340" y1="326" x2="340" y2="354"/>
+  <text class="lbl" x="350" y="346" text-anchor="start">approve</text>
+
+  <g class="purple"><rect x="210" y="358" width="260" height="66" rx="6"/><text class="t1" x="340" y="380" text-anchor="middle">Stage 2 — implement</text><text class="t2" x="340" y="397" text-anchor="middle">feature-implementer · code + tests</text><text class="mdl" x="340" y="415" text-anchor="middle">OPUS 5</text></g>
+  <g class="gray"><rect x="40" y="375" width="130" height="32" rx="6"/><text class="t2" x="105" y="395" text-anchor="middle">02-implementation.md</text></g>
+  <line class="leader" x1="170" y1="391" x2="208" y2="391"/>
+  <line class="arr" x1="340" y1="424" x2="340" y2="452"/>
+
+  <g class="purple"><rect x="210" y="456" width="260" height="66" rx="6"/><text class="t1" x="340" y="478" text-anchor="middle">Stage 3 — review</text><text class="t2" x="340" y="495" text-anchor="middle">feature-reviewer · always fresh</text><text class="mdl" x="340" y="513" text-anchor="middle">FABLE 5</text></g>
+  <g class="gray"><rect x="40" y="473" width="130" height="32" rx="6"/><text class="t2" x="105" y="493" text-anchor="middle">03-review(-r2).md</text></g>
+  <line class="leader" x1="170" y1="489" x2="208" y2="489"/>
+  <line class="arr" x1="470" y1="489" x2="476" y2="489"/>
+  <g class="amber"><rect x="480" y="463" width="160" height="52" rx="6"/><text class="t1" x="560" y="485" text-anchor="middle">Changes requested</text><text class="t2" x="560" y="503" text-anchor="middle">max 2 rounds</text></g>
+  <polyline class="arr" points="560,463 560,391 474,391"/>
+  <text class="lbl" x="552" y="430" text-anchor="end">rework · fresh reviewer</text>
+  <line class="arr" x1="560" y1="515" x2="560" y2="592"/>
+  <g class="amber"><rect x="480" y="596" width="160" height="56" rx="6"/><text class="t1" x="560" y="618" text-anchor="middle">2nd fail — stop</text><text class="t2" x="560" y="636" text-anchor="middle">re-plan with the dev</text></g>
+  <line class="arr" x1="340" y1="522" x2="340" y2="592"/>
+  <text class="lbl" x="350" y="560" text-anchor="start">approved</text>
+  <g class="teal"><rect x="210" y="596" width="260" height="56" rx="6"/><text class="t1" x="340" y="618" text-anchor="middle">Report to the dev</text><text class="t2" x="340" y="636" text-anchor="middle">files · deviations · tests really run</text></g>
+
+  <g class="purple"><rect x="60" y="680" width="10" height="10" rx="2"/></g><text class="lbl" x="76" y="689" text-anchor="start">agent stage</text>
+  <g class="amber"><rect x="180" y="680" width="10" height="10" rx="2"/></g><text class="lbl" x="196" y="689" text-anchor="start">dev decides</text>
+  <g class="teal"><rect x="310" y="680" width="10" height="10" rx="2"/></g><text class="lbl" x="326" y="689" text-anchor="start">done</text>
+  <g class="gray"><rect x="400" y="680" width="10" height="10" rx="2"/></g><text class="lbl" x="416" y="689" text-anchor="start">flow / artifacts</text>
+</svg>

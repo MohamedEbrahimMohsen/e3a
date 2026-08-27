@@ -1,0 +1,22 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path="Directory.Build.props" />
+    <File Path="pack.ps1" />
+  </Folder>
+  <Project Path="Core.Auditing/Core.Auditing.csproj" />
+  <Project Path="Core.Azure/Core.Azure.csproj" />
+  <Project Path="Core.CQRS/Core.CQRS.csproj" />
+  <Project Path="Core.Cache/Core.Cache.csproj" />
+  <Project Path="Core.DDD/Core.DDD.csproj" />
+  <Project Path="Core.EntityFrameworkCore/Core.EntityFrameworkCore.csproj" />
+  <Project Path="Core.Errors/Core.Errors.csproj" />
+  <Project Path="Core.Exceptions/Core.Exceptions.csproj" />
+  <Project Path="Core.Identity/Core.Identity.csproj" />
+  <Project Path="Core.Localization/Core.Localization.csproj" />
+  <Project Path="Core.Logging/Core.Logging.csproj" />
+  <Project Path="Core.Notifications/Core.Notifications.csproj" />
+  <Project Path="Core.OTP/Core.OTP.csproj" />
+  <Project Path="Core.Queues/Core.Queues.csproj" />
+  <Project Path="Core.Utilities/Core.Utilities.csproj" />
+  <Project Path="Core.Validation/Core.Validation.csproj" />
+</Solution>

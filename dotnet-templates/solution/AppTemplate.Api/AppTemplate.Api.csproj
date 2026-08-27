@@ -1,0 +1,39 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <UserSecretsId>apptemplate-api-user-secrets</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Azure.Data.AppConfiguration" />
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
+    <!-- Direct reference overrides the vulnerable 2.0.0 pulled transitively by Microsoft.AspNetCore.OpenApi (GHSA-v5pm-xwqc-g5wc). -->
+    <PackageReference Include="Microsoft.OpenApi" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design">
+  <PrivateAssets>all</PrivateAssets>
+  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.Configuration.AzureAppConfiguration" />
+    <PackageReference Include="Scalar.AspNetCore" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../core-libraries/Core.Auditing/Core.Auditing.csproj" />
+    <ProjectReference Include="../core-libraries/Core.CQRS/Core.CQRS.csproj" />
+    <ProjectReference Include="../core-libraries/Core.EntityFrameworkCore/Core.EntityFrameworkCore.csproj" />
+    <ProjectReference Include="../core-libraries/Core.Exceptions/Core.Exceptions.csproj" />
+    <ProjectReference Include="../core-libraries/Core.Identity/Core.Identity.csproj" />
+    <ProjectReference Include="../core-libraries/Core.Localization/Core.Localization.csproj" />
+    <ProjectReference Include="../core-libraries/Core.Logging/Core.Logging.csproj" />
+    <ProjectReference Include="../core-libraries/Core.Notifications/Core.Notifications.csproj" />
+    <ProjectReference Include="../core-libraries/Core.OTP/Core.OTP.csproj" />
+    <ProjectReference Include="../core-libraries/Core.Utilities/Core.Utilities.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../AppTemplate.Application/AppTemplate.Application.csproj" />
+    <ProjectReference Include="../AppTemplate.Domain/AppTemplate.Domain.csproj" />
+    <ProjectReference Include="../AppTemplate.Infrastructure/AppTemplate.Infrastructure.csproj" />
+  </ItemGroup>
+
+</Project>
