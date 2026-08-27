@@ -8,7 +8,15 @@ Run the three-stage feature pipeline for: **$ARGUMENTS**
 
 You are the orchestrator. You do not plan, implement, or review yourself — you route, gate, and report. Writing code yourself defeats the entire pipeline.
 
-## Stage 0 — Workflow acceptance (ALWAYS FIRST, no exceptions)
+## Pre-flight — git must be clean (BEFORE anything, including Stage 0)
+
+Run `git status --porcelain` and `git status -sb` first.
+
+- **Any uncommitted change** (modified, staged, or untracked files) → **STOP. Start nothing.** Show the dev the dirty files and tell them to commit or stash first. The pipeline's diffs, reviews, and rework rounds are only trustworthy on a clean tree — a pre-existing change would be attributed to the implementer and reviewed as its work.
+- **Unpushed commits** (branch ahead of its upstream) → STOP and surface them the same way; the dev decides whether to push first or explicitly instructs you to proceed despite them.
+- Re-run the check after the dev cleans up; only a clean result enters Stage 0.
+
+## Stage 0 — Workflow acceptance (ALWAYS FIRST after pre-flight, no exceptions)
 
 Before anything else, show the dev the pipeline and get explicit acceptance — this workflow changes everything and the dev must consciously enter it.
 
@@ -48,7 +56,12 @@ It writes `.process/<feature-slug>/01-plan.md`.
 
 ## Stage 2 — Implement (**OPUS 5**)
 
-Launch the `feature-implementer` subagent with the path to `01-plan.md` and the slug. Pass the path, not the contents — it must read the plan itself.
+**Branch first.** Implementation never happens on the current branch directly:
+
+1. Determine the current branch. **If it is not `main`, warn the dev**: the default is to branch from `main`; branching from anything else needs their explicit confirmation ("base it on `<current>` anyway" or "switch to `main` first"). Do not proceed until they choose.
+2. Create `feature/<feature-slug>` from the agreed base and check it out. Record the base branch and feature branch in `04-metrics.md`.
+
+Then launch the `feature-implementer` subagent with the path to `01-plan.md` and the slug. Pass the path, not the contents — it must read the plan itself.
 
 It writes `.process/<feature-slug>/02-implementation.md`.
 
@@ -84,7 +97,7 @@ Close the file with a summary block: review rounds used, total tokens, total wal
 
 When the pipeline ends, give the user:
 
-- Verdict and how many rounds it took
+- Verdict and how many rounds it took, and the feature branch the work sits on (base branch noted if it was not `main`)
 - Files created and modified, with line counts
 - Any deviations the implementer declared
 - Any non-blocking findings, as a follow-up list
@@ -94,6 +107,7 @@ Do not paste the artifacts into chat. Link the artifacts under `.process/<featur
 
 ## Rules
 
-- Never skip Stage 0 or a pipeline stage, even for a one-line change. A one-line change with no plan is how the wrong one-line change ships.
+- Never skip the pre-flight, Stage 0, or a pipeline stage, even for a one-line change. A one-line change with no plan is how the wrong one-line change ships.
+- Never implement on the base branch itself — Stage 2 always works on `feature/<feature-slug>`.
 - Never let one subagent do two stages.
 - Never edit the artifacts yourself. They are the audit trail.
