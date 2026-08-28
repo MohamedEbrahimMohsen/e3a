@@ -57,7 +57,7 @@ Hooks ARE imported — they map format-identically — but under the strictest h
 ## Engineer plugin layout (generated)
 
 ```
-.claude-plugin/plugin.json     # name, version, description, author { name: "@login", url }
+.claude-plugin/plugin.json     # name, version, description, author { name, url } — see marketplace.json
 agents/…                       # uploaded agents (a default persona is generated only if none exist)
 skills/…                       # uploaded skills + generated house-rules skill
 commands/…                     # uploaded commands
@@ -80,26 +80,40 @@ publish time — teams are immutable until the team owner republishes). Merge ru
 
 ## marketplace.json
 
-Regenerated in full from the DB on every publish; written atomically to Blob. Entries:
+Regenerated in full from the DB on every publish; written atomically to Blob. Claude Code
+requires a wrapper around the entries:
 
 ```json
 {
-  "name": "e3a-mmohsen",
-  "description": "…",
-  "version": "3.0.0",
-  "author": { "name": "@mohamed-dive", "url": "https://github.com/mohamed-dive" },
-  "keywords": ["backend", "dotnet"],
-  "source": {
-    "source": "archive",
-    "url": "https://<domain>/z/e3a-mmohsen/3.0.0.zip",
-    "sha256": "<hex>"
-  }
+  "name": "e3a",
+  "owner": { "name": "e3a", "url": "https://<domain>" },
+  "plugins": [
+    {
+      "name": "e3a-mmohsen",
+      "description": "…",
+      "version": "3.0.0",
+      "author": { "name": "mmohsen", "url": "https://<domain>/e/mmohsen" },
+      "keywords": ["backend", "dotnet"],
+      "source": {
+        "source": "archive",
+        "url": "https://<domain>/z/e3a-mmohsen/3.0.0.zip",
+        "sha256": "<hex>"
+      }
+    }
+  ]
 }
 ```
 
-Only latest published versions are listed; older zips remain at immutable URLs, and each
-version also gets a pinned single-plugin marketplace at `/m/{plugin}/{version}/marketplace.json`.
-`archive` sources are used because relative paths do not resolve for URL-added marketplaces.
+Only latest published versions are listed; unlisted engineers drop out of the root document
+while their zips and pinned marketplaces keep resolving, so existing installs never break.
+Older zips remain at immutable URLs, and each version also gets a pinned single-plugin
+marketplace at `/m/{plugin}/{version}/marketplace.json` — identical wrapper, one-element
+`plugins` array. `archive` sources are used because relative paths do not resolve for
+URL-added marketplaces.
+
+Attribution before GitHub OAuth: `author.name` is the creator's Identity `UserName`, falling
+back to the engineer slug when it is empty, and `author.url` is the e3a catalog page
+`https://<domain>/e/{slug}`. The GitHub login and GitHub profile URL arrive with the OAuth slice.
 
 ## Upload constraints
 

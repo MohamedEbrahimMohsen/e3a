@@ -190,6 +190,77 @@
           }
         },
         {
+          "name": "Publish Engineer",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"increment\": \"Patch\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/engineers/{{engineerId}}/publish",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "engineers",
+                "{{engineerId}}",
+                "publish"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Unlist Engineer",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/engineers/{{engineerId}}/unlist",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "engineers",
+                "{{engineerId}}",
+                "unlist"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Relist Engineer",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/engineers/{{engineerId}}/relist",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "engineers",
+                "{{engineerId}}",
+                "relist"
+              ]
+            }
+          }
+        },
+        {
           "name": "Delete Engineer",
           "request": {
             "method": "DELETE",
@@ -292,6 +363,30 @@
                 "api",
                 "catalog",
                 "dive-backend-engineer"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Publishing",
+      "item": [
+        {
+          "name": "Get Publish Status",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/publish/{{versionId}}/status",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "publish",
+                "{{versionId}}",
+                "status"
               ]
             }
           }

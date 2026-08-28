@@ -252,6 +252,11 @@ dotnet_naming_style.begins_with_i.capitalization = pascal_case
 # consumed from Visual Basic, so the rule costs structure and buys nothing.
 dotnet_diagnostic.CA1716.severity = none
 
+# CA1711 reserves the `EventHandler` suffix for delegates. Domain-event handlers
+# here are MediatR `INotificationHandler<T>` classes, and `[Event]EventHandler` is
+# the naming this solution uses for them. Allow the suffix rather than mute the rule.
+dotnet_code_quality.CA1711.allowed_suffixes = EventHandler
+
 [*.{cs,vb}]
 dotnet_style_coalesce_expression = true:suggestion
 dotnet_style_null_propagation = true:suggestion

@@ -1,0 +1,39 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <AzureFunctionsVersion>v4</AzureFunctionsVersion>
+    <OutputType>Exe</OutputType>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Azure.Storage.Blobs" />
+    <PackageReference Include="Microsoft.Azure.Functions.Worker" />
+    <PackageReference Include="Microsoft.Azure.Functions.Worker.Sdk" />
+    <PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.Abstractions" />
+    <PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.Http.AspNetCore" />
+    <PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.Storage.Queues" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.AzureAppConfiguration" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../core-libraries/Core.CQRS/Core.CQRS.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../E3A.Application/E3A.Application.csproj" />
+    <ProjectReference Include="../E3A.Domain/E3A.Domain.csproj" />
+    <ProjectReference Include="../E3A.Infrastructure/E3A.Infrastructure.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="host.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>

@@ -4,6 +4,9 @@ using E3A.Application.Engineers.DeleteEngineer;
 using E3A.Application.Engineers.GetEngineer;
 using E3A.Application.Engineers.GetImportManifest;
 using E3A.Application.Engineers.ListMyEngineers;
+using E3A.Application.Engineers.PublishEngineer;
+using E3A.Application.Engineers.RelistEngineer;
+using E3A.Application.Engineers.UnlistEngineer;
 using E3A.Application.Engineers.UpdateEngineer;
 using E3A.Application.Engineers.UploadEngineerDraft;
 using MediatR;
@@ -64,6 +67,27 @@ public class EngineersController(IMediator mediator) : ControllerBase
     public async Task<ActionResult> GetImportManifest([FromRoute] Guid engineerId, CancellationToken cancellationToken)
     {
         var result = await mediator.Send(new GetImportManifestQuery(engineerId), cancellationToken);
+        return Ok(result);
+    }
+
+    [HttpPost("{engineerId:guid}/publish")]
+    public async Task<ActionResult> PublishEngineer([FromRoute] Guid engineerId, [FromBody] PublishEngineerRequest request, CancellationToken cancellationToken)
+    {
+        var result = await mediator.Send(new PublishEngineerCommand(engineerId, request.Increment), cancellationToken);
+        return Accepted(result);
+    }
+
+    [HttpPost("{engineerId:guid}/unlist")]
+    public async Task<ActionResult> UnlistEngineer([FromRoute] Guid engineerId, CancellationToken cancellationToken)
+    {
+        var result = await mediator.Send(new UnlistEngineerCommand(engineerId), cancellationToken);
+        return Ok(result);
+    }
+
+    [HttpPost("{engineerId:guid}/relist")]
+    public async Task<ActionResult> RelistEngineer([FromRoute] Guid engineerId, CancellationToken cancellationToken)
+    {
+        var result = await mediator.Send(new RelistEngineerCommand(engineerId), cancellationToken);
         return Ok(result);
     }
 

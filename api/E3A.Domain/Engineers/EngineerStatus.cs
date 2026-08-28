@@ -4,5 +4,6 @@ public enum EngineerStatus
 {
     Draft,
     Published,
+    Unlisted,
     Deleted,
 }

@@ -15,6 +15,7 @@ public static class DependencyInjection
         services.Configure<UploadsOptions>(configuration.GetSection(UploadsOptions.SectionName));
         services.Configure<AzureOptions>(configuration.GetSection(AzureOptions.SectionName));
         services.Configure<CatalogOptions>(configuration.GetSection(CatalogOptions.SectionName));
+        services.Configure<PublishingOptions>(configuration.GetSection(PublishingOptions.SectionName));
 
         return services;
     }

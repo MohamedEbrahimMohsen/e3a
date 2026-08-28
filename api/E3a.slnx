@@ -28,5 +28,6 @@
   <Project Path="E3A.Application/E3A.Application.csproj" />
   <Project Path="E3A.Domain/E3A.Domain.csproj" />
   <Project Path="E3A.Infrastructure/E3A.Infrastructure.csproj" />
+  <Project Path="E3A.Jobs/E3A.Jobs.csproj" />
   <Project Path="E3A.Tests/E3A.Tests.csproj" />
 </Solution>
