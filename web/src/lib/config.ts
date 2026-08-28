@@ -1,6 +1,6 @@
 export const config = {
   siteUrl: (import.meta.env.VITE_SITE_URL as string | undefined) ?? 'https://e3a.dev',
-  apiBaseUrl: (import.meta.env.VITE_API_BASE_URL as string | undefined) ?? 'http://localhost:7071/api',
+  apiBaseUrl: (import.meta.env.VITE_API_BASE_URL as string | undefined) ?? 'https://localhost:62935/api',
   githubOrgUrl: (import.meta.env.VITE_GITHUB_ORG_URL as string | undefined) ?? 'https://github.com/e3a-registry',
 } as const;
 

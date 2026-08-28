@@ -80,6 +80,11 @@ builder.Services.ConfigureHttpJsonOptions(options =>
     options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
 });
 
+if (builder.Environment.IsDevelopment())
+{
+    builder.Services.AddCors(options => options.AddDefaultPolicy(policy => policy.WithOrigins("http://localhost:5173", "http://localhost:5174").AllowAnyHeader().AllowAnyMethod()));
+}
+
 var app = builder.Build();
 
 app.MapOpenApi();
@@ -91,6 +96,11 @@ app.UseCoreLocalization(builder.Configuration);
 app.UseMiddleware<CoreRequestLoggingMiddleware>();
 
 app.UseHttpsRedirection();
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseCors();
+}
 
 app.UseAuthorization();
 

@@ -1,10 +1,10 @@
 export interface CatalogItem {
   emoji: string;
   name: string;
-  author: string;
+  author?: string;
   description: string;
   tags: string[];
-  version: string;
+  version?: string;
   installs: number;
   team?: boolean;
   members?: string[];

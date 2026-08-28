@@ -1,0 +1,278 @@
+{
+  "info": {
+    "_postman_id": "e3a00000-0000-4000-8000-000000000001",
+    "name": "e3a",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "item": [
+    {
+      "name": "Engineers",
+      "item": [
+        {
+          "name": "Create Engineer",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"displayName\": \"Dive Backend Engineer\",\n  \"description\": \"Senior .NET backend engineer — CQRS vertical slices, EF Core, clean error contracts.\",\n  \"tags\": [\"dotnet\", \"cqrs\", \"api\"]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/engineers",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "engineers"
+              ]
+            }
+          }
+        },
+        {
+          "name": "List My Engineers",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/engineers/mine",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "engineers",
+                "mine"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Engineer",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/engineers/{{engineerId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "engineers",
+                "{{engineerId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Engineer",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"displayName\": \"Dive Backend Engineer\",\n  \"description\": \"Updated description.\",\n  \"tags\": [\"dotnet\", \"ddd\"]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/engineers/{{engineerId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "engineers",
+                "{{engineerId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Upload Engineer Draft",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": []
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/engineers/{{engineerId}}/upload",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "engineers",
+                "{{engineerId}}",
+                "upload"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Import Manifest",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/engineers/{{engineerId}}/import-manifest",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "engineers",
+                "{{engineerId}}",
+                "import-manifest"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete Engineer",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/engineers/{{engineerId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "engineers",
+                "{{engineerId}}"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Catalog",
+      "item": [
+        {
+          "name": "Browse Catalog",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/catalog?q=backend&tag=dotnet&sort=MostInstalled&page=1&pageSize=9",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "catalog"
+              ],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "backend"
+                },
+                {
+                  "key": "tag",
+                  "value": "dotnet"
+                },
+                {
+                  "key": "sort",
+                  "value": "MostInstalled"
+                },
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "pageSize",
+                  "value": "9"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Catalog Tags",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/catalog/tags",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "catalog",
+                "tags"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Catalog Engineer",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/catalog/dive-backend-engineer",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "catalog",
+                "dive-backend-engineer"
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

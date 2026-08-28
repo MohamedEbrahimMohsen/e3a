@@ -33,12 +33,14 @@ export function EngineerCard({ item }: { item: CatalogItem }) {
         <div style={{ width: 44, height: 44, borderRadius: 10, background: 'var(--surface-elevated)', border: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22, flexShrink: 0 }}>{item.emoji}</div>
         <div style={{ flex: 1, minWidth: 0 }}>
           <div className="mono" style={{ fontWeight: 600, fontSize: 15, color: 'var(--text)' }}>{item.name}</div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 3 }}>
-            <span style={{ width: 14, height: 14, borderRadius: '50%', background: 'linear-gradient(135deg,#3f3f46,#26262c)', display: 'inline-block', flexShrink: 0 }} />
-            <span onClick={openAuthor} className="link-author" style={{ fontSize: 12.5, color: 'var(--text-secondary)' }}>@{item.author}</span>
-          </div>
+          {item.author && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 3 }}>
+              <span style={{ width: 14, height: 14, borderRadius: '50%', background: 'linear-gradient(135deg,#3f3f46,#26262c)', display: 'inline-block', flexShrink: 0 }} />
+              <span onClick={openAuthor} className="link-author" style={{ fontSize: 12.5, color: 'var(--text-secondary)' }}>@{item.author}</span>
+            </div>
+          )}
         </div>
-        <span className="version-badge">{item.version}</span>
+        {item.version && <span className="version-badge">{item.version}</span>}
       </div>
       <div style={{ fontSize: 13, lineHeight: 1.55, color: 'var(--text-secondary)' }}>{item.description}</div>
       {item.team && (

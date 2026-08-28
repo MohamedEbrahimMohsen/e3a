@@ -72,7 +72,7 @@ export function TeamComposerPage() {
                       <span onClick={() => showToast('Version picker is stubbed in this prototype')} className="mono hover-border" style={{ fontSize: 11, color: 'var(--text-secondary)', background: 'var(--bg-deep)', border: '1px solid var(--border)', borderRadius: 6, padding: '3px 9px', cursor: 'pointer' }}>{candidate.version} ▾</span>
                       {added
                         ? <span style={{ fontSize: 12, color: 'var(--success)', fontWeight: 600, padding: '4px 8px' }}>Added ✓</span>
-                        : <button onClick={() => addMember(candidate.emoji, candidate.name, candidate.version)} className="btn-primary" style={{ borderRadius: 6, padding: '4px 12px', fontSize: 12 }}>Add</button>}
+                        : <button onClick={() => addMember(candidate.emoji, candidate.name, candidate.version ?? 'v1.0.0')} className="btn-primary" style={{ borderRadius: 6, padding: '4px 12px', fontSize: 12 }}>Add</button>}
                     </div>
                   </div>
                 );

@@ -81,4 +81,25 @@
   <data name="UPLOAD_EMPTY" xml:space="preserve">
     <value>لا يحتوي الملف المرفوع على ملفات قابلة للاستخدام.</value>
   </data>
+  <data name="CATALOG_SEARCH_TEXT_TOO_LONG" xml:space="preserve">
+    <value>نص البحث طويل جدا.</value>
+  </data>
+  <data name="CATALOG_TOO_MANY_TAG_FILTERS" xml:space="preserve">
+    <value>تم تحديد عدد كبير جدا من الوسوم للتصفية.</value>
+  </data>
+  <data name="CATALOG_TAG_FILTER_TOO_LONG" xml:space="preserve">
+    <value>وسم التصفية طويل جدا.</value>
+  </data>
+  <data name="CATALOG_SORT_INVALID" xml:space="preserve">
+    <value>خيار الترتيب غير معروف.</value>
+  </data>
+  <data name="CATALOG_PAGE_NUMBER_INVALID" xml:space="preserve">
+    <value>يجب ان يكون رقم الصفحة رقما موجبا.</value>
+  </data>
+  <data name="CATALOG_PAGE_SIZE_INVALID" xml:space="preserve">
+    <value>حجم الصفحة خارج النطاق المسموح به.</value>
+  </data>
+  <data name="CATALOG_SLUG_REQUIRED" xml:space="preserve">
+    <value>المعرف النصي للمهندس مطلوب.</value>
+  </data>
 </root>
