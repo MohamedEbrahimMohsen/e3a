@@ -155,3 +155,57 @@ The in-flight guard is a `FirstOrDefaultAsync`, not a lock, so two genuinely con
 both pass it. This is the same window `PublishEngineerHandler`, `UnlistEngineerHandler` and
 `RelistEngineerHandler` already carry; closing it needs a unique filtered index plus a caught
 constraint violation. The fix narrows the race rather than eliminating it — flagged deliberately.
+| 10 | Commit + push + PR | orchestrator | — | 2026-08-28 16:17 | 2026-08-28 16:22 | ~5m | — | — | commit `bf47eff` (109 files, +6,104/−37); **PR #4** opened via GitHub REST API |
+| 11 | CodeRabbit wait + fetch | orchestrator | — | 2026-08-28 16:22 | 2026-08-28 16:33 | ~9m poll | — | — | 13 inline (RC1–RC13) + 1 review object saved verbatim to `05-coderabbit-comments.md` |
+| 12 | CodeRabbit triage | feature-reviewer | OPUS 5 | 2026-08-28 16:34 | … | … | … | … | fresh reviewer decides |
+| 13 | CodeRabbit triage | feature-reviewer | OPUS 5 | 2026-08-28 16:34 | 2026-08-28 16:42 | 8m 00s | 141,056 | 40 | **TRIAGE: 4 implement / 8 rejected / 2 dev-decisions** — no Criticals raised, so no downgrade to veto; build + 351/351 re-run |
+| 14 | CodeRabbit rework | feature-implementer | OPUS 5 | 2026-08-28 16:43 | 2026-08-28 16:51 | 8m 02s | 76,865 | 36 | 4/4 done; **354/354**; proved the new tests bite by reverting both production changes (3 failures) then restoring; 4 declared deviations |
+| 15 | CodeRabbit verify | feature-reviewer | OPUS 5 | 2026-08-28 16:52 | … | … | … | … | fresh scoped verification |
+
+## The bug CodeRabbit found that the internal review did not
+
+**RC8 was a genuine data-integrity defect, and it originated in the plan, not the implementation.**
+The approved step order wrote the pinned per-version marketplace *after* persisting `Published`:
+
+```
+MarkPublished → SaveChangesAsync → upload m/{plugin}/{version}/marketplace.json
+```
+
+If that upload throws, the queue retries, the guard `if (version.Status is not (Queued or Building))
+return;` sees `Published`, and returns. The pinned marketplace is never written **and nothing will
+ever write it** — a permanent 404 for anyone pinning that version, on a version reporting success.
+
+Fixed by moving the pinned upload ahead of the save, so a retry finds `Building` and re-runs the
+whole tail idempotently (zip upload skipped by the exact-match check, pinned rewritten with
+`overwrite: true`). Save count stays at two; no `try`/`catch` added.
+
+## The rejection that would have been dangerous to accept
+
+**RC9 asked for the queue send-side `visibilityTimeout` to be removed as redundant.** The triage read
+`CoreDbContext.cs` and found domain events published at line 99 with `base.SaveChangesAsync` at line
+104 — the message really is enqueued before its own row commits, and that delay is the only guard
+against the worker chasing a row that does not exist yet. A dequeue lease governs redelivery, not
+initial visibility. Implementing RC9 would have created intermittent publish failures visible only
+under load.
+
+Accepting a finding that contradicted the plan while refusing one that contradicted the code is
+exactly what the triage stage exists to do.
+| 16 | CodeRabbit verify | feature-reviewer | OPUS 5 | 2026-08-28 16:52 | 2026-08-28 17:00 | 7m 43s | 114,680 | 38 | **APPROVED** — 4/4 resolved, 8 rejects held, scope contained; re-proved the tests bite in a detached worktree at `bf47eff`; build + 354/354 re-run |
+
+## ⚠️ Landmine recorded by the verifier — read before touching E3A.Jobs
+
+On the RC8 failure path the **in-memory** `version` is left `Published` while the database keeps
+`Building`. That is safe *today* only because nothing in the `E3A.Jobs` DI scope saves after the throw.
+
+But `Core.Auditing/AuditBehaviour.cs:44-68` calls `SaveChangesAsync` **in a `finally` block, on the
+exception path, swallowing its own errors**. `AddCoreAuditing` is currently registered only in
+`E3A.Api/Program.cs:68`. If it is ever added to `E3A.Jobs/Program.cs` and `ProcessPublishJobCommand`
+becomes `IAuditableCommand`, that flush commits the in-memory `Published` status on the failure path
+and **silently re-creates RC8** — the exact permanent-404 bug this cycle just fixed.
+
+If auditing ever reaches the worker: stop mutating `version` before the pinned upload rather than
+relying on scope disposal.
+
+Also noted: the ordering test's `Building` fixture is load-bearing. It yields exactly one save, which
+makes the `Received.InOrder` sequence unambiguous. Under a `Queued` fixture the matched set would be
+three calls and the test would pass under **both** orderings — vacuous. Do not "simplify" it.

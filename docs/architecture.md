@@ -33,11 +33,15 @@ dequeue → ignore unless the version is `Queued`/`Building` → mark Building �
 freeze drafts into `snapshots/{versionId}` → assemble the plugin tree from the snapshot +
 the frozen import manifest → validate structure → *(security scan — next slice)* →
 deterministic zip + sha256 → upload `public/z/{pluginName}/{semanticVersion}.zip` →
-mark Published + set the engineer's `LatestVersionId` →
 write the pinned `public/m/{pluginName}/{semanticVersion}/marketplace.json` →
+persist Published + set the engineer's `LatestVersionId` →
 regenerate the root `marketplace.json`.
 
-Poison queue after `maxDequeueCount` (5) retries.
+Blob artefacts are written before `Published` is persisted, so a failed artefact write leaves the
+version `Building` and the queue retry re-runs the whole tail — the zip upload is skipped when the
+exact blob name already exists and the pinned marketplace is overwritten idempotently.
+
+Poison queue after `maxDequeueCount` (5) total attempts, including the first.
 
 ## Backend style
 

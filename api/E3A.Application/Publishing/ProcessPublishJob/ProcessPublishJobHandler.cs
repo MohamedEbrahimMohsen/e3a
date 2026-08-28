@@ -79,7 +79,7 @@ public sealed class ProcessPublishJobHandler(IItemVersionRepository itemVersionR
         var zipBlobPath = PublishBlobPaths.Zip(pluginName, version.SemanticVersion);
         var existingZips = await storageBlobClient.ListByPrefixAsync(azure.ManagedIdentityClientId, azure.StorageAccountUrl, azure.PublicBlobContainerName, zipBlobPath, cancellationToken).ConfigureAwait(false);
 
-        if (existingZips.Count == 0)
+        if (!existingZips.Exists(name => string.Equals(name, zipBlobPath, StringComparison.Ordinal)))
         {
             using var zipStream = new MemoryStream(zipped.Content);
             await storageBlobClient.UploadAsync(zipStream, azure.ManagedIdentityClientId, azure.StorageAccountUrl, azure.PublicBlobContainerName, zipBlobPath, PublishBlobPaths.ZipContentType, publishing.ZipCacheControl, overwrite: false, cancellationToken).ConfigureAwait(false);
@@ -87,14 +87,15 @@ public sealed class ProcessPublishJobHandler(IItemVersionRepository itemVersionR
 
         version.MarkPublished(zipBlobPath, zipped.Sha256, zipped.SizeBytes);
         engineer.MarkPublished(version.Id);
-        itemVersionRepository.Update(version);
-        engineerRepository.Update(engineer);
-        await itemVersionRepository.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
         var pinnedJson = MarketplaceDocumentGenerator.Generate([MarketplaceDocumentGenerator.GeneratePlugin(engineer, version, authorName, publishing)], publishing);
 
         using var pinnedStream = new MemoryStream(Encoding.UTF8.GetBytes(pinnedJson));
         await storageBlobClient.UploadAsync(pinnedStream, azure.ManagedIdentityClientId, azure.StorageAccountUrl, azure.PublicBlobContainerName, PublishBlobPaths.PinnedMarketplace(pluginName, version.SemanticVersion), PublishBlobPaths.MarketplaceContentType, publishing.MarketplaceCacheControl, overwrite: true, cancellationToken).ConfigureAwait(false);
+
+        itemVersionRepository.Update(version);
+        engineerRepository.Update(engineer);
+        await itemVersionRepository.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
     }
 
     private async Task FailAsync(ItemVersion version, string failureReason, CancellationToken cancellationToken)

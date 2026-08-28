@@ -12,8 +12,15 @@ e3a is a free community product + portfolio piece for a solo senior .NET/Azure e
 
 ## Key architecture decisions
 
+### Superseded (kept for history — see the Locked stack paragraph above for the current design)
+
 1. **Free SWA + standalone Function App** (not SWA Standard, not managed API): SPA on free SWA; separate .NET 10 Function App at `api.<domain>` with CORS, its own GitHub OAuth code exchange, and self-issued JWTs (HS256). Managed API is disqualified because the publish pipeline needs a **queue trigger**.
+   - Superseded 2026-08-27: the API is E3A.Api on Azure Container Apps; E3A.Jobs is the only Functions host and carries the queue trigger.
 2. **Backend = vertical slices without MediatR**: 3 projects — `E3a.Functions` (thin HTTP/queue triggers), `E3a.Core` (`Features/<Area>/<UseCase>/{Command,Handler,Validator,Response}`, `Domain/`, `Infrastructure/`), `E3a.Core.Tests` (xUnit; heaviest on PluginBuilder, SecurityScanner, MarketplaceGenerator). FluentValidation; EF Core directly (no repo layer).
+   - Superseded 2026-08-27: five projects (E3A.Api / E3A.Application / E3A.Domain / E3A.Infrastructure / E3A.Jobs) with MediatR 14 and a repository layer.
+
+### Current
+
 3. **Serving**: `marketplace.json` + zips live in Blob; a free-tier **Cloudflare Worker** proxies `<domain>/marketplace.json` and `<domain>/z/*` to Blob. freshness comes from cache headers written at blob write time — zips `public, max-age=31536000, immutable` (versioned URLs), `marketplace.json` `public, max-age=60`. No cache purge step.
 4. **Votes need login** (one switchable ±1 row per user/item, denormalized counts shown anonymously); reports allowed anonymous behind Cloudflare rate limiting.
 
@@ -55,7 +62,7 @@ Regex rule engine over all text files, categories: credential exfiltration (read
 
 Auth: `GET login`, `GET callback` (code→JWT), `GET me`. Catalog (anon): `GET /catalog?type&q&tag&sort&page&pageSize` (PageData), `GET /catalog/{slug}`, `GET /catalog/tags` (tags with counts). Engineers: `GET /api/engineers/{id}` is anonymous (published to anyone; drafts owner-only: 401 anonymous / 403 non-owner); the anonymous published list lives on `/catalog` — while `GET /api/engineers/mine`, `GET /api/engineers/slug-availability?slug=` and all mutations are [auth/owner]: CRUD + upload + `POST {id}/publish → 202` + `POST {id}/unlist` + `POST {id}/relist`. Teams: mirror + members with pinned versions. `GET /publish/{versionId}/status` (poll, owner-only). Social: `POST report` (anon OK). Worker: queue `publish-jobs`.
 
-**Publish pipeline**: dequeue → ignore unless the version is Queued/Building → Building → freeze drafts into `snapshots/{versionId}` → assemble the tree from the snapshot + the frozen manifest → validate structure → *(security scan — next slice)* → deterministic zip + sha256 → upload `public/z/...` → Published + LatestVersionId → pinned `public/m/{name}/{semanticVersion}/marketplace.json` → regenerate the root marketplace.json. Poison queue after `maxDequeueCount` (5) retries.
+**Publish pipeline**: dequeue → ignore unless the version is Queued/Building → Building → freeze drafts into `snapshots/{versionId}` → assemble the tree from the snapshot + the frozen manifest → validate structure → *(security scan — next slice)* → deterministic zip + sha256 → upload `public/z/...` → pinned `public/m/{name}/{semanticVersion}/marketplace.json` → persist Published + LatestVersionId → regenerate the root marketplace.json. Poison queue after `maxDequeueCount` (5) total attempts, including the first.
 
 ## Build phases (each demoable, solo part-time ~3–6 weeks)
 
