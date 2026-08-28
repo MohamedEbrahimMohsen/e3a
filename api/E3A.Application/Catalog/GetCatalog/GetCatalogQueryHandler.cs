@@ -28,8 +28,13 @@ public sealed class GetCatalogQueryHandler(IEngineerRepository engineerRepositor
 
         var ordered = request.Sort switch
         {
-            CatalogSort.Newest => filtered.OrderByDescending(x => x.CreationDate),
-            _ => filtered.OrderByDescending(x => x.InstallCount).ThenByDescending(x => x.CreationDate),
+            CatalogSort.Newest => filtered
+                .OrderByDescending(x => x.CreationDate)
+                .ThenBy(x => x.Id),
+            _ => filtered
+                .OrderByDescending(x => x.InstallCount)
+                .ThenByDescending(x => x.CreationDate)
+                .ThenBy(x => x.Id),
         };
 
         var matched = ordered.ToList();

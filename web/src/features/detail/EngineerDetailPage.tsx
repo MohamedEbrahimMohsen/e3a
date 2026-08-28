@@ -61,16 +61,16 @@ export function EngineerDetailPage() {
             <span>{formatInstalls(engineer.installCount)}</span>
           </div>
         </div>
-        <span onClick={() => openReport(engineer.slug)} className="link-danger-hover" style={{ marginLeft: 'auto', fontSize: 13, color: 'var(--text-muted)' }}>Report</span>
+        <button type="button" onClick={() => openReport(engineer.slug)} className="link-danger-hover" style={{ marginLeft: 'auto', background: 'transparent', border: 'none', padding: 0, fontSize: 13, color: 'var(--text-muted)' }}>Report</button>
       </div>
       <InstallBlock line2={installCommand('creator', engineer.slug)} />
       {engineer.hookWarnings.length > 0 && (
-        <div onClick={() => setHooksOpen(!hooksOpen)} style={{ background: 'rgba(251,191,36,0.06)', border: '1px solid rgba(251,191,36,0.3)', borderRadius: 12, padding: '14px 18px', cursor: 'pointer' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 13.5, color: 'var(--warning)' }}>
+        <div style={{ background: 'rgba(251,191,36,0.06)', border: '1px solid rgba(251,191,36,0.3)', borderRadius: 12, padding: '14px 18px' }}>
+          <button type="button" onClick={() => setHooksOpen(!hooksOpen)} aria-expanded={hooksOpen} style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 10, background: 'transparent', border: 'none', padding: 0, textAlign: 'left', fontSize: 13.5, color: 'var(--warning)', cursor: 'pointer' }}>
             <span>⚠</span>
             <span style={{ fontWeight: 600 }}>Includes {engineer.hookWarnings.length} {engineer.hookWarnings.length > 1 ? 'hooks that run' : 'hook that runs'} automatically</span>
             <span style={{ marginLeft: 'auto', color: 'var(--text-muted)', fontSize: 12 }}>{hooksOpen ? '▴ hide' : '▾ inspect'}</span>
-          </div>
+          </button>
           {hooksOpen && (
             <div className="fade-in" style={{ marginTop: 12, display: 'flex', flexDirection: 'column', gap: 8 }}>
               {engineer.hookWarnings.map((hook, index) => (

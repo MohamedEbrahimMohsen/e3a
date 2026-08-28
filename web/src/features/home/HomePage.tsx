@@ -13,12 +13,13 @@ export function HomePage() {
   const [engineers, setEngineers] = useState<CatalogEngineer[]>([]);
   const [totalEngineers, setTotalEngineers] = useState(0);
   const [tagCount, setTagCount] = useState(0);
+  const [loadFailed, setLoadFailed] = useState(false);
 
   useEffect(() => {
     getCatalog({ sort: 'MostInstalled', pageSize: STATS_FETCH_SIZE })
       .then(result => { setEngineers(result.items); setTotalEngineers(result.totalItems); })
-      .catch(() => setEngineers([]));
-    getCatalogTags().then(tags => setTagCount(tags.length)).catch(() => setTagCount(0));
+      .catch(() => setLoadFailed(true));
+    getCatalogTags().then(tags => setTagCount(tags.length)).catch(() => setLoadFailed(true));
   }, []);
 
   const totalInstalls = engineers.reduce((sum, engineer) => sum + engineer.installCount, 0);
@@ -38,14 +39,18 @@ export function HomePage() {
         <div style={{ position: 'relative', width: 660, marginTop: 12 }}>
           <InstallBlock line2={installCommand('mohamed', engineers[0]?.slug ?? 'dive-backend-engineer')} />
         </div>
-        <div style={{ position: 'relative', display: 'flex', gap: 64, marginTop: 36 }}>
-          {stats.map(stat => (
-            <div key={stat.label} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
-              <span className="mono" style={{ fontSize: 26, fontWeight: 600 }}>{stat.value}</span>
-              <span style={{ fontSize: 12.5, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{stat.label}</span>
-            </div>
-          ))}
-        </div>
+        {loadFailed ? (
+          <div style={{ position: 'relative', marginTop: 36, fontSize: 13.5, color: 'var(--text-muted)' }}>Catalog stats unavailable — the API is unreachable.</div>
+        ) : (
+          <div style={{ position: 'relative', display: 'flex', gap: 64, marginTop: 36 }}>
+            {stats.map(stat => (
+              <div key={stat.label} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
+                <span className="mono" style={{ fontSize: 26, fontWeight: 600 }}>{stat.value}</span>
+                <span style={{ fontSize: 12.5, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{stat.label}</span>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
       <div style={{ maxWidth: 1200, width: '100%', margin: '0 auto', padding: '24px 48px 72px', display: 'flex', flexDirection: 'column', gap: 48 }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>

@@ -75,7 +75,7 @@ export function getCatalog(query: CatalogQuery): Promise<PageData<CatalogEnginee
     parameters.set('sort', query.sort);
   }
   if (query.pageNumber) {
-    parameters.set('pageNumber', String(query.pageNumber));
+    parameters.set('page', String(query.pageNumber));
   }
   if (query.pageSize) {
     parameters.set('pageSize', String(query.pageSize));

@@ -12,6 +12,11 @@
 | 5 | Environment + seed | orchestrator | FABLE 5 | 2026-08-28 03:05 | 2026-08-28 03:20 | — | n/a | — | localdb E3A migrated; tools/E3A.Seeder built+run: 14 published + 2 drafts (idempotent, real domain factories); API smoke-tested over HTTP (search/tags/sort/paging/404s) |
 | 6 | Frontend wiring | orchestrator | FABLE 5 | 2026-08-28 03:20 | 2026-08-28 03:40 | — | n/a | — | public pages on real API (api.ts client, catalog/home/detail rewired, hooks banner, dynamic tag chips, real paging); Dev-gated CORS added to Program.cs; build clean |
 | 7 | Browser verification | orchestrator | FABLE 5 | 2026-08-28 03:40 | 2026-08-28 03:50 | — | n/a | — | home/catalog/tag-filter/detail/draft-404 all verified in browser; zero console errors |
+| 8 | Commit + push + PR | orchestrator | — | 2026-08-28 | 2026-08-28 | — | — | — | dev-authorized: commit 177840c (60 files, +2,295), PR #2 opened; git identity confirmed repo-local |
+| 9 | CodeRabbit wait + fetch | orchestrator | — | 2026-08-28 | 2026-08-28 | ~7m poll | — | — | 15 inline + 1 summary saved to 05-coderabbit-comments.md |
+| 10 | CodeRabbit triage | feature-reviewer | FABLE 5 | 2026-08-28 | 2026-08-28 | 5m 27s | 124,748 | 23 | 7 implement (6 CodeRabbit + 1 self-found: page-param mismatch breaking web paging) / 10 rejected / 0 dev-decisions / no Critical downgrades |
+| 11 | CodeRabbit rework | feature-implementer | OPUS 5 | 2026-08-28 | 2026-08-28 | 5m 20s | 82,296 | 34 | all 7 items done — 166/166 API tests, web tsc clean; pagination + button styling verified live in browser by orchestrator |
+| 12 | CodeRabbit verify | feature-reviewer | FABLE 5 | 2026-08-28 | 2026-08-28 | 1m 23s | 33,928 | 11 | **APPROVED** — 7/7 resolved, rejects contained, scope exact; full solution build + 166/166 + web build independently re-run |
 
 ## Summary
 

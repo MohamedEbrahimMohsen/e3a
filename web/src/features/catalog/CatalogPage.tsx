@@ -21,6 +21,7 @@ export function CatalogPage() {
   const [data, setData] = useState<PageData<CatalogEngineer> | null>(null);
   const [availableTags, setAvailableTags] = useState<CatalogTag[]>([]);
   const [loadFailed, setLoadFailed] = useState(false);
+  const [reloadToken, setReloadToken] = useState(0);
 
   const segment = (searchParams.get('seg') ?? 'All') as Segment;
   const activeTags = searchParams.getAll('tag');
@@ -40,7 +41,7 @@ export function CatalogPage() {
         .catch(() => { if (!cancelled) { setLoadFailed(true); } });
     }, query ? 250 : 0);
     return () => { cancelled = true; window.clearTimeout(timer); };
-  }, [segment, query, searchParams, sort, page]);
+  }, [segment, query, searchParams, sort, page, reloadToken]);
 
   const setSegment = (next: Segment) => {
     const params = new URLSearchParams(searchParams);
@@ -57,7 +58,8 @@ export function CatalogPage() {
     setPage(1);
   };
 
-  const pageButtonStyle: React.CSSProperties = { width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 8, border: '1px solid var(--border)', color: 'var(--text-secondary)', cursor: 'pointer' };
+  const pageButtonStyle: React.CSSProperties = { width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 8, border: '1px solid var(--border)', background: 'transparent', padding: 0, fontSize: 13, color: 'var(--text-secondary)', cursor: 'pointer' };
+  const pageStepStyle: React.CSSProperties = { background: 'transparent', border: 'none', padding: '7px 12px', fontSize: 13, cursor: 'pointer' };
 
   return (
     <div className="page fade-in" style={{ gap: 24 }}>
@@ -68,20 +70,20 @@ export function CatalogPage() {
       <div style={{ display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
         <div style={{ display: 'flex', background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 999, padding: 3 }}>
           {segments.map(label => (
-            <span key={label} onClick={() => setSegment(label)} style={{ fontSize: 13, fontWeight: segment === label ? 600 : 400, padding: '6px 16px', borderRadius: 999, background: segment === label ? 'var(--primary)' : 'transparent', color: segment === label ? '#fff' : 'var(--text-secondary)', cursor: 'pointer', transition: 'all 0.15s ease' }}>{label}</span>
+            <button key={label} type="button" onClick={() => setSegment(label)} aria-pressed={segment === label} style={{ fontSize: 13, fontWeight: segment === label ? 600 : 400, padding: '6px 16px', borderRadius: 999, border: 'none', background: segment === label ? 'var(--primary)' : 'transparent', color: segment === label ? '#fff' : 'var(--text-secondary)', cursor: 'pointer', transition: 'all 0.15s ease' }}>{label}</button>
           ))}
         </div>
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
           {availableTags.slice(0, VISIBLE_TAG_FILTERS).map(tagEntry => {
             const active = activeTags.includes(tagEntry.tag);
             return (
-              <span key={tagEntry.tag} onClick={() => toggleTag(tagEntry.tag)} className="hover-border-violet" style={{ fontSize: 12.5, color: active ? '#fff' : 'var(--text-secondary)', background: active ? 'var(--primary)' : 'var(--surface)', border: `1px solid ${active ? 'var(--primary)' : 'var(--border)'}`, borderRadius: 999, padding: '5px 14px', cursor: 'pointer' }}># {tagEntry.tag} <span style={{ opacity: 0.6 }}>{tagEntry.count}</span></span>
+              <button key={tagEntry.tag} type="button" onClick={() => toggleTag(tagEntry.tag)} aria-pressed={active} className="hover-border-violet" style={{ fontSize: 12.5, color: active ? '#fff' : 'var(--text-secondary)', background: active ? 'var(--primary)' : 'var(--surface)', border: `1px solid ${active ? 'var(--primary)' : 'var(--border)'}`, borderRadius: 999, padding: '5px 14px', cursor: 'pointer' }}># {tagEntry.tag} <span style={{ opacity: 0.6 }}>{tagEntry.count}</span></button>
             );
           })}
         </div>
-        <div onClick={() => { setSort(sort === 'MostInstalled' ? 'Newest' : 'MostInstalled'); setPage(1); }} className="hover-border" style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 8, background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 999, padding: '7px 16px', fontSize: 13, color: 'var(--text-secondary)', cursor: 'pointer' }}>
+        <button type="button" onClick={() => { setSort(sort === 'MostInstalled' ? 'Newest' : 'MostInstalled'); setPage(1); }} className="hover-border" style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 8, background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 999, padding: '7px 16px', fontSize: 13, color: 'var(--text-secondary)', cursor: 'pointer' }}>
           Sort: <span style={{ color: 'var(--text)', fontWeight: 500 }}>{sortLabels[sort]}</span> <span style={{ color: 'var(--text-muted)' }}>▾</span>
-        </div>
+        </button>
       </div>
       {segment === 'Teams' ? (
         <div className="fade-in" style={{ padding: '72px 40px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10, textAlign: 'center' }}>
@@ -92,7 +94,7 @@ export function CatalogPage() {
         <div className="fade-in" style={{ padding: '72px 40px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10, textAlign: 'center' }}>
           <span style={{ fontSize: 16, fontWeight: 700 }}>Could not reach the catalog</span>
           <span style={{ fontSize: 13.5, color: 'var(--text-secondary)' }}>The API is unreachable. Check that it is running, then retry.</span>
-          <button onClick={() => { setLoadFailed(false); setPage(1); setQuery(query => query); }} className="btn-secondary" style={{ padding: '8px 18px', fontSize: 13, marginTop: 6 }}>Retry</button>
+          <button type="button" onClick={() => { setLoadFailed(false); setReloadToken(token => token + 1); }} className="btn-secondary" style={{ padding: '8px 18px', fontSize: 13, marginTop: 6 }}>Retry</button>
         </div>
       ) : data && data.items.length > 0 ? (
         <>
@@ -101,11 +103,11 @@ export function CatalogPage() {
           </div>
           {data.totalPages > 1 && (
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, marginTop: 12, fontSize: 13 }}>
-              <span onClick={() => setPage(Math.max(1, page - 1))} className="link-quiet" style={{ color: page > 1 ? 'var(--text-secondary)' : 'var(--text-muted)', padding: '7px 12px', cursor: 'pointer' }}>← Prev</span>
+              <button type="button" onClick={() => setPage(Math.max(1, page - 1))} className="link-quiet" style={{ ...pageStepStyle, color: page > 1 ? 'var(--text-secondary)' : 'var(--text-muted)' }}>← Prev</button>
               {Array.from({ length: data.totalPages }, (_, index) => index + 1).map(pageNumber => (
-                <span key={pageNumber} onClick={() => setPage(pageNumber)} className="hover-border-violet" style={pageNumber === page ? { ...pageButtonStyle, background: 'var(--primary)', border: 'none', color: '#fff', fontWeight: 600 } : pageButtonStyle}>{pageNumber}</span>
+                <button key={pageNumber} type="button" onClick={() => setPage(pageNumber)} aria-current={pageNumber === page ? 'page' : undefined} className="hover-border-violet" style={pageNumber === page ? { ...pageButtonStyle, background: 'var(--primary)', border: 'none', color: '#fff', fontWeight: 600 } : pageButtonStyle}>{pageNumber}</button>
               ))}
-              <span onClick={() => setPage(Math.min(data.totalPages, page + 1))} className="link-quiet" style={{ color: page < data.totalPages ? 'var(--text-secondary)' : 'var(--text-muted)', padding: '7px 12px', cursor: 'pointer' }}>Next →</span>
+              <button type="button" onClick={() => setPage(Math.min(data.totalPages, page + 1))} className="link-quiet" style={{ ...pageStepStyle, color: page < data.totalPages ? 'var(--text-secondary)' : 'var(--text-muted)' }}>Next →</button>
             </div>
           )}
         </>
