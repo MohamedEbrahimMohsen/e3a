@@ -30,7 +30,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"displayName\": \"Dive Backend Engineer\",\n  \"description\": \"Senior .NET backend engineer — CQRS vertical slices, EF Core, clean error contracts.\",\n  \"tags\": [\"dotnet\", \"cqrs\", \"api\"]\n}",
+              "raw": "{\n  \"slug\": \"dive-backend-engineer\",\n  \"displayName\": \"Dive Backend Engineer\",\n  \"description\": \"Senior .NET backend engineer — CQRS vertical slices, EF Core, clean error contracts.\",\n  \"tags\": [\"dotnet\", \"cqrs\", \"api\"]\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -68,6 +68,30 @@
           }
         },
         {
+          "name": "Check Slug Availability",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/engineers/slug-availability?slug=dive-backend-engineer",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "engineers",
+                "slug-availability"
+              ],
+              "query": [
+                {
+                  "key": "slug",
+                  "value": "dive-backend-engineer"
+                }
+              ]
+            }
+          }
+        },
+        {
           "name": "Get Engineer",
           "request": {
             "method": "GET",
@@ -97,7 +121,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"displayName\": \"Dive Backend Engineer\",\n  \"description\": \"Updated description.\",\n  \"tags\": [\"dotnet\", \"ddd\"]\n}",
+              "raw": "{\n  \"slug\": \"dive-backend-engineer\",\n  \"displayName\": \"Dive Backend Engineer\",\n  \"description\": \"Updated description.\",\n  \"tags\": [\"dotnet\", \"ddd\"]\n}",
               "options": {
                 "raw": {
                   "language": "json"

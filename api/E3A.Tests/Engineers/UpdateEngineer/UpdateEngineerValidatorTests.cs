@@ -14,7 +14,7 @@ public sealed class UpdateEngineerValidatorTests
     [Fact]
     public void Validate_ShouldPass_WhenCommandIsValid()
     {
-        var result = _sut.Validate(new UpdateEngineerCommand(Guid.NewGuid(), "Dive Backend Engineer", "A backend engineer.", ["dotnet"]));
+        var result = _sut.Validate(new UpdateEngineerCommand(Guid.NewGuid(), null, "Dive Backend Engineer", "A backend engineer.", ["dotnet"]));
 
         result.IsValid.Should().BeTrue();
     }
@@ -22,7 +22,7 @@ public sealed class UpdateEngineerValidatorTests
     [Fact]
     public void Validate_ShouldFail_WhenEngineerIdIsEmpty()
     {
-        var result = _sut.Validate(new UpdateEngineerCommand(Guid.Empty, "Dive Backend Engineer", null, []));
+        var result = _sut.Validate(new UpdateEngineerCommand(Guid.Empty, null, "Dive Backend Engineer", null, []));
 
         result.IsValid.Should().BeFalse();
         result.Errors.Should().Contain(x => x.ErrorCode == ErrorCodes.EngineerIdRequired);
@@ -34,7 +34,7 @@ public sealed class UpdateEngineerValidatorTests
     [InlineData("   ")]
     public void Validate_ShouldFail_WhenDisplayNameIsMissing(string? displayName)
     {
-        var result = _sut.Validate(new UpdateEngineerCommand(Guid.NewGuid(), displayName!, null, []));
+        var result = _sut.Validate(new UpdateEngineerCommand(Guid.NewGuid(), null, displayName!, null, []));
 
         result.IsValid.Should().BeFalse();
         result.Errors.Should().Contain(x => x.ErrorCode == ErrorCodes.EngineerDisplayNameRequired);
@@ -43,7 +43,7 @@ public sealed class UpdateEngineerValidatorTests
     [Fact]
     public void Validate_ShouldFail_WhenDisplayNameExceedsMaxLength()
     {
-        var result = _sut.Validate(new UpdateEngineerCommand(Guid.NewGuid(), new string('a', 101), null, []));
+        var result = _sut.Validate(new UpdateEngineerCommand(Guid.NewGuid(), null, new string('a', 101), null, []));
 
         result.IsValid.Should().BeFalse();
         result.Errors.Should().Contain(x => x.ErrorCode == ErrorCodes.EngineerDisplayNameTooLong);
@@ -52,7 +52,7 @@ public sealed class UpdateEngineerValidatorTests
     [Fact]
     public void Validate_ShouldFail_WhenDisplayNameHasNoAsciiLetterOrDigit()
     {
-        var result = _sut.Validate(new UpdateEngineerCommand(Guid.NewGuid(), "مهندس", null, []));
+        var result = _sut.Validate(new UpdateEngineerCommand(Guid.NewGuid(), null, "مهندس", null, []));
 
         result.IsValid.Should().BeFalse();
         result.Errors.Should().Contain(x => x.ErrorCode == ErrorCodes.EngineerDisplayNameInvalid);
@@ -61,7 +61,7 @@ public sealed class UpdateEngineerValidatorTests
     [Fact]
     public void Validate_ShouldFail_WhenDescriptionExceedsMaxLength()
     {
-        var result = _sut.Validate(new UpdateEngineerCommand(Guid.NewGuid(), "Dive Backend Engineer", new string('a', 501), []));
+        var result = _sut.Validate(new UpdateEngineerCommand(Guid.NewGuid(), null, "Dive Backend Engineer", new string('a', 501), []));
 
         result.IsValid.Should().BeFalse();
         result.Errors.Should().Contain(x => x.ErrorCode == ErrorCodes.EngineerDescriptionTooLong);
@@ -72,7 +72,7 @@ public sealed class UpdateEngineerValidatorTests
     {
         var tags = Enumerable.Range(0, 11).Select(index => $"tag-{index}").ToList();
 
-        var result = _sut.Validate(new UpdateEngineerCommand(Guid.NewGuid(), "Dive Backend Engineer", null, tags));
+        var result = _sut.Validate(new UpdateEngineerCommand(Guid.NewGuid(), null, "Dive Backend Engineer", null, tags));
 
         result.IsValid.Should().BeFalse();
         result.Errors.Should().Contain(x => x.ErrorCode == ErrorCodes.EngineerTooManyTags);
@@ -81,7 +81,7 @@ public sealed class UpdateEngineerValidatorTests
     [Fact]
     public void Validate_ShouldFail_WhenATagIsEmpty()
     {
-        var result = _sut.Validate(new UpdateEngineerCommand(Guid.NewGuid(), "Dive Backend Engineer", null, ["dotnet", "  "]));
+        var result = _sut.Validate(new UpdateEngineerCommand(Guid.NewGuid(), null, "Dive Backend Engineer", null, ["dotnet", "  "]));
 
         result.IsValid.Should().BeFalse();
         result.Errors.Should().Contain(x => x.ErrorCode == ErrorCodes.EngineerTagRequired);
@@ -90,7 +90,7 @@ public sealed class UpdateEngineerValidatorTests
     [Fact]
     public void Validate_ShouldFail_WhenATagExceedsMaxLength()
     {
-        var result = _sut.Validate(new UpdateEngineerCommand(Guid.NewGuid(), "Dive Backend Engineer", null, [new string('a', 31)]));
+        var result = _sut.Validate(new UpdateEngineerCommand(Guid.NewGuid(), null, "Dive Backend Engineer", null, [new string('a', 31)]));
 
         result.IsValid.Should().BeFalse();
         result.Errors.Should().Contain(x => x.ErrorCode == ErrorCodes.EngineerTagTooLong);

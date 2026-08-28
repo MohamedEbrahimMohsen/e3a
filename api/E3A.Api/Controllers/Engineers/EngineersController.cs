@@ -1,3 +1,4 @@
+using E3A.Application.Engineers.CheckSlugAvailability;
 using E3A.Application.Engineers.CreateEngineer;
 using E3A.Application.Engineers.DeleteEngineer;
 using E3A.Application.Engineers.GetEngineer;
@@ -23,6 +24,13 @@ public class EngineersController(IMediator mediator) : ControllerBase
         return Ok(result);
     }
 
+    [HttpGet("slug-availability")]
+    public async Task<ActionResult> CheckSlugAvailability([FromQuery] string slug, CancellationToken cancellationToken)
+    {
+        var result = await mediator.Send(new CheckSlugAvailabilityQuery(slug), cancellationToken);
+        return Ok(result);
+    }
+
     [HttpGet("{engineerId:guid}")]
     [AllowAnonymous]
     public async Task<ActionResult> GetEngineer([FromRoute] Guid engineerId, CancellationToken cancellationToken)
@@ -34,14 +42,14 @@ public class EngineersController(IMediator mediator) : ControllerBase
     [HttpPost]
     public async Task<ActionResult> CreateEngineer([FromBody] CreateEngineerRequest request, CancellationToken cancellationToken)
     {
-        var result = await mediator.Send(new CreateEngineerCommand(request.DisplayName, request.Description, request.Tags ?? []), cancellationToken);
+        var result = await mediator.Send(new CreateEngineerCommand(request.Slug, request.DisplayName, request.Description, request.Tags ?? []), cancellationToken);
         return CreatedAtAction(nameof(GetEngineer), new { engineerId = result.Id }, result);
     }
 
     [HttpPut("{engineerId:guid}")]
     public async Task<ActionResult> UpdateEngineer([FromRoute] Guid engineerId, [FromBody] UpdateEngineerRequest request, CancellationToken cancellationToken)
     {
-        var result = await mediator.Send(new UpdateEngineerCommand(engineerId, request.DisplayName, request.Description, request.Tags ?? []), cancellationToken);
+        var result = await mediator.Send(new UpdateEngineerCommand(engineerId, request.Slug, request.DisplayName, request.Description, request.Tags ?? []), cancellationToken);
         return Ok(result);
     }
 

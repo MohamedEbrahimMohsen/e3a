@@ -31,7 +31,7 @@ docs/           architecture.md, plugin-spec.md, security-scan.md
 ## Data model (SQL, EF Core)
 
 - `users`: Id, GitHubId (unique), GitHubLogin, DisplayName, AvatarUrl, IsBlocked
-- `engineers` / `teams` (separate tables, same shape): Id, OwnerUserId, Slug (unique, kebab-case of DisplayName, auto-suffixed via IGenerator on collision; the `{githublogin}` segment lives in the plugin name `e3a-{githublogin}-{item-slug}`, not in the row), DisplayName, Description, Tags(json), Status(Draft|Published|Deleted), DraftManifestJson, LatestVersionId, InstallCount. Schema/business caps (lengths, tag counts, per-creator limits) live in `[Area]Options` bound from appsettings — never as entity constants.
+- `engineers` / `teams` (separate tables, same shape): Id, OwnerUserId, Slug (unique, creator-typed kebab-case `^[a-z0-9]+(-[a-z0-9]+)*$`, 3–`SlugMaxLength` characters, reserved words rejected from a config list, auto-suffixed via IGenerator only as a collision race guard; editable while `LatestVersionId` is null and frozen after the first publish; the slug is the entire plugin name `e3a-{slug}` — GitHub login is not part of the plugin identity), DisplayName, Description, Tags(json), Status(Draft|Published|Deleted), DraftManifestJson, LatestVersionId, InstallCount. Schema/business caps (lengths, tag counts, per-creator limits) live in `[Area]Options` bound from appsettings — never as entity constants.
 - `team_members`: (TeamId, EngineerId) PK, PinnedVersionId, SortOrder
 - `versions`: Id, ItemType, ItemId, VersionNumber, SemVer, FrozenManifestJson, ZipBlobPath, ZipSha256, SizeBytes, Status(Queued|Building|Published|Rejected|Failed), ScanReportJson; unique (ItemType, ItemId, VersionNumber)
 - `likes`: (UserId, ItemType, ItemId) PK, Value ±1
@@ -41,7 +41,7 @@ Limits enforced in handlers: ≤50 engineers per creator (any status, non-delete
 
 ## Plugin build spec
 
-- **Naming**: `e3a-{githublogin}-{engineer-slug}` — unique + attributable.
+- **Naming**: `e3a-{slug}` — the creator-typed slug is the plugin name; uniqueness enforced by the DB index, attribution via `author` (GitHub login).
 - **Engineer zip**: `.claude-plugin/plugin.json` (author = @login + GitHub URL), `agents/{engineer}.md` (persona; default generated if omitted), `skills/{slug}/SKILL.md`, `commands/{engineer}.md`.
 - **Team zip**: one plugin; each member materialized as `agents/{member-slug}.md` + `skills/{member-slug}--{skill-slug}/` (double-hyphen namespacing). Built from **snapshots** stored at engineer-publish time — never live drafts → immutable teams; republish team to adopt newer member versions.
 - **Upload normalization** (upload-only since 2026-08-23): whole `.claude` folder → sanitize (strip settings.local.json/.env/memory) → map per the imported/converted/skipped table in docs/plugin-spec.md (CLAUDE.md+rules → generated house-rules skill + CLAUDE.md snippet; hooks imported with script-tier scan + warnings); skills keep `SKILL.md`-at-root validation, kebab-case slugs; path-traversal-safe extraction.
@@ -53,7 +53,7 @@ Regex rule engine over all text files, categories: credential exfiltration (read
 
 ## API surface (`/api/*`)
 
-Auth: `GET login`, `GET callback` (code→JWT), `GET me`. Catalog (anon): `GET /catalog?type&q&tag&sort&page&pageSize` (PageData), `GET /catalog/{slug}`, `GET /catalog/tags` (tags with counts). Engineers: `GET /api/engineers/{id}` is anonymous (published to anyone; drafts owner-only: 401 anonymous / 403 non-owner); the anonymous published list lives on `/catalog` — while `GET /api/engineers/mine` and all mutations are [auth/owner]: CRUD + upload + `POST {id}/publish → 202`. Teams: mirror + members with pinned versions. `GET /publish/{versionId}/status` (poll). Social: `POST report` (anon OK). Worker: queue `publish-jobs`.
+Auth: `GET login`, `GET callback` (code→JWT), `GET me`. Catalog (anon): `GET /catalog?type&q&tag&sort&page&pageSize` (PageData), `GET /catalog/{slug}`, `GET /catalog/tags` (tags with counts). Engineers: `GET /api/engineers/{id}` is anonymous (published to anyone; drafts owner-only: 401 anonymous / 403 non-owner); the anonymous published list lives on `/catalog` — while `GET /api/engineers/mine`, `GET /api/engineers/slug-availability?slug=` and all mutations are [auth/owner]: CRUD + upload + `POST {id}/publish → 202`. Teams: mirror + members with pinned versions. `GET /publish/{versionId}/status` (poll). Social: `POST report` (anon OK). Worker: queue `publish-jobs`.
 
 **Publish pipeline**: dequeue → Building → assemble tree (draft assets or member snapshots) → validate structure → security scan (fail = Rejected + report) → deterministic zip + sha256 → upload `public/z/...` + snapshot assets → Published + LatestVersionId → regenerate marketplace.json → purge Cloudflare. Poison queue after 3 retries → Failed.
 

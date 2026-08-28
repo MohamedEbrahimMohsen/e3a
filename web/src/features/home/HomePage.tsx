@@ -37,7 +37,7 @@ export function HomePage() {
         <h1 style={{ position: 'relative', fontSize: 58, fontWeight: 800, letterSpacing: '-0.03em', textAlign: 'center', lineHeight: 1.08, maxWidth: 820 }}>Hire an AI engineering team<br />in one command</h1>
         <p style={{ position: 'relative', fontSize: 17, color: 'var(--text-secondary)', textAlign: 'center', maxWidth: 560, lineHeight: 1.6 }}>Browse engineers composed by the community — skills plus a persona, packaged as a Claude Code plugin. Copy one command and they're on your project.</p>
         <div style={{ position: 'relative', width: 660, marginTop: 12 }}>
-          <InstallBlock line2={installCommand('mohamed', engineers[0]?.slug ?? 'dive-backend-engineer')} />
+          <InstallBlock line2={installCommand(engineers[0]?.slug ?? 'dive-backend-engineer')} />
         </div>
         {loadFailed ? (
           <div style={{ position: 'relative', marginTop: 36, fontSize: 13.5, color: 'var(--text-muted)' }}>Catalog stats unavailable — the API is unreachable.</div>

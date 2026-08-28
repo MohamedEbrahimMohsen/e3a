@@ -63,7 +63,7 @@ export function EngineerDetailPage() {
         </div>
         <button type="button" onClick={() => openReport(engineer.slug)} className="link-danger-hover" style={{ marginLeft: 'auto', background: 'transparent', border: 'none', padding: 0, fontSize: 13, color: 'var(--text-muted)' }}>Report</button>
       </div>
-      <InstallBlock line2={installCommand('creator', engineer.slug)} />
+      <InstallBlock line2={installCommand(engineer.slug)} />
       {engineer.hookWarnings.length > 0 && (
         <div style={{ background: 'rgba(251,191,36,0.06)', border: '1px solid rgba(251,191,36,0.3)', borderRadius: 12, padding: '14px 18px' }}>
           <button type="button" onClick={() => setHooksOpen(!hooksOpen)} aria-expanded={hooksOpen} style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 10, background: 'transparent', border: 'none', padding: 0, textAlign: 'left', fontSize: 13.5, color: 'var(--warning)', cursor: 'pointer' }}>

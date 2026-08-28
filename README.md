@@ -6,7 +6,7 @@ e3a is a free, open catalog where developers compose *AI engineers* — bundles 
 
 ```
 /plugin marketplace add https://<domain>/marketplace.json
-/plugin install e3a-<creator>-<engineer>@e3a
+/plugin install e3a-<slug>@e3a
 ```
 
 ## Why
