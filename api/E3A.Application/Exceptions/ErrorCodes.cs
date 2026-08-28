@@ -36,4 +36,13 @@ public static class ErrorCodes
     public const string UploadFileTypeNotAllowed = "UPLOAD_FILE_TYPE_NOT_ALLOWED";
     public const string UploadDuplicatePath = "UPLOAD_DUPLICATE_PATH";
     public const string UploadEmpty = "UPLOAD_EMPTY";
+
+    // Catalog
+    public const string CatalogSearchTextTooLong = "CATALOG_SEARCH_TEXT_TOO_LONG";
+    public const string CatalogTooManyTagFilters = "CATALOG_TOO_MANY_TAG_FILTERS";
+    public const string CatalogTagFilterTooLong = "CATALOG_TAG_FILTER_TOO_LONG";
+    public const string CatalogSortInvalid = "CATALOG_SORT_INVALID";
+    public const string CatalogPageNumberInvalid = "CATALOG_PAGE_NUMBER_INVALID";
+    public const string CatalogPageSizeInvalid = "CATALOG_PAGE_SIZE_INVALID";
+    public const string CatalogSlugRequired = "CATALOG_SLUG_REQUIRED";
 }

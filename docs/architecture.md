@@ -20,7 +20,7 @@ Browser ──► Azure Static Web Apps (React SPA, free tier)
 
 ## Principles
 
-- **Reads never hit the API.** `marketplace.json` and plugin zips are served from Blob via Cloudflare cache; the API only handles auth, drafts, and publishing — so scale-to-zero cold starts are irrelevant for consumers.
+- **Reads never hit the API.** `marketplace.json` and plugin zips are served from Blob via Cloudflare cache; the API handles auth, drafts, publishing, and the website's catalog browse — so scale-to-zero cold starts are irrelevant for plugin consumers.
 - **Versions are immutable.** A published zip at `/z/{name}/{semver}.zip` never changes; sha256 recorded in the DB and in the marketplace entry.
 - **Public-only in v0.1.** No private items, no multi-tenancy. Login (GitHub OAuth) is required only to create/publish/vote.
 - **Limits**: 50 engineers + 10 teams per creator; 50 versions per item; version created only on explicit Publish.

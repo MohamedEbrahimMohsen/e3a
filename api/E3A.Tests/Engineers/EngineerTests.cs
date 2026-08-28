@@ -95,6 +95,27 @@ public sealed class EngineerTests
     }
 
     [Fact]
+    public void RecordInstallCount_ShouldSetInstallCount_WhenCalled()
+    {
+        var engineer = EngineerFactory.Draft(Guid.NewGuid());
+
+        engineer.RecordInstallCount(42);
+
+        engineer.InstallCount.Should().Be(42);
+    }
+
+    [Fact]
+    public void RecordInstallCount_ShouldAdvanceUpdationDate_WhenCalled()
+    {
+        var engineer = EngineerFactory.Draft(Guid.NewGuid());
+        var before = DateTimeOffset.UtcNow;
+
+        engineer.RecordInstallCount(42);
+
+        engineer.UpdationDate.Should().BeOnOrAfter(before);
+    }
+
+    [Fact]
     public void ReplaceDraftManifest_ShouldStoreManifestJson_WhenCalled()
     {
         var engineer = EngineerFactory.Draft(Guid.NewGuid());

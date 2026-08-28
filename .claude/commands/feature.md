@@ -69,6 +69,8 @@ It writes `.process/<feature-slug>/01-plan.md`.
 
 Then launch the `feature-implementer` subagent with the path to `01-plan.md` and the slug. Pass the path, not the contents — it must read the plan itself.
 
+**Postman collection is part of every implementation.** The repo-root `postman/e3a.postman_collection.json` (+ local environment file) must always mirror the real API surface: the implementer adds a request for every new endpoint, modifies requests whose contract changed, and deletes requests for removed endpoints — in the same change. An endpoint change without its collection change is an incomplete implementation.
+
 It writes `.process/<feature-slug>/02-implementation.md`.
 
 ## Stage 3 — Review (**FABLE 5**)

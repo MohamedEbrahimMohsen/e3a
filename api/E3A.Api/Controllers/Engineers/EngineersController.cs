@@ -2,7 +2,6 @@ using E3A.Application.Engineers.CreateEngineer;
 using E3A.Application.Engineers.DeleteEngineer;
 using E3A.Application.Engineers.GetEngineer;
 using E3A.Application.Engineers.GetImportManifest;
-using E3A.Application.Engineers.ListEngineers;
 using E3A.Application.Engineers.ListMyEngineers;
 using E3A.Application.Engineers.UpdateEngineer;
 using E3A.Application.Engineers.UploadEngineerDraft;
@@ -17,14 +16,6 @@ namespace E3A.Api.Controllers.Engineers;
 [Authorize]
 public class EngineersController(IMediator mediator) : ControllerBase
 {
-    [HttpGet]
-    [AllowAnonymous]
-    public async Task<ActionResult> ListEngineers(CancellationToken cancellationToken)
-    {
-        var result = await mediator.Send(new ListEngineersQuery(), cancellationToken);
-        return Ok(result);
-    }
-
     [HttpGet("mine")]
     public async Task<ActionResult> ListMyEngineers(CancellationToken cancellationToken)
     {

@@ -53,7 +53,7 @@ Regex rule engine over all text files, categories: credential exfiltration (read
 
 ## API surface (`/api/*`)
 
-Auth: `GET login`, `GET callback` (code→JWT), `GET me`. Catalog (anon): `GET /catalog?type&q&tag&sort&page`, `GET /catalog/{slug}`. Engineers: **GET reads are anonymous** — `GET /api/engineers` (published only) and `GET /api/engineers/{id}` (published to anyone; drafts owner-only: 401 anonymous / 403 non-owner) — while `GET /api/engineers/mine` and all mutations are [auth/owner]: CRUD + upload + `POST {id}/publish → 202`. Teams: mirror + members with pinned versions. `GET /publish/{versionId}/status` (poll). Social: `POST report` (anon OK). Worker: queue `publish-jobs`.
+Auth: `GET login`, `GET callback` (code→JWT), `GET me`. Catalog (anon): `GET /catalog?type&q&tag&sort&page&pageSize` (PageData), `GET /catalog/{slug}`, `GET /catalog/tags` (tags with counts). Engineers: `GET /api/engineers/{id}` is anonymous (published to anyone; drafts owner-only: 401 anonymous / 403 non-owner); the anonymous published list lives on `/catalog` — while `GET /api/engineers/mine` and all mutations are [auth/owner]: CRUD + upload + `POST {id}/publish → 202`. Teams: mirror + members with pinned versions. `GET /publish/{versionId}/status` (poll). Social: `POST report` (anon OK). Worker: queue `publish-jobs`.
 
 **Publish pipeline**: dequeue → Building → assemble tree (draft assets or member snapshots) → validate structure → security scan (fail = Rejected + report) → deterministic zip + sha256 → upload `public/z/...` + snapshot assets → Published + LatestVersionId → regenerate marketplace.json → purge Cloudflare. Poison queue after 3 retries → Failed.
 

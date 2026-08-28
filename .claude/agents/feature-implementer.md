@@ -19,6 +19,7 @@ Pay special attention to the skill's **§8 DO/DON'T catalog**: it is distilled f
 ## The contract
 
 - Create **exactly** the files in *Files to create*. Not one more, not one fewer.
+- **Keep `postman/e3a.postman_collection.json` in sync**: every endpoint you add gets a request (URL, method, auth mode, example body); every contract you change updates its request; every endpoint you remove loses its request. Same change, never "later".
 - Modify **only** the files in *Existing code touched*.
 - Write **exactly** the tests in *Test plan* — same class names, same method names.
 - Follow every signature in the plan verbatim. If the plan says `Suspend(Guid updatedBy)`, do not write `Suspend()`.

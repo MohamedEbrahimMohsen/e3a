@@ -49,6 +49,12 @@ public class Engineer : AuditEntity
         UpdationDate = DateTimeOffset.UtcNow;
     }
 
+    public void RecordInstallCount(int installCount)
+    {
+        InstallCount = installCount;
+        UpdationDate = DateTimeOffset.UtcNow;
+    }
+
     public void ReplaceDraftManifest(string draftManifestJson)
     {
         DraftManifestJson = draftManifestJson;

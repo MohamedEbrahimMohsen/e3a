@@ -81,4 +81,25 @@
   <data name="UPLOAD_EMPTY" xml:space="preserve">
     <value>The upload contains no usable files.</value>
   </data>
+  <data name="CATALOG_SEARCH_TEXT_TOO_LONG" xml:space="preserve">
+    <value>The search text is too long.</value>
+  </data>
+  <data name="CATALOG_TOO_MANY_TAG_FILTERS" xml:space="preserve">
+    <value>Too many tag filters were provided.</value>
+  </data>
+  <data name="CATALOG_TAG_FILTER_TOO_LONG" xml:space="preserve">
+    <value>A tag filter is too long.</value>
+  </data>
+  <data name="CATALOG_SORT_INVALID" xml:space="preserve">
+    <value>The sort option is not recognized.</value>
+  </data>
+  <data name="CATALOG_PAGE_NUMBER_INVALID" xml:space="preserve">
+    <value>The page number must be a positive number.</value>
+  </data>
+  <data name="CATALOG_PAGE_SIZE_INVALID" xml:space="preserve">
+    <value>The page size is out of the allowed range.</value>
+  </data>
+  <data name="CATALOG_SLUG_REQUIRED" xml:space="preserve">
+    <value>An engineer slug is required.</value>
+  </data>
 </root>

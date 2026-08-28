@@ -890,6 +890,7 @@ var engineers = await repository.FindAsync(x => !x.IsDeleted && ..., cancellatio
 - [ ] Policy constant added to `DefaultCodes`
 - [ ] API input: `Request` suffix record when HTTP shape differs; controller thin: map → send → `Ok(result)`
 - [ ] New error codes added to both `Messages.ar.resx` and `Messages.en.resx`
+- [ ] `postman/e3a.postman_collection.json` updated: request added/modified/deleted for every endpoint change
 
 **Tests (per conventions/dotnet-testing.md)**
 - [ ] Entity: factory + every domain-method branch
