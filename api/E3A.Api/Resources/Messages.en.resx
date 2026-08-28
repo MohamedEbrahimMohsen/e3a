@@ -48,6 +48,24 @@
   <data name="ENGINEER_DRAFT_NOT_UPLOADED" xml:space="preserve">
     <value>No draft has been uploaded for this engineer yet.</value>
   </data>
+  <data name="ENGINEER_SLUG_REQUIRED" xml:space="preserve">
+    <value>A slug is required.</value>
+  </data>
+  <data name="ENGINEER_SLUG_TOO_SHORT" xml:space="preserve">
+    <value>A slug must be at least 3 characters.</value>
+  </data>
+  <data name="ENGINEER_SLUG_TOO_LONG" xml:space="preserve">
+    <value>A slug must not exceed 100 characters.</value>
+  </data>
+  <data name="ENGINEER_SLUG_INVALID" xml:space="preserve">
+    <value>A slug must use lowercase English letters, digits and single hyphens.</value>
+  </data>
+  <data name="ENGINEER_SLUG_RESERVED" xml:space="preserve">
+    <value>That slug is reserved. Please choose another one.</value>
+  </data>
+  <data name="ENGINEER_SLUG_FROZEN" xml:space="preserve">
+    <value>A slug cannot be changed after the engineer has been published.</value>
+  </data>
   <data name="UPLOAD_FILE_REQUIRED" xml:space="preserve">
     <value>An upload file is required.</value>
   </data>

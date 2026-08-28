@@ -8,7 +8,7 @@
 
 ## Naming
 
-Plugin name: `e3a-{githublogin}-{item-slug}` — globally unique, attributable.
+Plugin name: `e3a-{slug}` — the creator types the slug when creating the engineer; it is globally unique, editable only while the item has never been published, and permanently frozen afterwards. GitHub login is no longer part of the plugin name; attribution lives in the `author` field.
 
 ## Ingestion: the `.claude` → plugin mapping
 
@@ -84,14 +84,14 @@ Regenerated in full from the DB on every publish; written atomically to Blob. En
 
 ```json
 {
-  "name": "e3a-mohamed-dive-backend-engineer",
+  "name": "e3a-mmohsen",
   "description": "…",
   "version": "3.0.0",
   "author": { "name": "@mohamed-dive", "url": "https://github.com/mohamed-dive" },
   "keywords": ["backend", "dotnet"],
   "source": {
     "source": "archive",
-    "url": "https://<domain>/z/e3a-mohamed-dive-backend-engineer/3.0.0.zip",
+    "url": "https://<domain>/z/e3a-mmohsen/3.0.0.zip",
     "sha256": "<hex>"
   }
 }

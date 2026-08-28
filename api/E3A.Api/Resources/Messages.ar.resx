@@ -48,6 +48,24 @@
   <data name="ENGINEER_DRAFT_NOT_UPLOADED" xml:space="preserve">
     <value>لم يتم رفع مسودة لهذا المهندس بعد.</value>
   </data>
+  <data name="ENGINEER_SLUG_REQUIRED" xml:space="preserve">
+    <value>الاسم المختصر مطلوب.</value>
+  </data>
+  <data name="ENGINEER_SLUG_TOO_SHORT" xml:space="preserve">
+    <value>يجب ان يكون الاسم المختصر 3 احرف على الاقل.</value>
+  </data>
+  <data name="ENGINEER_SLUG_TOO_LONG" xml:space="preserve">
+    <value>يجب الا يتجاوز الاسم المختصر 100 حرف.</value>
+  </data>
+  <data name="ENGINEER_SLUG_INVALID" xml:space="preserve">
+    <value>يجب ان يتكون الاسم المختصر من حروف انجليزية صغيرة وارقام وشرطات مفردة.</value>
+  </data>
+  <data name="ENGINEER_SLUG_RESERVED" xml:space="preserve">
+    <value>هذا الاسم المختصر محجوز. من فضلك اختر اسما اخر.</value>
+  </data>
+  <data name="ENGINEER_SLUG_FROZEN" xml:space="preserve">
+    <value>لا يمكن تغيير الاسم المختصر بعد نشر المهندس.</value>
+  </data>
   <data name="UPLOAD_FILE_REQUIRED" xml:space="preserve">
     <value>ملف الرفع مطلوب.</value>
   </data>

@@ -15,6 +15,9 @@ namespace E3A.Tests.Engineers.CreateEngineer;
 
 public sealed class CreateEngineerHandlerTests
 {
+    private const string TypedSlug = "mmohsen";
+    private const string SuffixedSlug = "mmohsen-ab12";
+
     private readonly IEngineerRepository _engineerRepository = Substitute.For<IEngineerRepository>();
     private readonly ICurrentUserService _currentUserService = Substitute.For<ICurrentUserService>();
     private readonly IGenerator _generator = Substitute.For<IGenerator>();
@@ -28,53 +31,45 @@ public sealed class CreateEngineerHandlerTests
     }
 
     [Fact]
-    public async Task Handle_ShouldCreateEngineerWithBaseSlug_WhenSlugIsFreeAndUnderLimit()
+    public async Task Handle_ShouldCreateEngineerWithTypedSlug_WhenSlugIsFree()
     {
         _engineerRepository.CountAsync(Arg.Any<CancellationToken>(), Arg.Any<Expression<Func<Engineer, bool>>>()).Returns(0);
-        _engineerRepository.IsSlugExistsAsync(EngineerFactory.DefaultSlug, Arg.Any<CancellationToken>()).Returns(false);
+        _engineerRepository.IsSlugExistsAsync(TypedSlug, Arg.Any<CancellationToken>()).Returns(false);
 
-        var result = await _sut.Handle(new CreateEngineerCommand(EngineerFactory.DefaultDisplayName, "A backend engineer.", ["dotnet"]), CancellationToken.None);
+        var result = await _sut.Handle(new CreateEngineerCommand(TypedSlug, EngineerFactory.DefaultDisplayName, "A backend engineer.", ["dotnet"]), CancellationToken.None);
 
-        result.Slug.Should().Be(EngineerFactory.DefaultSlug);
+        result.Slug.Should().Be(TypedSlug);
         result.Status.Should().Be(nameof(EngineerStatus.Draft));
         result.InstallCount.Should().Be(0);
-        _generator.DidNotReceive().Generate(Arg.Any<string>(), Arg.Any<int>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>());
         await _engineerRepository.Received(1).AddAsync(Arg.Any<Engineer>(), Arg.Any<CancellationToken>());
         await _engineerRepository.Received(1).SaveChangesAsync(Arg.Any<CancellationToken>());
     }
 
     [Fact]
-    public async Task Handle_ShouldCreateEngineerWithSuffixedSlug_WhenBaseSlugIsAlreadyTaken()
+    public async Task Handle_ShouldNormalizeTypedSlug_WhenSlugHasUppercaseAndWhitespace()
     {
-        var suffixedSlug = $"{EngineerFactory.DefaultSlug}-ab12";
         _engineerRepository.CountAsync(Arg.Any<CancellationToken>(), Arg.Any<Expression<Func<Engineer, bool>>>()).Returns(0);
-        _engineerRepository.IsSlugExistsAsync(EngineerFactory.DefaultSlug, Arg.Any<CancellationToken>()).Returns(true);
-        _engineerRepository.IsSlugExistsAsync(suffixedSlug, Arg.Any<CancellationToken>()).Returns(false);
-        _generator.Generate(EngineerFactory.DefaultSlug, Arg.Any<int>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>()).Returns(suffixedSlug);
+        _engineerRepository.IsSlugExistsAsync(TypedSlug, Arg.Any<CancellationToken>()).Returns(false);
 
-        var result = await _sut.Handle(new CreateEngineerCommand(EngineerFactory.DefaultDisplayName, null, []), CancellationToken.None);
+        var result = await _sut.Handle(new CreateEngineerCommand("  MMohsen  ", EngineerFactory.DefaultDisplayName, null, []), CancellationToken.None);
 
-        result.Slug.Should().Be(suffixedSlug);
-        _generator.Received(1).Generate(EngineerFactory.DefaultSlug, Arg.Any<int>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>());
-        await _engineerRepository.Received(1).AddAsync(Arg.Is<Engineer>(x => x.Slug == suffixedSlug), Arg.Any<CancellationToken>());
-        await _engineerRepository.Received(1).SaveChangesAsync(Arg.Any<CancellationToken>());
+        result.Slug.Should().Be(TypedSlug);
+        await _engineerRepository.Received(1).AddAsync(Arg.Is<Engineer>(x => x.Slug == TypedSlug), Arg.Any<CancellationToken>());
     }
 
     [Fact]
-    public async Task Handle_ShouldRetrySuffixedSlug_WhenFirstCandidateIsAlsoTaken()
+    public async Task Handle_ShouldCreateEngineerWithSuffixedSlug_WhenTypedSlugIsTaken()
     {
-        var takenCandidate = $"{EngineerFactory.DefaultSlug}-ab12";
-        var freeCandidate = $"{EngineerFactory.DefaultSlug}-cd34";
         _engineerRepository.CountAsync(Arg.Any<CancellationToken>(), Arg.Any<Expression<Func<Engineer, bool>>>()).Returns(0);
-        _engineerRepository.IsSlugExistsAsync(EngineerFactory.DefaultSlug, Arg.Any<CancellationToken>()).Returns(true);
-        _engineerRepository.IsSlugExistsAsync(takenCandidate, Arg.Any<CancellationToken>()).Returns(true);
-        _engineerRepository.IsSlugExistsAsync(freeCandidate, Arg.Any<CancellationToken>()).Returns(false);
-        _generator.Generate(EngineerFactory.DefaultSlug, Arg.Any<int>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>()).Returns(takenCandidate, freeCandidate);
+        _engineerRepository.IsSlugExistsAsync(TypedSlug, Arg.Any<CancellationToken>()).Returns(true);
+        _engineerRepository.IsSlugExistsAsync(SuffixedSlug, Arg.Any<CancellationToken>()).Returns(false);
+        _generator.Generate(TypedSlug, Arg.Any<int>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>()).Returns($"{SuffixedSlug}-");
 
-        var result = await _sut.Handle(new CreateEngineerCommand(EngineerFactory.DefaultDisplayName, null, []), CancellationToken.None);
+        var result = await _sut.Handle(new CreateEngineerCommand(TypedSlug, EngineerFactory.DefaultDisplayName, null, []), CancellationToken.None);
 
-        result.Slug.Should().Be(freeCandidate);
-        _generator.Received(2).Generate(EngineerFactory.DefaultSlug, Arg.Any<int>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>());
+        result.Slug.Should().Be(SuffixedSlug);
+        await _engineerRepository.Received(1).AddAsync(Arg.Is<Engineer>(x => x.Slug == SuffixedSlug), Arg.Any<CancellationToken>());
+        await _engineerRepository.Received(1).SaveChangesAsync(Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -82,7 +77,7 @@ public sealed class CreateEngineerHandlerTests
     {
         _currentUserService.UserId.Returns((Guid?)null);
 
-        var act = async () => await _sut.Handle(new CreateEngineerCommand(EngineerFactory.DefaultDisplayName, null, []), CancellationToken.None);
+        var act = async () => await _sut.Handle(new CreateEngineerCommand(TypedSlug, EngineerFactory.DefaultDisplayName, null, []), CancellationToken.None);
 
         await act.Should().ThrowAsync<UnauthorizedCoreException>().Where(x => x.ErrorCode == ErrorCodes.UserNotAuthenticated);
         await _engineerRepository.DidNotReceive().SaveChangesAsync(Arg.Any<CancellationToken>());
@@ -93,7 +88,7 @@ public sealed class CreateEngineerHandlerTests
     {
         _engineerRepository.CountAsync(Arg.Any<CancellationToken>(), Arg.Any<Expression<Func<Engineer, bool>>>()).Returns(2);
 
-        var act = async () => await _sut.Handle(new CreateEngineerCommand(EngineerFactory.DefaultDisplayName, null, []), CancellationToken.None);
+        var act = async () => await _sut.Handle(new CreateEngineerCommand(TypedSlug, EngineerFactory.DefaultDisplayName, null, []), CancellationToken.None);
 
         await act.Should().ThrowAsync<BusinessRuleViolationCoreException>().Where(x => x.ErrorCode == ErrorCodes.EngineerLimitReached);
         await _engineerRepository.DidNotReceive().AddAsync(Arg.Any<Engineer>(), Arg.Any<CancellationToken>());

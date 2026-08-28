@@ -1,10 +1,15 @@
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace E3A.Domain.Engineers;
 
 // Kebab-case normalization only — uniqueness suffixes come from Core.Utilities IGenerator.
 public static class EngineerSlugGenerator
 {
+    // A match timeout is mandatory (Sonar S6444); the pattern cannot backtrack, so any bound suffices.
+    private static readonly TimeSpan SlugFormatMatchTimeout = TimeSpan.FromMilliseconds(100);
+    private static readonly Regex SlugFormatRegex = new("^[a-z0-9]+(-[a-z0-9]+)*$", RegexOptions.Compiled, SlugFormatMatchTimeout);
+
     public static string Normalize(string displayName, int maxLength)
     {
         var builder = new StringBuilder();
@@ -29,5 +34,15 @@ public static class EngineerSlugGenerator
         }
 
         return slug;
+    }
+
+    public static string NormalizeTypedSlug(string? slug)
+    {
+        return slug?.Trim().ToLowerInvariant() ?? string.Empty;
+    }
+
+    public static bool IsValidFormat(string slug)
+    {
+        return SlugFormatRegex.IsMatch(slug);
     }
 }

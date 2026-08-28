@@ -5,11 +5,11 @@ using E3A.Domain.Engineers;
 using FluentValidation;
 using Microsoft.Extensions.Options;
 
-namespace E3A.Application.Engineers.CreateEngineer;
+namespace E3A.Application.Engineers.CheckSlugAvailability;
 
-public sealed class CreateEngineerValidator : AbstractValidator<CreateEngineerCommand>
+public sealed class CheckSlugAvailabilityQueryValidator : AbstractValidator<CheckSlugAvailabilityQuery>
 {
-    public CreateEngineerValidator(IOptions<EngineersOptions> engineersOptions)
+    public CheckSlugAvailabilityQueryValidator(IOptions<EngineersOptions> engineersOptions)
     {
         var options = engineersOptions.Value;
 
@@ -39,25 +39,5 @@ public sealed class CreateEngineerValidator : AbstractValidator<CreateEngineerCo
             .WithMessage("{PropertyName} is reserved.")
             .WithErrorCode(ErrorCodes.EngineerSlugReserved)
             .When(x => !string.IsNullOrWhiteSpace(x.Slug));
-
-        RuleFor(x => x.DisplayName)
-            .ValidateRequired(ErrorCodes.EngineerDisplayNameRequired)
-            .ValidateMaxLength(options.DisplayNameMaxLength, ErrorCodes.EngineerDisplayNameTooLong);
-
-        RuleFor(x => x.DisplayName)
-            .Must(displayName => displayName.Any(char.IsAsciiLetterOrDigit))
-            .WithMessage("{PropertyName} must contain at least one English letter or digit.")
-            .WithErrorCode(ErrorCodes.EngineerDisplayNameInvalid)
-            .When(x => !string.IsNullOrWhiteSpace(x.DisplayName));
-
-        RuleFor(x => x.Description)
-            .ValidateMaxLength(options.DescriptionMaxLength, ErrorCodes.EngineerDescriptionTooLong);
-
-        RuleFor(x => x.Tags)
-            .ValidateListMaxItems(options.MaxTags, ErrorCodes.EngineerTooManyTags);
-
-        RuleForEach(x => x.Tags)
-            .ValidateRequired(ErrorCodes.EngineerTagRequired)
-            .ValidateMaxLength(options.TagMaxLength, ErrorCodes.EngineerTagTooLong);
     }
 }

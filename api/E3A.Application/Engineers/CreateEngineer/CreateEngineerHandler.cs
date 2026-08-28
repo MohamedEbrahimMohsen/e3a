@@ -30,32 +30,12 @@ public sealed class CreateEngineerHandler(IEngineerRepository engineerRepository
             throw new BusinessRuleViolationCoreException(ErrorCodes.EngineerLimitReached, context: new Dictionary<string, object> { ["limit"] = options.MaxEngineersPerCreator });
         }
 
-        var slug = await GenerateUniqueSlugAsync(request.DisplayName, options, cancellationToken).ConfigureAwait(false);
+        var slug = await EngineerSlugResolver.ResolveUniqueAsync(EngineerSlugGenerator.NormalizeTypedSlug(request.Slug), engineerRepository, generator, options, cancellationToken).ConfigureAwait(false);
         var engineer = Engineer.Create(ownerUserId, slug, request.DisplayName, request.Description, request.Tags);
 
         await engineerRepository.AddAsync(engineer, cancellationToken).ConfigureAwait(false);
         await engineerRepository.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
         return EngineerResultGenerator.Generate(engineer);
-    }
-
-    private async Task<string> GenerateUniqueSlugAsync(string displayName, EngineersOptions options, CancellationToken cancellationToken)
-    {
-        var baseSlug = EngineerSlugGenerator.Normalize(displayName, options.SlugMaxLength);
-
-        if (!await engineerRepository.IsSlugExistsAsync(baseSlug, cancellationToken).ConfigureAwait(false))
-        {
-            return baseSlug;
-        }
-
-        // Re-normalize shorter so "{prefix}-{suffix}" can never exceed SlugMaxLength.
-        var prefix = EngineerSlugGenerator.Normalize(displayName, options.SlugMaxLength - options.SlugSuffixSize - 1);
-        string candidateSlug;
-        do
-        {
-            candidateSlug = generator.Generate(prefix: prefix, size: options.SlugSuffixSize);
-        } while (await engineerRepository.IsSlugExistsAsync(candidateSlug, cancellationToken).ConfigureAwait(false));
-
-        return candidateSlug;
     }
 }

@@ -23,6 +23,12 @@ public static class ErrorCodes
     public const string EngineerTagRequired = "ENGINEER_TAG_REQUIRED";
     public const string EngineerTagTooLong = "ENGINEER_TAG_TOO_LONG";
     public const string EngineerDraftNotUploaded = "ENGINEER_DRAFT_NOT_UPLOADED";
+    public const string EngineerSlugRequired = "ENGINEER_SLUG_REQUIRED";
+    public const string EngineerSlugTooShort = "ENGINEER_SLUG_TOO_SHORT";
+    public const string EngineerSlugTooLong = "ENGINEER_SLUG_TOO_LONG";
+    public const string EngineerSlugInvalid = "ENGINEER_SLUG_INVALID";
+    public const string EngineerSlugReserved = "ENGINEER_SLUG_RESERVED";
+    public const string EngineerSlugFrozen = "ENGINEER_SLUG_FROZEN";
 
     // Uploads
     public const string UploadFileRequired = "UPLOAD_FILE_REQUIRED";

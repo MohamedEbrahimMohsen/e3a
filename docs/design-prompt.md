@@ -13,7 +13,7 @@ Design a complete dark-mode web app UI for **e3a — "Engineer as an Agent"**: a
 
 ## Signature components (reused across pages)
 
-1. **Install command block** — dark mono block with two lines (`/plugin marketplace add https://e3a.dev/marketplace.json`, `/plugin install e3a-mohamed-dive-backend-engineer@e3a`), each with its own copy button; compact variant for cards.
+1. **Install command block** — dark mono block with two lines (`/plugin marketplace add https://e3a.dev/marketplace.json`, `/plugin install e3a-mmohsen@e3a`), each with its own copy button; compact variant for cards.
 2. **Engineer card** — avatar-style identicon or emoji tile, engineer name, `@author` with tiny GitHub avatar, one-line description, tag chips, version badge (mono, e.g. `v3.0.0`), install count ("1,204 installs"; below 50 installs show plain number only — NO chart; above threshold show a small 12-week cyan sparkline npm-style), "Team" variant with stacked member avatars.
 3. **Version history row** — version badge, published date, size, sha256 (truncated, mono), and a "pin this version" copy command that expands the pinned-marketplace command (`/plugin marketplace add https://e3a.dev/m/{plugin}/{version}/marketplace.json`).
 4. **Scan report panel** — rejection state for publishing: red-tinted card listing per-file, per-line findings (rule id chip like `EXF001`, severity, file path in mono, excerpt); warnings variant in amber.

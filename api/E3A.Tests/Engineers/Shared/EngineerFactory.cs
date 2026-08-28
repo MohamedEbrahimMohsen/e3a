@@ -7,6 +7,7 @@ public static class EngineerFactory
 {
     public const string DefaultDisplayName = "Dive Backend Engineer";
     public const string DefaultSlug = "dive-backend-engineer";
+    public const string DefaultReservedSlug = "admin";
 
     public static Engineer Draft(Guid ownerUserId, string displayName = DefaultDisplayName, string slug = DefaultSlug, DateTimeOffset? creationDate = null)
     {
@@ -43,9 +44,11 @@ public static class EngineerFactory
             DescriptionMaxLength = 500,
             SlugMaxLength = 100,
             SlugSuffixSize = 4,
+            SlugMinLength = 3,
             MaxTags = 10,
             TagMaxLength = 30,
             TagsColumnMaxLength = 400,
+            ReservedSlugs = ["e3a", "api", "admin", "www", "docs", "health", "install", "marketplace", "catalog", "teams", "new", "edit", "settings", "z", "m"],
         };
     }
 }

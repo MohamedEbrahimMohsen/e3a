@@ -9,7 +9,9 @@ public sealed class EngineersOptions
     public int DescriptionMaxLength { get; set; }
     public int SlugMaxLength { get; set; }
     public int SlugSuffixSize { get; set; }
+    public int SlugMinLength { get; set; }
     public int MaxTags { get; set; }
     public int TagMaxLength { get; set; }
     public int TagsColumnMaxLength { get; set; }
+    public List<string> ReservedSlugs { get; set; } = [];
 }

@@ -10,8 +10,8 @@ export function marketplaceAddCommand(): string {
   return `/plugin marketplace add ${config.siteUrl}/marketplace.json`;
 }
 
-export function installCommand(author: string, name: string): string {
-  return `/plugin install e3a-${author}-${name}@e3a`;
+export function installCommand(slug: string): string {
+  return `/plugin install e3a-${slug}@e3a`;
 }
 
 export function pinnedMarketplaceCommand(pluginName: string, version: string): string {

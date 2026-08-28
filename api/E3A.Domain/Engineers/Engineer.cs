@@ -13,6 +13,7 @@ public class Engineer : AuditEntity
     public string? DraftManifestJson { get; private set; }
     public Guid? LatestVersionId { get; private set; }
     public int InstallCount { get; private set; }
+    public bool IsSlugMutable => LatestVersionId == null;
 
     private Engineer(Guid id, Guid? createdBy) : base(id, createdBy) { }
 
@@ -39,6 +40,12 @@ public class Engineer : AuditEntity
         DisplayName = displayName;
         Description = description;
         Tags = [.. tags];
+        UpdationDate = DateTimeOffset.UtcNow;
+    }
+
+    public void ChangeSlug(string slug)
+    {
+        Slug = slug;
         UpdationDate = DateTimeOffset.UtcNow;
     }
 

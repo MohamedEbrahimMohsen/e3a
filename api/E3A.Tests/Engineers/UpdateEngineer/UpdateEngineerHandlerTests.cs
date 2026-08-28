@@ -1,10 +1,12 @@
 using Core.Errors;
 using Core.Identity.Tokens.CurrentUser;
+using Core.Utilities.Generator;
 using E3A.Application.Engineers.UpdateEngineer;
 using E3A.Application.Exceptions;
 using E3A.Domain.Engineers;
 using E3A.Tests.Engineers.Shared;
 using FluentAssertions;
+using Microsoft.Extensions.Options;
 using NSubstitute;
 using Xunit;
 
@@ -14,13 +16,14 @@ public sealed class UpdateEngineerHandlerTests
 {
     private readonly IEngineerRepository _engineerRepository = Substitute.For<IEngineerRepository>();
     private readonly ICurrentUserService _currentUserService = Substitute.For<ICurrentUserService>();
+    private readonly IGenerator _generator = Substitute.For<IGenerator>();
     private readonly Guid _ownerUserId = Guid.NewGuid();
     private readonly UpdateEngineerHandler _sut;
 
     public UpdateEngineerHandlerTests()
     {
         _currentUserService.UserId.Returns(_ownerUserId);
-        _sut = new UpdateEngineerHandler(_engineerRepository, _currentUserService);
+        _sut = new UpdateEngineerHandler(_engineerRepository, _currentUserService, _generator, Options.Create(EngineerFactory.CreateEngineersOptions()));
     }
 
     [Fact]
@@ -29,7 +32,7 @@ public sealed class UpdateEngineerHandlerTests
         var engineer = EngineerFactory.Draft(_ownerUserId);
         _engineerRepository.GetByIdAsync(engineer.Id, Arg.Any<CancellationToken>()).Returns(engineer);
 
-        var result = await _sut.Handle(new UpdateEngineerCommand(engineer.Id, "Dive Frontend Engineer", "A frontend engineer.", ["react"]), CancellationToken.None);
+        var result = await _sut.Handle(new UpdateEngineerCommand(engineer.Id, null, "Dive Frontend Engineer", "A frontend engineer.", ["react"]), CancellationToken.None);
 
         engineer.DisplayName.Should().Be("Dive Frontend Engineer");
         engineer.Description.Should().Be("A frontend engineer.");
@@ -46,7 +49,7 @@ public sealed class UpdateEngineerHandlerTests
     {
         _currentUserService.UserId.Returns((Guid?)null);
 
-        var act = async () => await _sut.Handle(new UpdateEngineerCommand(Guid.NewGuid(), "Dive Frontend Engineer", null, []), CancellationToken.None);
+        var act = async () => await _sut.Handle(new UpdateEngineerCommand(Guid.NewGuid(), null, "Dive Frontend Engineer", null, []), CancellationToken.None);
 
         await act.Should().ThrowAsync<UnauthorizedCoreException>().Where(x => x.ErrorCode == ErrorCodes.UserNotAuthenticated);
         await _engineerRepository.DidNotReceive().SaveChangesAsync(Arg.Any<CancellationToken>());
@@ -57,7 +60,7 @@ public sealed class UpdateEngineerHandlerTests
     {
         _engineerRepository.GetByIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>()).Returns((Engineer?)null);
 
-        var act = async () => await _sut.Handle(new UpdateEngineerCommand(Guid.NewGuid(), "Dive Frontend Engineer", null, []), CancellationToken.None);
+        var act = async () => await _sut.Handle(new UpdateEngineerCommand(Guid.NewGuid(), null, "Dive Frontend Engineer", null, []), CancellationToken.None);
 
         await act.Should().ThrowAsync<NotFoundCoreException>().Where(x => x.ErrorCode == ErrorCodes.EngineerNotFound);
         await _engineerRepository.DidNotReceive().SaveChangesAsync(Arg.Any<CancellationToken>());
@@ -69,7 +72,7 @@ public sealed class UpdateEngineerHandlerTests
         var engineer = EngineerFactory.Draft(Guid.NewGuid());
         _engineerRepository.GetByIdAsync(engineer.Id, Arg.Any<CancellationToken>()).Returns(engineer);
 
-        var act = async () => await _sut.Handle(new UpdateEngineerCommand(engineer.Id, "Dive Frontend Engineer", null, []), CancellationToken.None);
+        var act = async () => await _sut.Handle(new UpdateEngineerCommand(engineer.Id, null, "Dive Frontend Engineer", null, []), CancellationToken.None);
 
         await act.Should().ThrowAsync<ForbiddenCoreException>().Where(x => x.ErrorCode == ErrorCodes.EngineerNotOwned);
         _engineerRepository.DidNotReceive().Update(Arg.Any<Engineer>());
