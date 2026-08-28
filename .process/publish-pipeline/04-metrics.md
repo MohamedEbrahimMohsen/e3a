@@ -209,3 +209,58 @@ relying on scope disposal.
 Also noted: the ordering test's `Building` fixture is load-bearing. It yields exactly one save, which
 makes the `Received.InOrder` sequence unambiguous. Under a `Queued` fixture the matched set would be
 three calls and the test would pass under **both** orderings — vacuous. Do not "simplify" it.
+| 17 | Commit + push fixes | orchestrator | — | 2026-08-28 17:01 | 2026-08-28 17:02 | — | — | — | `cbcf3ef` pushed to PR #4 |
+| 18 | CodeRabbit round 2 | orchestrator | — | 2026-08-28 17:03 | 2026-08-28 17:22 | ~19m poll | — | — | 2 new inline + 1 review object — **found only after extending the poll window** (see below) |
+| 19 | CodeRabbit triage r2 | feature-reviewer | OPUS 5 | 2026-08-28 17:23 | 2026-08-28 17:30 | 7m 03s | 75,438 | 25 | **TRIAGE: 0 implement / 3 rejected / 0 dev-decisions** — no Criticals; build + 354/354 re-run; **Stage 4 complete** |
+
+## A poll that nearly closed the PR early
+
+The round-2 poller exited on its **timeout** path with the last observation reading
+`WAIT processing` — CodeRabbit had not finished reviewing `cbcf3ef`. The script printed
+"ROUND2_CLEAN_NO_NEW_COMMENTS", which is indistinguishable in a summary line from a genuine clean
+result, and merging there would have closed the PR on unreviewed feedback.
+
+The window was extended instead. **The next attempt returned 2 new inline comments and a new review
+object.** Same root cause as the PR #3 poll bug: a status check that cannot distinguish *absent*
+from *not yet*.
+
+## Round 2 — both comments rejected, verified
+
+- **RC2-r2** (`ProcessPublishJobHandler.cs:98`) claimed the fix leaves the root `marketplace.json`
+  unrefreshed. **False premise**: `E3A.Jobs/Functions/ProcessPublishJobFunction.cs:19-20` sends
+  `ProcessPublishJobCommand` and then `RegenerateMarketplaceCommand` **unconditionally** — approved
+  plan decision D2 — and `RegenerateMarketplaceHandler` rebuilds from live database state, so the
+  version committed at `:98` is picked up by the very next statement. CodeRabbit reviewed the handler
+  **without its only caller**, which was not in its round-2 file set. Orchestrator confirmed the
+  Function body directly.
+- **RC1-r2** targets `07-coderabbit-rework.md`, an audit artifact. Its fact is correct this time
+  (`cbcf3ef` does touch `04-metrics.md` via the orchestrator's run-log appends), but the correction
+  already exists in the right place — `08-coderabbit-verify.md` — and pushing it backwards into the
+  artifact it corrects would falsify the trail. Consistent with PR #2, PR #3, and round 1.
+
+## Stage 4 summary
+
+- **CodeRabbit cycles:** 2 of 2 (cap reached). Round 1: 13 inline + 1 review → **4 implemented / 8
+  rejected / 2 escalated**. Round 2: 2 inline + 1 review → **0 implemented / 3 rejected**.
+- **No Criticals raised in either round**, so no downgrade veto is owed to the dev.
+- **Highest-value outcome:** RC8 — a permanent-404 data-integrity bug that originated in the approved
+  plan, not the implementation, and that the internal review did not catch.
+- **Most dangerous rejection avoided:** RC9 — implementing it would have created the very race it
+  claimed to prevent.
+
+## Run totals
+
+- **Verdict:** APPROVED internally (round 1, zero blocking) · Stage 4 closed at the cycle cap.
+- **Implementer passes:** 4 (2 planned split + 1 enum fix + 1 post-approval fix). Review rounds: 1.
+- **Measured agent tokens:** ~1,213,000 (pass 1 unmeasured — the agent was terminated by a session
+  usage limit and its notification carried no usage block).
+- **Tests:** 236 → **354**, re-run independently by six separate agents plus the orchestrator.
+
+## Dev decisions still open
+
+- **DD1** — marketplace-regeneration concurrency. Plan decision D5 rejected lease/ETag schemes
+  *before* D21 added a second regeneration path inside the API process, so the approved decision does
+  not cover the new case. Triage recommends deferring rather than overturning a plan-gate decision.
+- **DD2** — RC13's claim about a specific Claude Code version is an unverifiable external fact and
+  cites doc sections that do not exist.
+- Plus the round-1 non-blocking follow-ups N1, N3, N5–N9 in `03-review.md`.
