@@ -17,6 +17,15 @@
 | 10 | CodeRabbit triage | feature-reviewer | FABLE 5 | 2026-08-28 | 2026-08-28 | 5m 27s | 124,748 | 23 | 7 implement (6 CodeRabbit + 1 self-found: page-param mismatch breaking web paging) / 10 rejected / 0 dev-decisions / no Critical downgrades |
 | 11 | CodeRabbit rework | feature-implementer | OPUS 5 | 2026-08-28 | 2026-08-28 | 5m 20s | 82,296 | 34 | all 7 items done — 166/166 API tests, web tsc clean; pagination + button styling verified live in browser by orchestrator |
 | 12 | CodeRabbit verify | feature-reviewer | FABLE 5 | 2026-08-28 | 2026-08-28 | 1m 23s | 33,928 | 11 | **APPROVED** — 7/7 resolved, rejects contained, scope exact; full solution build + 166/166 + web build independently re-run |
+| 13 | Fix commit + push | orchestrator | — | 2026-08-28 | 2026-08-28 | — | — | — | b06fd8a pushed to PR #2; local API restarted |
+| 14 | CodeRabbit round 2 | feature-reviewer | FABLE 5 | 2026-08-28 | 2026-08-28 | 1m 05s | 25,731 | 5 | TRIAGE: 0 implement / 2 rejected (RC16 re-litigates settled RC5 + targets immutable run record; RC17 accurate but unobservable, deferred to slice ③) — **Stage 4 complete** |
+
+## Stage 4 summary
+
+- **CodeRabbit cycles:** 2 of 2 — round 1: 15 comments → 7 implemented (incl. 1 triage-found real bug: web page-param mismatch) / 10 rejected · round 2: 2 comments → 0 implemented / 2 rejected
+- **Stage 4 agent cost:** ~267k tokens (triage 124,748 + rework 82,296 + verify 33,928 + triage-r2 25,731)
+- **Commits on PR #2:** 177840c (slice) · b06fd8a (CodeRabbit fixes)
+- **Deferred with rationale:** RC17 bounded pagination window → slice ③ (unobservable at current scale)
 
 ## Summary
 
