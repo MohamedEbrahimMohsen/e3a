@@ -29,6 +29,8 @@ public static class ErrorCodes
     public const string EngineerSlugInvalid = "ENGINEER_SLUG_INVALID";
     public const string EngineerSlugReserved = "ENGINEER_SLUG_RESERVED";
     public const string EngineerSlugFrozen = "ENGINEER_SLUG_FROZEN";
+    public const string EngineerNotPublished = "ENGINEER_NOT_PUBLISHED";
+    public const string EngineerNotUnlisted = "ENGINEER_NOT_UNLISTED";
 
     // Uploads
     public const string UploadFileRequired = "UPLOAD_FILE_REQUIRED";
@@ -51,4 +53,19 @@ public static class ErrorCodes
     public const string CatalogPageNumberInvalid = "CATALOG_PAGE_NUMBER_INVALID";
     public const string CatalogPageSizeInvalid = "CATALOG_PAGE_SIZE_INVALID";
     public const string CatalogSlugRequired = "CATALOG_SLUG_REQUIRED";
+
+    // Publishing
+    public const string PublishVersionIdRequired = "PUBLISH_VERSION_ID_REQUIRED";
+    public const string PublishIncrementInvalid = "PUBLISH_INCREMENT_INVALID";
+    public const string PublishVersionNotFound = "PUBLISH_VERSION_NOT_FOUND";
+    public const string PublishAlreadyInProgress = "PUBLISH_ALREADY_IN_PROGRESS";
+    public const string PublishVersionLimitReached = "PUBLISH_VERSION_LIMIT_REACHED";
+    public const string EngineerSnapshotEmpty = "ENGINEER_SNAPSHOT_EMPTY";
+    public const string PluginNoInstallableContent = "PLUGIN_NO_INSTALLABLE_CONTENT";
+    public const string PluginManifestAssetMissing = "PLUGIN_MANIFEST_ASSET_MISSING";
+    public const string PluginUnsafePath = "PLUGIN_UNSAFE_PATH";
+    public const string PluginSkillMissingSkillFile = "PLUGIN_SKILL_MISSING_SKILL_FILE";
+    public const string PluginTooManyFiles = "PLUGIN_TOO_MANY_FILES";
+    public const string PluginTooLarge = "PLUGIN_TOO_LARGE";
+    public const string MarketplaceEngineerLimitExceeded = "MARKETPLACE_ENGINEER_LIMIT_EXCEEDED";
 }

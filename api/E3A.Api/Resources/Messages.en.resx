@@ -120,4 +120,49 @@
   <data name="CATALOG_SLUG_REQUIRED" xml:space="preserve">
     <value>An engineer slug is required.</value>
   </data>
+  <data name="PUBLISH_VERSION_ID_REQUIRED" xml:space="preserve">
+    <value>A version identifier is required.</value>
+  </data>
+  <data name="PUBLISH_INCREMENT_INVALID" xml:space="preserve">
+    <value>The version increment is not recognized.</value>
+  </data>
+  <data name="PUBLISH_VERSION_NOT_FOUND" xml:space="preserve">
+    <value>We couldn't find that version.</value>
+  </data>
+  <data name="PUBLISH_ALREADY_IN_PROGRESS" xml:space="preserve">
+    <value>A publish is already running for this engineer.</value>
+  </data>
+  <data name="PUBLISH_VERSION_LIMIT_REACHED" xml:space="preserve">
+    <value>You have reached the limit of {limit} versions for this engineer.</value>
+  </data>
+  <data name="ENGINEER_NOT_PUBLISHED" xml:space="preserve">
+    <value>Only a published engineer can be unlisted.</value>
+  </data>
+  <data name="ENGINEER_NOT_UNLISTED" xml:space="preserve">
+    <value>Only an unlisted engineer can be relisted.</value>
+  </data>
+  <data name="ENGINEER_SNAPSHOT_EMPTY" xml:space="preserve">
+    <value>The uploaded draft has no files to publish.</value>
+  </data>
+  <data name="PLUGIN_NO_INSTALLABLE_CONTENT" xml:space="preserve">
+    <value>The plugin has no agents, skills or commands to install.</value>
+  </data>
+  <data name="PLUGIN_MANIFEST_ASSET_MISSING" xml:space="preserve">
+    <value>A file listed in the import manifest is missing from the upload.</value>
+  </data>
+  <data name="PLUGIN_UNSAFE_PATH" xml:space="preserve">
+    <value>The plugin contains an unsafe file path.</value>
+  </data>
+  <data name="PLUGIN_SKILL_MISSING_SKILL_FILE" xml:space="preserve">
+    <value>A skill folder is missing its SKILL.md file.</value>
+  </data>
+  <data name="PLUGIN_TOO_MANY_FILES" xml:space="preserve">
+    <value>The plugin contains too many files.</value>
+  </data>
+  <data name="PLUGIN_TOO_LARGE" xml:space="preserve">
+    <value>The plugin is larger than the allowed size.</value>
+  </data>
+  <data name="MARKETPLACE_ENGINEER_LIMIT_EXCEEDED" xml:space="preserve">
+    <value>The marketplace has more engineers than the generator can process.</value>
+  </data>
 </root>

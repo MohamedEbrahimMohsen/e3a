@@ -35,6 +35,14 @@ public static class EngineerFactory
         return engineer;
     }
 
+    public static Engineer Unlisted(Guid ownerUserId, string slug = DefaultSlug)
+    {
+        var engineer = Published(ownerUserId, slug);
+        engineer.Unlist();
+
+        return engineer;
+    }
+
     public static EngineersOptions CreateEngineersOptions(int maxEngineersPerCreator = 50)
     {
         return new EngineersOptions

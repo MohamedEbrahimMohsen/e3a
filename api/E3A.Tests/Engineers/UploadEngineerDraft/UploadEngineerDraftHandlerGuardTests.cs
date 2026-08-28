@@ -6,6 +6,7 @@ using E3A.Application.Engineers.UploadEngineerDraft;
 using E3A.Application.Exceptions;
 using E3A.Application.Options;
 using E3A.Domain.Engineers;
+using E3A.Domain.Publishing;
 using E3A.Tests.Engineers.Shared;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
@@ -18,6 +19,7 @@ namespace E3A.Tests.Engineers.UploadEngineerDraft;
 public sealed class UploadEngineerDraftHandlerGuardTests
 {
     private readonly IEngineerRepository _engineerRepository = Substitute.For<IEngineerRepository>();
+    private readonly IItemVersionRepository _itemVersionRepository = Substitute.For<IItemVersionRepository>();
     private readonly ICurrentUserService _currentUserService = Substitute.For<ICurrentUserService>();
     private readonly IStorageBlobClient _storageBlobClient = Substitute.For<IStorageBlobClient>();
     private readonly IFormFile _file = Substitute.For<IFormFile>();
@@ -29,7 +31,7 @@ public sealed class UploadEngineerDraftHandlerGuardTests
     {
         _currentUserService.UserId.Returns(_ownerUserId);
         _file.OpenReadStream().Returns(_ => ZipFixtureFactory.AsStream(Encoding.UTF8.GetBytes("this is not a zip archive")));
-        _sut = new UploadEngineerDraftHandler(_engineerRepository, _currentUserService, _storageBlobClient, Options.Create(UploadsOptionsFactory.Default()), Options.Create(_azureOptions));
+        _sut = new UploadEngineerDraftHandler(_engineerRepository, _itemVersionRepository, _currentUserService, _storageBlobClient, Options.Create(UploadsOptionsFactory.Default()), Options.Create(_azureOptions));
     }
 
     [Fact]

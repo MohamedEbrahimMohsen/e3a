@@ -6,12 +6,13 @@ using E3A.Application.Engineers.Shared;
 using E3A.Application.Exceptions;
 using E3A.Application.Options;
 using E3A.Domain.Engineers;
+using E3A.Domain.Publishing;
 using MediatR;
 using Microsoft.Extensions.Options;
 
 namespace E3A.Application.Engineers.UploadEngineerDraft;
 
-public sealed class UploadEngineerDraftHandler(IEngineerRepository engineerRepository, ICurrentUserService currentUserService, IStorageBlobClient storageBlobClient, IOptions<UploadsOptions> uploadsOptions, IOptions<AzureOptions> azureOptions) : IRequestHandler<UploadEngineerDraftCommand, ImportManifestResult>
+public sealed class UploadEngineerDraftHandler(IEngineerRepository engineerRepository, IItemVersionRepository itemVersionRepository, ICurrentUserService currentUserService, IStorageBlobClient storageBlobClient, IOptions<UploadsOptions> uploadsOptions, IOptions<AzureOptions> azureOptions) : IRequestHandler<UploadEngineerDraftCommand, ImportManifestResult>
 {
     public async Task<ImportManifestResult> Handle(UploadEngineerDraftCommand request, CancellationToken cancellationToken)
     {
@@ -33,6 +34,13 @@ public sealed class UploadEngineerDraftHandler(IEngineerRepository engineerRepos
         if (engineer.OwnerUserId != ownerUserId)
         {
             throw new ForbiddenCoreException(ErrorCodes.EngineerNotOwned);
+        }
+
+        var inProgress = await itemVersionRepository.FirstOrDefaultAsync(x => x.ItemType == ItemType.Engineer && x.ItemId == engineer.Id && (x.Status == ItemVersionStatus.Queued || x.Status == ItemVersionStatus.Building), cancellationToken).ConfigureAwait(false);
+
+        if (inProgress != null)
+        {
+            throw new ConflictCoreException(ErrorCodes.PublishAlreadyInProgress);
         }
 
         var options = uploadsOptions.Value;

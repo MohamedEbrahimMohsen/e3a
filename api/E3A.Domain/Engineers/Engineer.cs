@@ -68,6 +68,18 @@ public class Engineer : AuditEntity
         UpdationDate = DateTimeOffset.UtcNow;
     }
 
+    public void Unlist()
+    {
+        Status = EngineerStatus.Unlisted;
+        UpdationDate = DateTimeOffset.UtcNow;
+    }
+
+    public void Relist()
+    {
+        Status = EngineerStatus.Published;
+        UpdationDate = DateTimeOffset.UtcNow;
+    }
+
     public void Delete()
     {
         Status = EngineerStatus.Deleted;
