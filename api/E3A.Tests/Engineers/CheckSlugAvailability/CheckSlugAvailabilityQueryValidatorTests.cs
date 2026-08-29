@@ -70,4 +70,13 @@ public sealed class CheckSlugAvailabilityQueryValidatorTests
         result.IsValid.Should().BeFalse();
         result.Errors.Should().Contain(x => x.ErrorCode == ErrorCodes.EngineerSlugReserved);
     }
+
+    [Fact]
+    public void Validate_ShouldFail_WhenSlugUsesTheTeamNamespacePrefix()
+    {
+        var result = _sut.Validate(new CheckSlugAvailabilityQuery("team-alpha"));
+
+        result.IsValid.Should().BeFalse();
+        result.Errors.Should().Contain(x => x.ErrorCode == ErrorCodes.EngineerSlugReserved);
+    }
 }

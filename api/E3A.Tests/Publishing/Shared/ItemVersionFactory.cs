@@ -36,6 +36,14 @@ public static class ItemVersionFactory
         return version;
     }
 
+    public static ItemVersion PublishedTeam(Guid teamId, int versionNumber = 1, string semanticVersion = DefaultSemanticVersion, string zipBlobPath = DefaultZipBlobPath)
+    {
+        var version = QueuedTeam(teamId, versionNumber, semanticVersion);
+        version.MarkPublished(zipBlobPath, DefaultZipSha256, DefaultSizeBytes);
+
+        return version;
+    }
+
     public static ItemVersion Failed(Guid engineerId, string failureReason, int versionNumber = 1, string semanticVersion = DefaultSemanticVersion)
     {
         var version = Queued(engineerId, versionNumber, semanticVersion);

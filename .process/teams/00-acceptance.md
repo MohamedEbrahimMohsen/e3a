@@ -111,3 +111,21 @@ Any interaction between teams and the scanner is the merge-order problem of whoe
 ## Known debts NOT to be fixed here
 
 Everything carried from earlier slices.
+
+## Correction — 2026-08-29 (appended; the decision above is unchanged)
+
+Decision 1's stated rationale at lines 39-40 — "collision between a team slug and an engineer slug
+becomes structurally impossible" — **was false as implemented**, and CodeRabbit RC3/RC4 on PR #7
+falsified it. The `e3a-team-` prefix on its own does not separate the namespaces: engineer slug
+`team-alpha` and team slug `alpha` both produce the plugin name `e3a-team-alpha`, and nothing rejected
+an engineer slug beginning `team-`. The consequence was silent artifact adoption in
+`ProcessPublishJobHandler` — the second publisher's zip upload is skipped because the blob path
+already exists, and the version is still marked `Published` with a sha256 that does not match the
+served bytes — plus an overwritten pinned marketplace and duplicate root `marketplace.json` entries.
+
+The decision itself stands: `e3a-team-{slug}` remains the naming scheme. What has changed is that the
+invariant is now **enforced** rather than assumed. `PluginName.IsTeamNamespaced(slug)` rejects the
+`team-` prefix in `CreateEngineerValidator`, `UpdateEngineerValidator` and
+`CheckSlugAvailabilityQueryValidator` with `ENGINEER_SLUG_RESERVED`. Because a team can only ever
+produce `e3a-team-{x}`, closing the engineer side alone makes the two namespaces disjoint in both
+directions, with no cross-repository lookup.

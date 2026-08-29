@@ -50,8 +50,7 @@ public sealed class CheckTeamSlugAvailabilityQueryHandlerTests
         var result = await _sut.Handle(new CheckTeamSlugAvailabilityQuery(TypedSlug), CancellationToken.None);
 
         result.IsAvailable.Should().BeFalse();
-        result.SuggestedSlug.Should().NotBeNullOrEmpty();
-        result.SuggestedSlug.Should().NotBe(TypedSlug);
+        result.SuggestedSlug.Should().Be(SuffixedSlug);
     }
 
     [Fact]

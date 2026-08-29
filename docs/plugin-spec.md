@@ -70,8 +70,11 @@ hooks/hooks.json (+ scripts)   # when present in the upload
 One plugin bundling member engineers at **pinned versions** (snapshots taken at engineer
 publish time — teams are immutable until the team owner republishes). The ordered roster is
 **frozen into the team version row** at publish time, so a member engineer publishing a newer
-version cannot alter an already-published team; the team owner adopts newer member versions by
-republishing the team. Merge rules:
+version cannot alter an already-published team. Republishing on its own does **not** adopt newer
+member versions: a member with no explicit `pinnedVersionId` falls back to its existing pin, so the
+owner must first send the new `pinnedVersionId` to `PUT /api/teams/{teamId}/members` and then
+republish. Prompting the owner automatically when a member has a newer version is deferred to the
+`team-compile-merge` slice. Merge rules:
 
 **Merged today (the `teams` slice):**
 

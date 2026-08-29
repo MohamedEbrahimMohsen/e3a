@@ -9,14 +9,14 @@ A creator bundles published engineers at **pinned versions** into one installabl
 This is the part worth reviewing carefully, because it is the whole product:
 
 - The roster is frozen into `ItemVersion.FrozenManifestJson` at publish time. The worker reads it from **there**, never from the `TeamMember` rows — so editing membership after publishing cannot alter a published version.
-- `TeamPublishBuilder` takes **no `IEngineerRepository`**. It cannot read live member state even by accident, because it has no way to.
+- `TeamPublishBuilder` takes **no `IEngineerRepository`**, so it cannot reach a member engineer's *current* `LatestVersionId` at all. That is supporting evidence, not the whole guarantee — it does take `ITeamRepository` and loads the team, so live `TeamMember` rows are reachable in principle. The guarantee is the data flow above and below: the roster comes from `FrozenManifestJson`, the content from the pinned snapshot prefix.
 - Member content comes from each pinned version's own immutable `snapshots/{pinnedVersionId}/` prefix, which is never rewritten.
 
 **Proven by mutation, not by assertion.** Round 1's review caught that the test nominated as proof of this was vacuous — it built a newer member snapshot and never passed it to anything, so both calls took identical input. It was also at the wrong level: the assembler is a pure function over already-pinned snapshots, so no mutation of it could express the defect. The replacement lives at builder level; mutating `TeamPublishBuilder` to resolve by engineer instead of by pin fails exactly one test, and two reviewers independently reproduced byte-identical shas.
 
 ## Design decisions worth a look
 
-- **`e3a-team-{slug}`** rather than a shared namespace, per your explicit choice — collision between a team slug and an engineer slug becomes structurally impossible.
+- **`e3a-team-{slug}`** rather than a shared namespace, per your explicit choice. The prefix alone does **not** make collision impossible — CodeRabbit round 4 showed engineer slug `team-{x}` and team slug `{x}` both produce `e3a-team-{x}`. The namespaces are made disjoint by rejecting the `team-` prefix on the engineer side: `PluginName.IsTeamNamespaced` is enforced by all three engineer slug validators with `ENGINEER_SLUG_RESERVED`.
 - **One worker, one pipeline, two builders.** `ProcessPublishJobHandler` switches on `ItemType` and delegates; an inline branch would have pushed it past 150 lines with two entity types to mark published.
 - **Idempotent full-replace membership** (`PUT /members`) rather than three endpoints — makes ordering a property of the payload, and removes the member-not-found and reorder-mismatch guards entirely.
 - **Collision prefixing is symmetric**: when two members share an agent filename, *both* get prefixed, so output never depends on member order. That is what makes the shuffled-input determinism test possible.
@@ -36,7 +36,7 @@ Implemented in 5 checkpointed passes, each with a full build+test before the nex
 
 `PublishStatusResult.EngineerId` → **`ItemId`**, plus a new `ItemType` field. The old name is wrong for teams. This affects `GET /api/publish/{versionId}/status` and the `202` bodies of both publish endpoints:
 
-```
+```text
 { versionId, itemId, itemType, versionNumber, semanticVersion, status,
   zipUrl, zipSha256, sizeBytes, failureReason, updatedAt }
 ```

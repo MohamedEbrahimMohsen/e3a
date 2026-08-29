@@ -101,7 +101,7 @@ public sealed class SetTeamMembersHandlerGuardTests
     {
         var team = TeamFactory.Draft(_ownerUserId);
         var member = TeamFactory.PublishedMember("alpha");
-        var teamVersion = ItemVersionFactory.QueuedTeam(member.Engineer.Id);
+        var teamVersion = ItemVersionFactory.PublishedTeam(member.Engineer.Id);
         Stub(team, [member.Engineer], [member.Version, teamVersion]);
 
         await AssertThrowsAsync<BusinessRuleViolationCoreException>(new SetTeamMembersCommand(team.Id, [new TeamMemberSelection(member.Engineer.Id, teamVersion.Id)]), ErrorCodes.TeamMemberVersionNotPublished);

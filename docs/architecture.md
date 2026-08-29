@@ -53,8 +53,10 @@ exact blob name already exists and the pinned marketplace is overwritten idempot
 
 At most **two `SaveChangesAsync` calls** happen per job on every path (mark Building, then the
 terminal Published-or-Failed write; a queue retry that resumes from `Building` does one). **No write
-to the public container happens on any failure path**, for either item type: every build failure
-returns before the zip is created.
+to the public container happens on any build-failure path**, for either item type: every build failure
+returns before the zip is created. A failure *after* the zip upload — in the pinned-marketplace write
+or in the terminal save — does leave that zip in the public container, with the version still
+`Building`, exactly as described above.
 
 Poison queue after `maxDequeueCount` (5) total attempts, including the first.
 

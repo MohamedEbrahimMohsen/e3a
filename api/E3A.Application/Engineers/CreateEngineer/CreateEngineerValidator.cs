@@ -1,6 +1,7 @@
 using Core.Validation.Extensions;
 using E3A.Application.Exceptions;
 using E3A.Application.Options;
+using E3A.Application.Publishing.Shared;
 using E3A.Domain.SharedKernel;
 using FluentValidation;
 using Microsoft.Extensions.Options;
@@ -36,6 +37,12 @@ public sealed class CreateEngineerValidator : AbstractValidator<CreateEngineerCo
 
         RuleFor(x => x.Slug)
             .Must(slug => !options.ReservedSlugs.Contains(SlugGenerator.NormalizeTypedSlug(slug), StringComparer.OrdinalIgnoreCase))
+            .WithMessage("{PropertyName} is reserved.")
+            .WithErrorCode(ErrorCodes.EngineerSlugReserved)
+            .When(x => !string.IsNullOrWhiteSpace(x.Slug));
+
+        RuleFor(x => x.Slug)
+            .Must(slug => !PluginName.IsTeamNamespaced(SlugGenerator.NormalizeTypedSlug(slug)))
             .WithMessage("{PropertyName} is reserved.")
             .WithErrorCode(ErrorCodes.EngineerSlugReserved)
             .When(x => !string.IsNullOrWhiteSpace(x.Slug));

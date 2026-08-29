@@ -66,7 +66,7 @@ public sealed class PublishTeamHandlerTests
     public async Task Handle_ShouldIncrementFromTheLatestVersion_WhenTeamHasPublishedBefore()
     {
         var team = StubTeam();
-        var latest = ItemVersionFactory.QueuedTeam(team.Id, versionNumber: 1, semanticVersion: "1.0.0");
+        var latest = ItemVersionFactory.PublishedTeam(team.Id, versionNumber: 1, semanticVersion: "1.0.0");
         _itemVersionRepository.FirstOrDefaultAsync(Arg.Any<Expression<Func<ItemVersion, bool>>>(), Arg.Any<CancellationToken>(), Arg.Any<Func<IQueryable<ItemVersion>, IQueryable<ItemVersion>>>(), Arg.Is<Func<IQueryable<ItemVersion>, IOrderedQueryable<ItemVersion>>>(x => x != null), Arg.Any<bool>()).Returns(latest);
 
         var result = await _sut.Handle(new PublishTeamCommand(team.Id, VersionIncrement.Minor), CancellationToken.None);

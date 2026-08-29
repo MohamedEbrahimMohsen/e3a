@@ -19,3 +19,12 @@
 | 5 | Rework r1 | feature-implementer (fresh) | OPUS 5 | 2026-08-29 | 2026-08-29 | 9m 55s | 89,295 | 24 | builder-level pinning test, mutation-proven; 521 passing |
 
 | 6 | Review r2 | feature-reviewer (fresh) | OPUS 5 | 2026-08-29 | 2026-08-29 | 8m 52s | 92,508 | 31 | **APPROVED** — independently re-ran the mutation, byte-identical shas |
+| 7 | Merge main | feature-implementer | OPUS 5 | 2026-08-29 | 2026-08-29 | 12m 41s | 83,952 | 55 | 5 conflicts resolved as unions; snapshot verified by empty scratch migration; 604 passing |
+
+| 8 | PR + CodeRabbit | external | — | 2026-08-29 | 2026-08-29 | ~16m | — | — | PR #7 opened; 11 inline comments |
+
+| 9 | Triage | feature-reviewer (fresh) | OPUS 5 | 2026-08-29 | 2026-08-29 | 8m 56s | 174,882 | 54 | 8 implement, 1 rejected, 1 dev-decision; **RC4 upgraded to Critical** (cross-type plugin name collision) |
+
+| 10 | CodeRabbit rework | feature-implementer | OPUS 5 | 2026-08-29 | 2026-08-29 | 11m 08s | 116,582 | 57 | collision closed at 3 validators; 2nd vacuous test fixed; 604 -> 614 |
+
+| 11 | CodeRabbit verify | feature-reviewer (fresh) | OPUS 5 | 2026-08-29 | 2026-08-29 | 10m 50s | 112,003 | 61 | **APPROVED** — ran the vacuity experiment both ways; confirmed no fourth slug-write path |

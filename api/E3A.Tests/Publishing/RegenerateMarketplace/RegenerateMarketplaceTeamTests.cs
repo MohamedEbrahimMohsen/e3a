@@ -92,7 +92,7 @@ public sealed class RegenerateMarketplaceTeamTests
     private Team PublishedTeam(string slug)
     {
         var team = TeamFactory.Draft(_ownerUserId, slug: slug);
-        var version = ItemVersionFactory.Published(team.Id, zipBlobPath: $"z/e3a-team-{slug}/1.0.0.zip");
+        var version = ItemVersionFactory.PublishedTeam(team.Id, zipBlobPath: $"z/e3a-team-{slug}/1.0.0.zip");
         team.MarkPublished(version.Id);
         _publishedVersions.Add(version);
 

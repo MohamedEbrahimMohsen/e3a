@@ -728,3 +728,17 @@ Divergence only — never delete a not-yet-built feature from a doc.
 - [ ] The eleven docs edits in "Docs sync" are made; `docs/security-scan.md` and `docs/design-prompt.md` are untouched.
 - [ ] No Azure resource is created, referenced or required; `AzureOptions` gains no new member.
 - [ ] The new `Teams` configuration section is called out in the implementation notes so the dev can mirror it into his environments and Azure App Configuration.
+
+## Correction — 2026-08-29 (appended; the decisions above are unchanged)
+
+Decision 10's rationale (line 70) — "Plugin names are namespaced (`e3a-` versus `e3a-team-`), so a
+team slug equal to an engineer slug is structurally harmless" — **was false as implemented**.
+CodeRabbit RC3/RC4 on PR #7 showed that engineer slug `team-{x}` and team slug `{x}` both produce
+`e3a-team-{x}`, so scoping slug uniqueness per table was not sufficient on its own. See
+`.process/teams/06-coderabbit-triage.md` item 1 for the traced consequence.
+
+Decision 10 stands as written — team slug uniqueness is still scoped to the `Teams` table only — but
+it now rests on an enforced guard rather than on the prefix alone: `PluginName.IsTeamNamespaced(slug)`
+bars engineer slugs beginning `team-` in all three engineer slug validators, reusing
+`ErrorCodes.EngineerSlugReserved`. The guard is one-directional by design; a team can only ever emit
+`e3a-team-{x}`, so no cross-repository engineer lookup is needed on the team side.
