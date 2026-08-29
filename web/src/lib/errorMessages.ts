@@ -19,6 +19,7 @@ const errorMessages: Record<string, string> = {
   PLUGIN_SKILL_MISSING_SKILL_FILE: 'A skill folder is missing its SKILL.md file.',
   PLUGIN_TOO_MANY_FILES: 'The plugin contains too many files.',
   PLUGIN_TOO_LARGE: 'The plugin is larger than the allowed size.',
+  PLUGIN_DUPLICATE_PATH: 'The plugin contains two files with the same path.',
 };
 
 export function messageForErrorCode(code: string | null | undefined): string {

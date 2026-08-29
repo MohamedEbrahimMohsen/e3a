@@ -43,7 +43,9 @@ describe('failureText', () => {
   it('should never render a raw error code, for a single code or several joined ones', () => {
     expect(failureText('PLUGIN_NO_INSTALLABLE_CONTENT')).not.toMatch(screamingSnake);
     expect(failureText('ENGINEER_SNAPSHOT_EMPTY')).not.toMatch(screamingSnake);
+    expect(failureText('PLUGIN_DUPLICATE_PATH')).not.toMatch(screamingSnake);
     expect(failureText('PLUGIN_UNSAFE_PATH, PLUGIN_TOO_MANY_FILES, PLUGIN_TOO_LARGE')).not.toMatch(screamingSnake);
+    expect(failureText('PLUGIN_DUPLICATE_PATH, PLUGIN_NO_INSTALLABLE_CONTENT')).not.toMatch(screamingSnake);
     expect(failureText('PLUGIN_NOT_A_REAL_CODE')).toBe(GENERIC_ERROR_MESSAGE);
   });
 
@@ -51,6 +53,9 @@ describe('failureText', () => {
     const text = failureText('PLUGIN_UNSAFE_PATH, PLUGIN_TOO_LARGE');
 
     expect(text).toBe('The plugin contains an unsafe file path. The plugin is larger than the allowed size.');
+    expect(failureText('PLUGIN_DUPLICATE_PATH, PLUGIN_NO_INSTALLABLE_CONTENT')).toBe(
+      'The plugin contains two files with the same path. The plugin has no agents, skills or commands to install.',
+    );
   });
 
   it('should pass a prose reason through unchanged', () => {
