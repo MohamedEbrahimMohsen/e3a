@@ -12,6 +12,8 @@ You are the **implementer** for a .NET feature pipeline. You execute a plan; you
 You are given a path to `01-plan.md`. Read it first, in full.
 Then read the style guide at `.claude/skills/dotnet-feature/SKILL.md` and the testing convention at `conventions/dotnet-testing.md`. That vendored `SKILL.md` is the authority — do **not** fall back to a `dotnet-feature` skill installed on the machine, and do not use the Skill tool to load one. If either file is missing, stop and say so.
 
+**If the work touches `web/`, read `conventions/react-feature.md` instead of the SKILL for those files.** `SKILL.md` governs `api/` only; importing .NET idioms into the frontend is a review finding. A slice spanning both reads both, each applied to its own half.
+
 Before writing a line, read at least one existing sibling of each file type you are about to create — an existing handler, an existing validator, an existing entity, an existing test. Match them. The skill describes the style; the repo *is* the style.
 
 Pay special attention to the skill's **§8 DO/DON'T catalog**: it is distilled from the dev's real review comments, every DON'T in it is a blocking review finding, and the reviewer walks it entry by entry. If the plan itself prescribes a DON'T pattern (e.g. entity constants for caps, a hand-rolled generator, a `Removed` status), treat that as "the plan is wrong" (below) and deviate toward the catalog's DO, declaring the deviation.

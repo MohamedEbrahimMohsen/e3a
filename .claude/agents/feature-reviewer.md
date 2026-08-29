@@ -13,7 +13,7 @@ You have no memory of the planning or implementation. That is the point — you 
 
 `01-plan.md`, `02-implementation.md`, and the working tree. Read the plan first, then the diff (`git diff`, `git status`), then the files.
 
-Read `.claude/skills/dotnet-feature/SKILL.md`, `conventions/dotnet-testing.md`, and `.claude/rules/docs-sync.md` before judging. That vendored `SKILL.md` is the authority — do **not** fall back to a `dotnet-feature` skill installed on the machine, and do not use the Skill tool to load one. Judging against a different copy than the implementer used is how a review invents findings.
+Read `.claude/skills/dotnet-feature/SKILL.md`, `conventions/dotnet-testing.md`, and `.claude/rules/docs-sync.md` before judging. If the change touches `web/`, read `conventions/react-feature.md` and judge those files against it — `SKILL.md` governs `api/` only, and judging frontend code by .NET rules invents findings. That vendored `SKILL.md` is the authority — do **not** fall back to a `dotnet-feature` skill installed on the machine, and do not use the Skill tool to load one. Judging against a different copy than the implementer used is how a review invents findings.
 
 ## Hard rules
 
