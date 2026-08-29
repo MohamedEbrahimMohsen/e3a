@@ -14,6 +14,7 @@ public class ItemVersion : AuditEntity
     public string? ZipSha256 { get; private set; }
     public long SizeBytes { get; private set; }
     public string? FailureReason { get; private set; }
+    public string? ScanReportJson { get; private set; }
     public bool IsTerminal => Status is ItemVersionStatus.Published or ItemVersionStatus.Rejected or ItemVersionStatus.Failed;
 
     private ItemVersion(Guid id, Guid? createdBy) : base(id, createdBy) { }
@@ -51,6 +52,19 @@ public class ItemVersion : AuditEntity
         ZipSha256 = zipSha256;
         SizeBytes = sizeBytes;
         FailureReason = null;
+        UpdationDate = DateTimeOffset.UtcNow;
+    }
+
+    public void RecordScanReport(string scanReportJson)
+    {
+        ScanReportJson = scanReportJson;
+        UpdationDate = DateTimeOffset.UtcNow;
+    }
+
+    public void MarkRejected(string failureReason)
+    {
+        Status = ItemVersionStatus.Rejected;
+        FailureReason = failureReason;
         UpdationDate = DateTimeOffset.UtcNow;
     }
 

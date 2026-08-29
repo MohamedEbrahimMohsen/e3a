@@ -31,6 +31,15 @@ public static class ItemVersionFactory
         return version;
     }
 
+    public static ItemVersion Rejected(Guid engineerId, string failureReason, string scanReportJson, int versionNumber = 1, string semanticVersion = DefaultSemanticVersion)
+    {
+        var version = Queued(engineerId, versionNumber, semanticVersion);
+        version.RecordScanReport(scanReportJson);
+        version.MarkRejected(failureReason);
+
+        return version;
+    }
+
     public static ItemVersion Failed(Guid engineerId, string failureReason, int versionNumber = 1, string semanticVersion = DefaultSemanticVersion)
     {
         var version = Queued(engineerId, versionNumber, semanticVersion);
