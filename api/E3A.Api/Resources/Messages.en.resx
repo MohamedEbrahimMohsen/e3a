@@ -165,4 +165,22 @@
   <data name="MARKETPLACE_ENGINEER_LIMIT_EXCEEDED" xml:space="preserve">
     <value>The marketplace has more engineers than the generator can process.</value>
   </data>
+  <data name="AUTHENTICATION_CODE_MISSING" xml:space="preserve">
+    <value>GitHub did not send an authorization code.</value>
+  </data>
+  <data name="AUTHENTICATION_STATE_INVALID" xml:space="preserve">
+    <value>The sign-in request could not be verified. Please try again.</value>
+  </data>
+  <data name="AUTHENTICATION_STATE_EXPIRED" xml:space="preserve">
+    <value>The sign-in request has expired. Please try again.</value>
+  </data>
+  <data name="GITHUB_TOKEN_EXCHANGE_FAILED" xml:space="preserve">
+    <value>We could not complete the sign-in with GitHub.</value>
+  </data>
+  <data name="GITHUB_PROFILE_FETCH_FAILED" xml:space="preserve">
+    <value>We could not read your GitHub profile.</value>
+  </data>
+  <data name="GITHUB_PROFILE_INVALID" xml:space="preserve">
+    <value>Your GitHub profile is missing the details we need.</value>
+  </data>
 </root>

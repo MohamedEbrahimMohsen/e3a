@@ -10,6 +10,14 @@ public static class ErrorCodes
     public const string UserNotAuthenticated = "USER_NOT_AUTHENTICATED";
     public const string UserNotFound = "USER_NOT_FOUND";
 
+    // Authentication
+    public const string AuthenticationCodeMissing = "AUTHENTICATION_CODE_MISSING";
+    public const string AuthenticationStateInvalid = "AUTHENTICATION_STATE_INVALID";
+    public const string AuthenticationStateExpired = "AUTHENTICATION_STATE_EXPIRED";
+    public const string GitHubTokenExchangeFailed = "GITHUB_TOKEN_EXCHANGE_FAILED";
+    public const string GitHubProfileFetchFailed = "GITHUB_PROFILE_FETCH_FAILED";
+    public const string GitHubProfileInvalid = "GITHUB_PROFILE_INVALID";
+
     // Engineers
     public const string EngineerNotFound = "ENGINEER_NOT_FOUND";
     public const string EngineerNotOwned = "ENGINEER_NOT_OWNED";

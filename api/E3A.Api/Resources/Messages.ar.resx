@@ -165,4 +165,22 @@
   <data name="MARKETPLACE_ENGINEER_LIMIT_EXCEEDED" xml:space="preserve">
     <value>عدد المهندسين في السوق اكبر مما يستطيع المولد معالجته.</value>
   </data>
+  <data name="AUTHENTICATION_CODE_MISSING" xml:space="preserve">
+    <value>لم ترسل جيت هب كود التفويض.</value>
+  </data>
+  <data name="AUTHENTICATION_STATE_INVALID" xml:space="preserve">
+    <value>تعذر التحقق من طلب تسجيل الدخول. برجاء المحاولة مرة اخرى.</value>
+  </data>
+  <data name="AUTHENTICATION_STATE_EXPIRED" xml:space="preserve">
+    <value>انتهت صلاحية طلب تسجيل الدخول. برجاء المحاولة مرة اخرى.</value>
+  </data>
+  <data name="GITHUB_TOKEN_EXCHANGE_FAILED" xml:space="preserve">
+    <value>تعذر اكمال تسجيل الدخول عن طريق جيت هب.</value>
+  </data>
+  <data name="GITHUB_PROFILE_FETCH_FAILED" xml:space="preserve">
+    <value>تعذر قراءة ملفك الشخصي على جيت هب.</value>
+  </data>
+  <data name="GITHUB_PROFILE_INVALID" xml:space="preserve">
+    <value>ملفك الشخصي على جيت هب ينقصه البيانات المطلوبة.</value>
+  </data>
 </root>
