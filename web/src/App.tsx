@@ -1,10 +1,12 @@
 import { useEffect } from 'react';
 import { Outlet, Route, Routes, useLocation } from 'react-router-dom';
 import { AuthProvider } from './app/AuthContext';
+import { RequireAuth } from './app/RequireAuth';
 import { ReportProvider } from './app/ReportContext';
 import { ToastProvider } from './app/ToastContext';
 import { Footer } from './components/Footer';
 import { NavBar } from './components/NavBar';
+import { AuthCallbackPage } from './features/auth/AuthCallbackPage';
 import { CatalogPage } from './features/catalog/CatalogPage';
 import { EngineerComposerPage } from './features/composer/EngineerComposerPage';
 import { TeamComposerPage } from './features/composer/TeamComposerPage';
@@ -55,13 +57,19 @@ export function App() {
               <Route path="/t/:name" element={<TeamDetailPage />} />
               <Route path="/u/:login" element={<ProfilePage />} />
               <Route path="/how" element={<HowItWorksPage />} />
-              <Route path="/workspace" element={<WorkspacePage />} />
-              <Route path="/workspace/publish" element={<PublishStatusPage />} />
+              <Route path="/auth/callback" element={<AuthCallbackPage />} />
+              <Route element={<RequireAuth />}>
+                <Route path="/workspace" element={<WorkspacePage />} />
+                <Route path="/workspace/publish" element={<PublishStatusPage />} />
+              </Route>
               <Route path="*" element={<NotFoundPage />} />
             </Route>
             <Route element={<ComposerLayout />}>
-              <Route path="/workspace/new-engineer" element={<EngineerComposerPage />} />
-              <Route path="/workspace/new-team" element={<TeamComposerPage />} />
+              <Route element={<RequireAuth />}>
+                <Route path="/workspace/new-engineer" element={<EngineerComposerPage />} />
+                <Route path="/workspace/engineers/:engineerId" element={<EngineerComposerPage />} />
+                <Route path="/workspace/new-team" element={<TeamComposerPage />} />
+              </Route>
             </Route>
           </Routes>
         </ReportProvider>
