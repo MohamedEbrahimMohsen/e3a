@@ -9,3 +9,6 @@
 | # | Stage | Agent | Model | Started | Finished | Duration | Tokens | Tool uses | Outcome |
 |---|-------|-------|-------|---------|----------|----------|--------|-----------|---------|
 | 0 | Acceptance | orchestrator (proxied) | — | — | — | — | — | — | accepted |
+| 1 | Plan | feature-planner | OPUS 5 | 2026-08-29 | 2026-08-29 | 17m 09s | 174,594 | 42 | plan written (22 decisions, 26 new files, 48 tests, 2 docs edits) |
+
+| 2 | Gate | orchestrator (proxied) | — | — | — | — | — | — | APPROVED — verified CORS has no `AllowCredentials` (which is what makes decision 1's anchor reasoning correct), the stale `.env.example` port, and that `PublishStatusResult` still declares `EngineerId` on this branch |
