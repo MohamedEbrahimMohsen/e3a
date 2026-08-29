@@ -11,6 +11,11 @@ namespace Core.Exceptions;
 
 public class CoreExceptionMiddleware(RequestDelegate next, ILogger<CoreExceptionMiddleware> logger)
 {
+    // MVC serialises successful responses with JsonSerializerDefaults.Web (camelCase). Serialising
+    // errors with the bare default would emit PascalCase, so a client reading `code` off a failure
+    // body would silently get undefined on every error.
+    private static readonly JsonSerializerOptions ErrorSerializerOptions = new(JsonSerializerDefaults.Web);
+
     public async Task InvokeAsync(HttpContext context)
     {
         try
@@ -44,7 +49,19 @@ public class CoreExceptionMiddleware(RequestDelegate next, ILogger<CoreException
                 Exception = exception,
             };
 
-        logger.LogError(exception, $"StatusCode: {exceptionDetails.StatusCode}, ErrorCode: {exceptionDetails.Code}, ErrorMessage: {exceptionDetails.Message}");
+        // A 4xx is an expected outcome the caller asked for, not an application fault. Logging it at
+        // Error with a stack trace makes normal flow (a draft with no upload yet, an unauthenticated
+        // probe) indistinguishable from a real failure, and buries the 5xx that actually need eyes.
+        var isClientError = exceptionDetails.StatusCode is >= 400 and < 500;
+
+        if (isClientError)
+        {
+            logger.LogWarning($"StatusCode: {exceptionDetails.StatusCode}, ErrorCode: {exceptionDetails.Code}, ErrorMessage: {exceptionDetails.Message}");
+        }
+        else
+        {
+            logger.LogError(exception, $"StatusCode: {exceptionDetails.StatusCode}, ErrorCode: {exceptionDetails.Code}, ErrorMessage: {exceptionDetails.Message}");
+        }
 
         context.Items["ErrorCode"] = exceptionDetails.Code;
         context.Response.ContentType = "application/json";
@@ -52,6 +69,6 @@ public class CoreExceptionMiddleware(RequestDelegate next, ILogger<CoreException
 
         var apiResponseHandler = context.RequestServices.GetRequiredService<IErrorResponseHandler>();
         var response = apiResponseHandler.GenerateErrorResponse(exceptionDetails);
-        await context.Response.WriteAsync(JsonSerializer.Serialize(response));
+        await context.Response.WriteAsync(JsonSerializer.Serialize(response, ErrorSerializerOptions));
     }
 }
