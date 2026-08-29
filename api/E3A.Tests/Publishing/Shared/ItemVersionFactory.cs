@@ -15,6 +15,11 @@ public static class ItemVersionFactory
         return ItemVersion.Create(ItemType.Engineer, engineerId, versionNumber, semanticVersion, frozenManifestJson, Guid.NewGuid());
     }
 
+    public static ItemVersion QueuedTeam(Guid teamId, int versionNumber = 1, string semanticVersion = DefaultSemanticVersion, string frozenManifestJson = DefaultFrozenManifestJson)
+    {
+        return ItemVersion.Create(ItemType.Team, teamId, versionNumber, semanticVersion, frozenManifestJson, Guid.NewGuid());
+    }
+
     public static ItemVersion Building(Guid engineerId, int versionNumber = 1, string semanticVersion = DefaultSemanticVersion, string frozenManifestJson = DefaultFrozenManifestJson)
     {
         var version = Queued(engineerId, versionNumber, semanticVersion, frozenManifestJson);

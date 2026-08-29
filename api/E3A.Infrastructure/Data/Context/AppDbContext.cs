@@ -2,6 +2,7 @@ using E3A.Application.Options;
 using E3A.Domain.Engineers;
 using E3A.Domain.Identity;
 using E3A.Domain.Publishing;
+using E3A.Domain.Teams;
 using Core.Auditing.Entities;
 using Core.EntityFrameworkCore.Context;
 using Core.Notifications.Entities;
@@ -13,7 +14,7 @@ using System.Text.Json;
 
 namespace E3A.Infrastructure.Data.Context;
 
-public class AppDbContext(DbContextOptions options, IMediator mediator, IOptions<EngineersOptions> engineersOptions, IOptions<PublishingOptions> publishingOptions) : CoreDbContext<User, Role, Guid>(options, mediator)
+public class AppDbContext(DbContextOptions options, IMediator mediator, IOptions<EngineersOptions> engineersOptions, IOptions<TeamsOptions> teamsOptions, IOptions<PublishingOptions> publishingOptions) : CoreDbContext<User, Role, Guid>(options, mediator)
 {
     // Enum-as-string columns share one width; not tunable — widening requires a migration anyway.
     private const int EnumColumnMaxLength = 50;
@@ -22,6 +23,8 @@ public class AppDbContext(DbContextOptions options, IMediator mediator, IOptions
     private const int Sha256HexLength = 64;
 
     public DbSet<Engineer> Engineers { get; set; }
+    public DbSet<Team> Teams { get; set; }
+    public DbSet<TeamMember> TeamMembers { get; set; }
     public DbSet<ItemVersion> ItemVersions { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -29,6 +32,7 @@ public class AppDbContext(DbContextOptions options, IMediator mediator, IOptions
         base.OnModelCreating(modelBuilder);
 
         ConfigureEngineers(modelBuilder);
+        ConfigureTeams(modelBuilder);
         ConfigureItemVersions(modelBuilder);
 
         ApplyGlobalFilterToIgnoreSoftDeletionInAllQueries(modelBuilder);
@@ -51,6 +55,36 @@ public class AppDbContext(DbContextOptions options, IMediator mediator, IOptions
                        v => JsonSerializer.Serialize(v, JsonSerializerOptions.Default),
                        v => JsonSerializer.Deserialize<List<string>>(v, JsonSerializerOptions.Default) ?? new List<string>())
                    .HasMaxLength(engineerSchema.TagsColumnMaxLength);
+        });
+    }
+
+    private void ConfigureTeams(ModelBuilder modelBuilder)
+    {
+        var teamSchema = teamsOptions.Value;
+        var publishingSchema = publishingOptions.Value;
+
+        modelBuilder.Entity<Team>(builder =>
+        {
+            builder.Property(x => x.Slug).IsRequired().HasMaxLength(teamSchema.SlugMaxLength);
+            builder.HasIndex(x => x.Slug).IsUnique().HasFilter("[IsDeleted] = 0");
+            builder.HasIndex(x => x.OwnerUserId);
+            builder.Property(x => x.DisplayName).IsRequired().HasMaxLength(teamSchema.DisplayNameMaxLength);
+            builder.Property(x => x.Description).HasMaxLength(teamSchema.DescriptionMaxLength);
+            builder.Property(x => x.Status).HasConversion<string>().HasMaxLength(EnumColumnMaxLength);
+            builder.Property(x => x.Tags)
+                   .HasConversion(
+                       v => JsonSerializer.Serialize(v, JsonSerializerOptions.Default),
+                       v => JsonSerializer.Deserialize<List<string>>(v, JsonSerializerOptions.Default) ?? new List<string>())
+                   .HasMaxLength(teamSchema.TagsColumnMaxLength);
+            builder.HasMany(x => x.Members).WithOne().HasForeignKey(x => x.TeamId).OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<TeamMember>(builder =>
+        {
+            builder.Property(x => x.EngineerSlug).IsRequired().HasMaxLength(teamSchema.SlugMaxLength);
+            builder.Property(x => x.PinnedSemanticVersion).IsRequired().HasMaxLength(publishingSchema.SemanticVersionMaxLength);
+            builder.HasIndex(x => new { x.TeamId, x.EngineerId }).IsUnique().HasFilter("[IsDeleted] = 0");
+            builder.HasIndex(x => x.TeamId);
         });
     }
 
@@ -80,6 +114,8 @@ public class AppDbContext(DbContextOptions options, IMediator mediator, IOptions
     {
         modelBuilder.Entity<User>().HasQueryFilter(x => !x.IsDeleted);
         modelBuilder.Entity<Engineer>().HasQueryFilter(x => !x.IsDeleted);
+        modelBuilder.Entity<Team>().HasQueryFilter(x => !x.IsDeleted);
+        modelBuilder.Entity<TeamMember>().HasQueryFilter(x => !x.IsDeleted);
         modelBuilder.Entity<ItemVersion>().HasQueryFilter(x => !x.IsDeleted);
     }
 }

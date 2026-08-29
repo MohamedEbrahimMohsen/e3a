@@ -25,6 +25,19 @@ public static class PluginStructureValidator
             errors.Add(ErrorCodes.PluginManifestAssetMissing);
         }
 
+        return [.. errors, .. Validate(files, options)];
+    }
+
+    public static List<string> Validate(List<PluginFile> files, PublishingOptions options)
+    {
+        var paths = new HashSet<string>(files.Select(x => x.Path), StringComparer.OrdinalIgnoreCase);
+        List<string> errors = [];
+
+        if (paths.Count != files.Count)
+        {
+            errors.Add(ErrorCodes.PluginDuplicatePath);
+        }
+
         if (!files.Exists(file => Array.Exists(InstallableRoots, root => file.Path.StartsWith(root, StringComparison.OrdinalIgnoreCase))))
         {
             errors.Add(ErrorCodes.PluginNoInstallableContent);

@@ -5,12 +5,13 @@ using E3A.Application.Options;
 using E3A.Application.Publishing.Shared;
 using E3A.Domain.Engineers;
 using E3A.Domain.Publishing;
+using E3A.Domain.Teams;
 using MediatR;
 using Microsoft.Extensions.Options;
 
 namespace E3A.Application.Publishing.GetPublishStatus;
 
-public sealed class GetPublishStatusQueryHandler(IItemVersionRepository itemVersionRepository, IEngineerRepository engineerRepository, ICurrentUserService currentUserService, IOptions<PublishingOptions> publishingOptions) : IRequestHandler<GetPublishStatusQuery, PublishStatusResult>
+public sealed class GetPublishStatusQueryHandler(IItemVersionRepository itemVersionRepository, IEngineerRepository engineerRepository, ITeamRepository teamRepository, ICurrentUserService currentUserService, IOptions<PublishingOptions> publishingOptions) : IRequestHandler<GetPublishStatusQuery, PublishStatusResult>
 {
     public async Task<PublishStatusResult> Handle(GetPublishStatusQuery request, CancellationToken cancellationToken)
     {
@@ -28,18 +29,31 @@ public sealed class GetPublishStatusQueryHandler(IItemVersionRepository itemVers
             throw new NotFoundCoreException(ErrorCodes.PublishVersionNotFound);
         }
 
-        var engineer = await engineerRepository.GetByIdAsync(version.ItemId, cancellationToken, asNoTracking: true).ConfigureAwait(false);
-
-        if (engineer == null)
+        var ownerUserId = version.ItemType switch
         {
-            throw new NotFoundCoreException(ErrorCodes.EngineerNotFound);
-        }
+            ItemType.Team => await ResolveTeamOwnerAsync(version.ItemId, cancellationToken).ConfigureAwait(false),
+            _ => await ResolveEngineerOwnerAsync(version.ItemId, cancellationToken).ConfigureAwait(false),
+        };
 
-        if (engineer.OwnerUserId != userId.Value)
+        if (ownerUserId != userId.Value)
         {
-            throw new ForbiddenCoreException(ErrorCodes.EngineerNotOwned);
+            throw new ForbiddenCoreException(version.ItemType == ItemType.Team ? ErrorCodes.TeamNotOwned : ErrorCodes.EngineerNotOwned);
         }
 
         return PublishStatusResultGenerator.Generate(version, publishingOptions.Value);
+    }
+
+    private async Task<Guid> ResolveTeamOwnerAsync(Guid teamId, CancellationToken cancellationToken)
+    {
+        var team = await teamRepository.GetByIdAsync(teamId, cancellationToken, asNoTracking: true).ConfigureAwait(false);
+
+        return team?.OwnerUserId ?? throw new NotFoundCoreException(ErrorCodes.TeamNotFound);
+    }
+
+    private async Task<Guid> ResolveEngineerOwnerAsync(Guid engineerId, CancellationToken cancellationToken)
+    {
+        var engineer = await engineerRepository.GetByIdAsync(engineerId, cancellationToken, asNoTracking: true).ConfigureAwait(false);
+
+        return engineer?.OwnerUserId ?? throw new NotFoundCoreException(ErrorCodes.EngineerNotFound);
     }
 }
