@@ -140,3 +140,128 @@ Passed!  - Failed:     0, Passed:   433, Skipped:     0, Total:   433, Duration:
    nothing useful.
 7. The nonce cookie is never logged: the callback reads it into a local and it is not part of any
    result. `System.Net.Http.HttpClient` logging is already floored at Warning for the token, unaffected.
+
+---
+
+## Round 2
+
+Stage 4 rework, round 2 (final CodeRabbit cycle), PR #5. Scope was the three IMPLEMENT items in
+`06-coderabbit-triage-r2.md`; RC2-3, RC2-4 and RC2-5 stayed rejected and nothing else was touched.
+
+### Finding -> what changed -> where
+
+| # | Finding | What I changed | Where |
+|---|---|---|---|
+| 1 | **RC2-2** - the callback deleted the fixed-name nonce cookie unconditionally *before* validation, so one parameterless top-level GET to `/api/auth/github/callback` killed a victim's in-flight login | `AuthenticationRedirectResult` gained `bool StateNonceConsumed`; the handler sets it `false` on the two branches that compare nothing and `true` from the `Expired` guard onward; the controller moved the delete to after `mediator.Send` behind `if (result.StateNonceConsumed)` | `api/E3A.Application/Authentication/Shared/AuthenticationRedirectResult.cs:3` - `api/E3A.Application/Authentication/CompleteGitHubLogin/CompleteGitHubLoginHandler.cs:18,25,30,37,44,49,70,73` - `api/E3A.Api/Controllers/Authentication/AuthenticationController.cs:35-40` |
+| 2 | **RC2-2** (tests) - the trap: the code-missing guard returns before `Validate` runs, so it must not report "consumed" | New test file with the three cases the triage named, plus a success-path assertion in the existing handler tests | `api/E3A.Tests/Authentication/CompleteGitHubLogin/CompleteGitHubLoginHandlerCookieTests.cs:36,47,57` - `api/E3A.Tests/Authentication/CompleteGitHubLogin/CompleteGitHubLoginHandlerTests.cs:76-83` |
+| 3 | **RC2-6** - `RedirectUrl.Should().NotContain("state-nonce")` is vacuously true against the substitute and **false** against the real protector, which puts the nonce verbatim into the state | Deleted that one line; kept `result.StateNonce.Should().Be("state-nonce")` and the test name | `api/E3A.Tests/Authentication/GetGitHubLoginUrl/GetGitHubLoginUrlQueryHandlerTests.cs:43` |
+| 4 | **RC2-1** - `pr-body.md` is the live PR description and still advertised the login-CSRF hole as open, called the state "stateless", reported 420 tests, and stopped its artifact list at `04-metrics.md` | Replaced the "Known residual risk" section with what actually shipped (and who found it); rewrote the `state` paragraph as signed/expiring/browser-bound; 420 -> 437; added the Stage 4 artifacts for both rounds; folded in the RC2-4 `MaxAge` correction with the exact SDK; added the F1-F6 follow-up table | `.process/github-oauth/pr-body.md:9,28,38-64,66-76` |
+
+### Files created
+
+| Path | Lines | Purpose |
+|---|---|---|
+| `api/E3A.Tests/Authentication/CompleteGitHubLogin/CompleteGitHubLoginHandlerCookieTests.cs` | 59 | Pins `StateNonceConsumed` on the three branches that decide whether the cookie is cleared |
+
+New file rather than additions to `CompleteGitHubLoginHandlerFailureTests.cs` (147 lines), so F4 does not
+get worse.
+
+### Files modified
+
+| Path | Change |
+|---|---|
+| `api/E3A.Application/Authentication/Shared/AuthenticationRedirectResult.cs` | `+ bool StateNonceConsumed` on the record |
+| `api/E3A.Application/Authentication/CompleteGitHubLogin/CompleteGitHubLoginHandler.cs` | `Failure(string errorCode, bool stateNonceConsumed)`; six call sites pass it by **named argument** so the branch reads without a comment; success path passes `StateNonceConsumed: true` |
+| `api/E3A.Api/Controllers/Authentication/AuthenticationController.cs` | Delete moved below the `Send` and gated on `result.StateNonceConsumed`; same `OAuthStateCookieOptionsGenerator.Generate()` options, so `Path` still matches |
+| `api/E3A.Tests/.../CompleteGitHubLoginHandlerTests.cs` | `+ Handle_ShouldConsumeTheStateCookie_WhenLoginSucceeds` (file now 98 lines, still under ~100) |
+| `api/E3A.Tests/.../GetGitHubLoginUrlQueryHandlerTests.cs` | Deleted the false `NotContain` assertion |
+| `.process/github-oauth/pr-body.md` | Live PR description corrected - see row 4 above |
+| `postman/e3a.postman_collection.json` | GitHub Callback description said "The cookie is cleared on every callback", which this change makes false; corrected to compare-then-clear. URL, method, query params and auth mode unchanged |
+
+### Why match-then-delete costs no security
+
+Round 1 chose unconditional deletion on the reasoning that a surviving cookie is a replayable cookie.
+That does not hold: under match-then-delete the cookie survives **only** when the presented nonce failed
+to match segment 0 of the state - i.e. only on callbacks that consumed nothing. Every callback whose
+nonce did match still deletes, including `Expired`, a failed exchange, a failed profile fetch and
+success. Single-use-per-browser is preserved exactly; only the denial-of-login is removed.
+
+The delete now happens on exactly the paths where `OAuthStateProtector.Validate` compared the nonce and
+found it equal. The code-missing guard returns before `Validate` runs and reports `false` - that is the
+trap the triage named, and the first test below is the one that pins it.
+
+### Verification
+
+Both halves of the branch were mutation-probed, not just asserted:
+
+```
+# mutate the code-missing guard to stateNonceConsumed: true  (re-opens the hole)
+dotnet test api/E3A.slnx --filter "FullyQualifiedName~CompleteGitHubLoginHandlerCookieTests"
+Failed!  - Failed: 1, Passed: 2 - Handle_ShouldNotConsumeTheStateCookie_WhenCodeIsAbsent
+
+# mutate the exchange-failure branch to stateNonceConsumed: false  ("always false" implementation)
+dotnet test api/E3A.slnx --filter "FullyQualifiedName~CompleteGitHubLoginHandlerCookieTests"
+Failed!  - Failed: 1, Passed: 2 - Handle_ShouldConsumeTheStateCookie_WhenTheStateMatchesButTheExchangeFails
+```
+
+Both mutations were reverted before the final run. Without the second test an always-`false`
+implementation would pass and single-use-per-browser would be silently lost.
+
+`Handle_ShouldNotConsumeTheStateCookie_WhenCodeIsAbsent` also asserts
+`_oAuthStateProtector.DidNotReceive().Validate(...)`, so it fails if someone later reorders the guards to
+make the flag look right - the guard order is load-bearing for the `#error=` precedence contract and for
+`CompleteGitHubLoginHandlerFailureTests.cs:38-44`.
+
+### Build & test
+
+```
+dotnet build api/E3A.slnx --no-incremental
+Build succeeded.
+    9 Warning(s)
+    0 Error(s)
+```
+
+All 9 warnings are pre-existing and in `api/core-libraries` (`Core.Validation` CS8602 x2, `Core.OTP`
+CS8618 x2, `Core.Notifications` CS8618 x5). No `E3A.*` warning; `TreatWarningsAsErrors` unaffected.
+
+```
+dotnet test api/E3A.slnx
+Passed!  - Failed: 0, Passed: 437, Skipped: 0, Total: 437 - E3A.Tests.dll (net10.0)
+```
+
+**433 -> 437.** Plus four (three in the new cookie file, one success-path case); RC2-6 removed an
+assertion, not a test.
+
+### Deviations
+
+| Plan said | Reality | What I did |
+|---|---|---|
+| Triage: "**Postman needs no change** - three auth requests, unchanged URLs, methods, query params and auth modes. Nothing added, removed or stale." | True for the request *shape*, but the GitHub Callback request's `description` asserted "The cookie is cleared on every callback" - a statement this change makes false. | Corrected that one sentence. No request added, removed, or re-shaped. Flagging it because it is one file outside the triage's stated touch list, and because the Postman-sync rule covers contract text, not just URLs. |
+
+Nothing else deviated: no Azure resource, no `az`, no new package, no migration, no new options key, no
+`/docs` edit, no handler `try`/`catch`, no closed `.process/` artifact rewritten.
+
+### Notes for review
+
+1. **The `/docs` divergence closed itself.** `docs/architecture.md:28` ("rejects the state unless the
+   cookie matches, then clears it") and `docs/implementation-plan.md:63` ("compares and clears") already
+   described compare-then-clear. The code now matches both. Confirmed by reading them; neither was
+   edited.
+2. **`Failure(errorCode, stateNonceConsumed: ...)` uses named arguments deliberately.** A bare positional
+   `true`/`false` at six call sites would have needed a comment to be readable, and comments are banned.
+   If a reviewer prefers two named private methods over a bool parameter, that is a style call, not a
+   correctness one.
+3. **The controller is still untested by house rule** (`conventions/dotnet-testing.md`, "Explicitly out
+   of scope: controllers"). So the `if (result.StateNonceConsumed)` line itself has no test - only the
+   flag feeding it does. That is the convention working as designed, but it is the one line where an
+   inverted condition would not go red. It is three lines, directly above the `Redirect`, and worth a
+   human's eye.
+4. **`Expired` consumes.** `OAuthStateProtector.Validate` compares the nonce at `:43`, before the expiry
+   check at `:60`, so an `Expired` result means the nonce *did* match and the cookie is correctly
+   cleared. If that ordering is ever changed, this flag changes meaning with it.
+5. **What RC2-2 does not fix, and I am not claiming it does.** An attacker who already holds the
+   victim's in-flight `state` value can still land a matching callback and clear the cookie - the same
+   precondition as F1, and the same reason F1 is the follow-up worth scheduling first. What is closed is
+   the version that needed **no** precondition at all.
+6. **`pr-body.md` was the only `.process/` file edited**, per the triage's ruling that it is the live PR
+   description rather than a closed artifact. Round 1's section above this line is untouched.

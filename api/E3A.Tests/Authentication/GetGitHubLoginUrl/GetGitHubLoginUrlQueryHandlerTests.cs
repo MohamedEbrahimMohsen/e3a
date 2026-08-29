@@ -41,7 +41,6 @@ public sealed class GetGitHubLoginUrlQueryHandlerTests
         var result = await _sut.Handle(new GetGitHubLoginUrlQuery(), CancellationToken.None);
 
         result.StateNonce.Should().Be("state-nonce");
-        result.RedirectUrl.Should().NotContain("state-nonce");
     }
 
     [Fact]

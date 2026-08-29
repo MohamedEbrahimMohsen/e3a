@@ -75,6 +75,14 @@ public sealed class CompleteGitHubLoginHandlerTests
     }
 
     [Fact]
+    public async Task Handle_ShouldConsumeTheStateCookie_WhenLoginSucceeds()
+    {
+        var result = await _sut.Handle(new CompleteGitHubLoginCommand("github-code", "signed-state", "state-nonce"), CancellationToken.None);
+
+        result.StateNonceConsumed.Should().BeTrue();
+    }
+
+    [Fact]
     public async Task Handle_ShouldIssueTheTokenWithTheStoredUserId_WhenTheUserIsCreated()
     {
         User? createdUser = null;

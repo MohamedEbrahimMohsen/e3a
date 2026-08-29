@@ -15,38 +15,38 @@ public sealed class CompleteGitHubLoginHandler(IGitHubOAuthClient gitHubOAuthCli
     {
         if (string.IsNullOrWhiteSpace(request.Code))
         {
-            return Failure(ErrorCodes.AuthenticationCodeMissing);
+            return Failure(ErrorCodes.AuthenticationCodeMissing, stateNonceConsumed: false);
         }
 
         var stateStatus = oAuthStateProtector.Validate(request.State, request.Nonce);
 
         if (stateStatus == OAuthStateStatus.Invalid)
         {
-            return Failure(ErrorCodes.AuthenticationStateInvalid);
+            return Failure(ErrorCodes.AuthenticationStateInvalid, stateNonceConsumed: false);
         }
 
         if (stateStatus == OAuthStateStatus.Expired)
         {
-            return Failure(ErrorCodes.AuthenticationStateExpired);
+            return Failure(ErrorCodes.AuthenticationStateExpired, stateNonceConsumed: true);
         }
 
         var accessToken = await gitHubOAuthClient.ExchangeCodeForAccessTokenAsync(request.Code, cancellationToken).ConfigureAwait(false);
 
         if (string.IsNullOrWhiteSpace(accessToken))
         {
-            return Failure(ErrorCodes.GitHubTokenExchangeFailed);
+            return Failure(ErrorCodes.GitHubTokenExchangeFailed, stateNonceConsumed: true);
         }
 
         var profile = await gitHubOAuthClient.GetProfileAsync(accessToken, cancellationToken).ConfigureAwait(false);
 
         if (profile == null)
         {
-            return Failure(ErrorCodes.GitHubProfileFetchFailed);
+            return Failure(ErrorCodes.GitHubProfileFetchFailed, stateNonceConsumed: true);
         }
 
         if (profile.Id <= 0 || string.IsNullOrWhiteSpace(profile.Login))
         {
-            return Failure(ErrorCodes.GitHubProfileInvalid);
+            return Failure(ErrorCodes.GitHubProfileInvalid, stateNonceConsumed: true);
         }
 
         var user = await userRepository.FirstOrDefaultAsync(x => x.GitHubId == profile.Id, cancellationToken).ConfigureAwait(false);
@@ -67,11 +67,11 @@ public sealed class CompleteGitHubLoginHandler(IGitHubOAuthClient gitHubOAuthCli
 
         var token = tokenService.GenerateTokenAsync(UserClaimsGenerator.Generate(user));
 
-        return new AuthenticationRedirectResult(AuthenticationRedirectUrlGenerator.Success(gitHubAuthenticationOptions.Value.WebRedirectUrl, token));
+        return new AuthenticationRedirectResult(AuthenticationRedirectUrlGenerator.Success(gitHubAuthenticationOptions.Value.WebRedirectUrl, token), StateNonceConsumed: true);
     }
 
-    private AuthenticationRedirectResult Failure(string errorCode)
+    private AuthenticationRedirectResult Failure(string errorCode, bool stateNonceConsumed)
     {
-        return new AuthenticationRedirectResult(AuthenticationRedirectUrlGenerator.Failure(gitHubAuthenticationOptions.Value.WebRedirectUrl, errorCode));
+        return new AuthenticationRedirectResult(AuthenticationRedirectUrlGenerator.Failure(gitHubAuthenticationOptions.Value.WebRedirectUrl, errorCode), stateNonceConsumed);
     }
 }

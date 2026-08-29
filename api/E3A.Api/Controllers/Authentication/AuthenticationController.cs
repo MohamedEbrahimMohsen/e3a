@@ -32,10 +32,12 @@ public class AuthenticationController(IMediator mediator, IOptions<GitHubAuthent
     {
         var options = gitHubAuthenticationOptions.Value;
         var nonce = Request.Cookies[options.StateCookieName];
-
-        Response.Cookies.Delete(options.StateCookieName, OAuthStateCookieOptionsGenerator.Generate());
-
         var result = await mediator.Send(new CompleteGitHubLoginCommand(code, state, nonce), cancellationToken);
+
+        if (result.StateNonceConsumed)
+        {
+            Response.Cookies.Delete(options.StateCookieName, OAuthStateCookieOptionsGenerator.Generate());
+        }
 
         return Redirect(result.RedirectUrl);
     }

@@ -52,7 +52,7 @@
             },
             "method": "GET",
             "header": [],
-            "description": "302 to the web app with #token= on success or #error=<ERROR_CODE> on failure. Requires the e3a_oauth_state cookie set by GitHub Login in the same cookie jar; a missing or mismatched nonce redirects with #error=AUTHENTICATION_STATE_INVALID. The cookie is cleared on every callback.",
+            "description": "302 to the web app with #token= on success or #error=<ERROR_CODE> on failure. Requires the e3a_oauth_state cookie set by GitHub Login in the same cookie jar; a missing or mismatched nonce redirects with #error=AUTHENTICATION_STATE_INVALID. The cookie is cleared only on callbacks where the nonce matched the state (including ones that fail later); a callback that validated nothing leaves it in place.",
             "url": {
               "raw": "{{baseUrl}}/api/auth/github/callback?code={{gitHubCode}}&state={{gitHubState}}",
               "host": [
