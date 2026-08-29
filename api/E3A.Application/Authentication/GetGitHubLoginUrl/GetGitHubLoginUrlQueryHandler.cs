@@ -5,13 +5,13 @@ using Microsoft.Extensions.Options;
 
 namespace E3A.Application.Authentication.GetGitHubLoginUrl;
 
-public sealed class GetGitHubLoginUrlQueryHandler(IOAuthStateProtector oAuthStateProtector, IOptions<GitHubAuthenticationOptions> gitHubAuthenticationOptions) : IRequestHandler<GetGitHubLoginUrlQuery, AuthenticationRedirectResult>
+public sealed class GetGitHubLoginUrlQueryHandler(IOAuthStateProtector oAuthStateProtector, IOptions<GitHubAuthenticationOptions> gitHubAuthenticationOptions) : IRequestHandler<GetGitHubLoginUrlQuery, GitHubLoginUrlResult>
 {
-    public Task<AuthenticationRedirectResult> Handle(GetGitHubLoginUrlQuery request, CancellationToken cancellationToken)
+    public Task<GitHubLoginUrlResult> Handle(GetGitHubLoginUrlQuery request, CancellationToken cancellationToken)
     {
         var state = oAuthStateProtector.Create();
-        var authorizationUrl = GitHubAuthorizationUrlGenerator.Generate(gitHubAuthenticationOptions.Value, state);
+        var authorizationUrl = GitHubAuthorizationUrlGenerator.Generate(gitHubAuthenticationOptions.Value, state.Value);
 
-        return Task.FromResult(new AuthenticationRedirectResult(authorizationUrl));
+        return Task.FromResult(new GitHubLoginUrlResult(authorizationUrl, state.Nonce));
     }
 }

@@ -26,6 +26,7 @@
             },
             "method": "GET",
             "header": [],
+            "description": "302 to GitHub. Also sets the Secure, HttpOnly, SameSite=Lax e3a_oauth_state cookie on /api/auth carrying the state nonce. Run this before GitHub Callback so the cookie jar holds the nonce.",
             "url": {
               "raw": "{{baseUrl}}/api/auth/github/login",
               "host": [
@@ -51,6 +52,7 @@
             },
             "method": "GET",
             "header": [],
+            "description": "302 to the web app with #token= on success or #error=<ERROR_CODE> on failure. Requires the e3a_oauth_state cookie set by GitHub Login in the same cookie jar; a missing or mismatched nonce redirects with #error=AUTHENTICATION_STATE_INVALID. The cookie is cleared on every callback.",
             "url": {
               "raw": "{{baseUrl}}/api/auth/github/callback?code={{gitHubCode}}&state={{gitHubState}}",
               "host": [

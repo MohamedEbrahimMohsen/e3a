@@ -3,4 +3,4 @@ using MediatR;
 
 namespace E3A.Application.Authentication.GetGitHubLoginUrl;
 
-public sealed record GetGitHubLoginUrlQuery : IRequest<AuthenticationRedirectResult>;
+public sealed record GetGitHubLoginUrlQuery : IRequest<GitHubLoginUrlResult>;

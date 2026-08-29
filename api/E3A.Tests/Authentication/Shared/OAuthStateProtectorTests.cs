@@ -26,9 +26,10 @@ public sealed class OAuthStateProtectorTests
     {
         var state = _sut.Create();
 
-        var segments = state.Split('.');
+        var segments = state.Value.Split('.');
         segments.Should().HaveCount(3);
         segments[0].Should().Be(Nonce);
+        state.Nonce.Should().Be(Nonce);
         long.TryParse(segments[1], NumberStyles.None, CultureInfo.InvariantCulture, out _).Should().BeTrue();
     }
 
@@ -39,7 +40,7 @@ public sealed class OAuthStateProtectorTests
 
         var state = _sut.Create();
 
-        var expiresAt = DateTimeOffset.FromUnixTimeSeconds(long.Parse(state.Split('.')[1], CultureInfo.InvariantCulture));
+        var expiresAt = DateTimeOffset.FromUnixTimeSeconds(long.Parse(state.Value.Split('.')[1], CultureInfo.InvariantCulture));
         expiresAt.Should().BeCloseTo(expected, TimeSpan.FromSeconds(1));
     }
 
@@ -51,7 +52,7 @@ public sealed class OAuthStateProtectorTests
         var first = _sut.Create();
         var second = _sut.Create();
 
-        first.Should().NotBe(second);
+        first.Value.Should().NotBe(second.Value);
     }
 
     [Fact]
@@ -59,7 +60,7 @@ public sealed class OAuthStateProtectorTests
     {
         var state = _sut.Create();
 
-        var result = _sut.Validate(state);
+        var result = _sut.Validate(state.Value, state.Nonce);
 
         result.Should().Be(OAuthStateStatus.Valid);
     }
@@ -69,7 +70,9 @@ public sealed class OAuthStateProtectorTests
     {
         var expiredProtector = new OAuthStateProtector(Options.Create(GitHubAuthenticationOptionsFactory.Default(stateExpirationMinutes: -1)), Options.Create(new JwtOptions { Key = "state-signing-key-that-is-long-enough" }), _generator);
 
-        var result = expiredProtector.Validate(expiredProtector.Create());
+        var expiredState = expiredProtector.Create();
+
+        var result = expiredProtector.Validate(expiredState.Value, expiredState.Nonce);
 
         result.Should().Be(OAuthStateStatus.Expired);
     }
@@ -79,8 +82,8 @@ public sealed class OAuthStateProtectorTests
     {
         var state = _sut.Create();
 
-        var first = _sut.Validate(state);
-        var second = _sut.Validate(state);
+        var first = _sut.Validate(state.Value, state.Nonce);
+        var second = _sut.Validate(state.Value, state.Nonce);
 
         first.Should().Be(OAuthStateStatus.Valid);
         second.Should().Be(OAuthStateStatus.Valid);

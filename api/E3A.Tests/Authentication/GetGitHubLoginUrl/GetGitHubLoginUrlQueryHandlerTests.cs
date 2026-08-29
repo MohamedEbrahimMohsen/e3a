@@ -15,7 +15,7 @@ public sealed class GetGitHubLoginUrlQueryHandlerTests
 
     public GetGitHubLoginUrlQueryHandlerTests()
     {
-        _oAuthStateProtector.Create().Returns("signed-state");
+        _oAuthStateProtector.Create().Returns(new OAuthState("signed-state", "state-nonce"));
         _sut = new GetGitHubLoginUrlQueryHandler(_oAuthStateProtector, Options.Create(GitHubAuthenticationOptionsFactory.Default()));
     }
 
@@ -33,6 +33,15 @@ public sealed class GetGitHubLoginUrlQueryHandlerTests
         var result = await _sut.Handle(new GetGitHubLoginUrlQuery(), CancellationToken.None);
 
         result.RedirectUrl.Should().Contain("state=signed-state");
+    }
+
+    [Fact]
+    public async Task Handle_ShouldSurfaceTheNonceForTheBrowserCookie_WhenCalled()
+    {
+        var result = await _sut.Handle(new GetGitHubLoginUrlQuery(), CancellationToken.None);
+
+        result.StateNonce.Should().Be("state-nonce");
+        result.RedirectUrl.Should().NotContain("state-nonce");
     }
 
     [Fact]

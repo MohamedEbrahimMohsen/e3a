@@ -1,4 +1,5 @@
 using Core.Identity.Tokens.AccessToken;
+using Core.Utilities.Generator;
 using E3A.Application.Authentication.Shared;
 using E3A.Application.Exceptions;
 using E3A.Application.Options;
@@ -8,7 +9,7 @@ using Microsoft.Extensions.Options;
 
 namespace E3A.Application.Authentication.CompleteGitHubLogin;
 
-public sealed class CompleteGitHubLoginHandler(IGitHubOAuthClient gitHubOAuthClient, IOAuthStateProtector oAuthStateProtector, IUserRepository userRepository, ITokenService tokenService, IOptions<GitHubAuthenticationOptions> gitHubAuthenticationOptions) : IRequestHandler<CompleteGitHubLoginCommand, AuthenticationRedirectResult>
+public sealed class CompleteGitHubLoginHandler(IGitHubOAuthClient gitHubOAuthClient, IOAuthStateProtector oAuthStateProtector, IUserRepository userRepository, ITokenService tokenService, IGenerator generator, IOptions<GitHubAuthenticationOptions> gitHubAuthenticationOptions) : IRequestHandler<CompleteGitHubLoginCommand, AuthenticationRedirectResult>
 {
     public async Task<AuthenticationRedirectResult> Handle(CompleteGitHubLoginCommand request, CancellationToken cancellationToken)
     {
@@ -17,7 +18,7 @@ public sealed class CompleteGitHubLoginHandler(IGitHubOAuthClient gitHubOAuthCli
             return Failure(ErrorCodes.AuthenticationCodeMissing);
         }
 
-        var stateStatus = oAuthStateProtector.Validate(request.State);
+        var stateStatus = oAuthStateProtector.Validate(request.State, request.Nonce);
 
         if (stateStatus == OAuthStateStatus.Invalid)
         {
@@ -52,7 +53,8 @@ public sealed class CompleteGitHubLoginHandler(IGitHubOAuthClient gitHubOAuthCli
 
         if (user == null)
         {
-            user = User.CreateFromGitHub(profile.Id, profile.Login, profile.Name, profile.AvatarUrl);
+            var userName = await UserNameResolver.ResolveUniqueAsync(profile.Login, userRepository, generator, gitHubAuthenticationOptions.Value, cancellationToken).ConfigureAwait(false);
+            user = User.CreateFromGitHub(profile.Id, profile.Login, userName, profile.Name, profile.AvatarUrl);
             await userRepository.AddAsync(user, cancellationToken).ConfigureAwait(false);
         }
         else

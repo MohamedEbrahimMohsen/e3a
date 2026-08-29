@@ -3,4 +3,4 @@ using MediatR;
 
 namespace E3A.Application.Authentication.CompleteGitHubLogin;
 
-public sealed record CompleteGitHubLoginCommand(string? Code, string? State) : IRequest<AuthenticationRedirectResult>;
+public sealed record CompleteGitHubLoginCommand(string? Code, string? State, string? Nonce) : IRequest<AuthenticationRedirectResult>;

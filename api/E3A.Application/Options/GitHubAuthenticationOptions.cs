@@ -17,6 +17,8 @@ public sealed class GitHubAuthenticationOptions
     public string UserAgent { get; set; } = "e3a";
     public int HttpTimeoutSeconds { get; set; } = 10;
     public int StateNonceSize { get; set; } = 16;
+    public string StateCookieName { get; set; } = "e3a_oauth_state";
+    public int UserNameSuffixSize { get; set; } = 4;
     public int GitHubLoginMaxLength { get; set; } = 100;
     public int DisplayNameMaxLength { get; set; } = 200;
     public int AvatarUrlMaxLength { get; set; } = 500;

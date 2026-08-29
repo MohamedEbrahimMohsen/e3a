@@ -19,12 +19,13 @@ public sealed class UserTests
     }
 
     [Fact]
-    public void CreateFromGitHub_ShouldSetUserNameAndNormalizedUserNameFromLogin_WhenCalled()
+    public void CreateFromGitHub_ShouldSetUserNameAndNormalizedUserNameFromTheResolvedName_WhenItDiffersFromTheLogin()
     {
-        var user = UserFactory.GitHub(login: "OctoCat");
+        var user = UserFactory.GitHub(login: "OctoCat", userName: "OctoCat-ab12");
 
-        user.UserName.Should().Be("OctoCat");
-        user.NormalizedUserName.Should().Be("OCTOCAT");
+        user.GitHubLogin.Should().Be("OctoCat");
+        user.UserName.Should().Be("OctoCat-ab12");
+        user.NormalizedUserName.Should().Be("OCTOCAT-AB12");
     }
 
     [Fact]

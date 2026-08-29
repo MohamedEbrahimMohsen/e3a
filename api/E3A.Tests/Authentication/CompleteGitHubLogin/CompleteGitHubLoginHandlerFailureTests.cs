@@ -1,4 +1,5 @@
 using Core.Identity.Tokens.AccessToken;
+using Core.Utilities.Generator;
 using E3A.Application.Authentication.CompleteGitHubLogin;
 using E3A.Application.Authentication.Shared;
 using E3A.Application.Exceptions;
@@ -19,14 +20,15 @@ public sealed class CompleteGitHubLoginHandlerFailureTests
     private readonly IOAuthStateProtector _oAuthStateProtector = Substitute.For<IOAuthStateProtector>();
     private readonly IUserRepository _userRepository = Substitute.For<IUserRepository>();
     private readonly ITokenService _tokenService = Substitute.For<ITokenService>();
+    private readonly IGenerator _generator = Substitute.For<IGenerator>();
     private readonly CompleteGitHubLoginHandler _sut;
 
     public CompleteGitHubLoginHandlerFailureTests()
     {
-        _oAuthStateProtector.Validate(Arg.Any<string?>()).Returns(OAuthStateStatus.Valid);
+        _oAuthStateProtector.Validate(Arg.Any<string?>(), Arg.Any<string?>()).Returns(OAuthStateStatus.Valid);
         _gitHubOAuthClient.ExchangeCodeForAccessTokenAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns("github-access-token");
         _gitHubOAuthClient.GetProfileAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(GitHubProfileFactory.Default());
-        _sut = new CompleteGitHubLoginHandler(_gitHubOAuthClient, _oAuthStateProtector, _userRepository, _tokenService, Options.Create(GitHubAuthenticationOptionsFactory.Default()));
+        _sut = new CompleteGitHubLoginHandler(_gitHubOAuthClient, _oAuthStateProtector, _userRepository, _tokenService, _generator, Options.Create(GitHubAuthenticationOptionsFactory.Default()));
     }
 
     [Theory]
@@ -35,7 +37,7 @@ public sealed class CompleteGitHubLoginHandlerFailureTests
     [InlineData("   ")]
     public async Task Handle_ShouldRedirectWithCodeMissing_WhenCodeIsAbsent(string? code)
     {
-        var result = await _sut.Handle(new CompleteGitHubLoginCommand(code, "signed-state"), CancellationToken.None);
+        var result = await _sut.Handle(new CompleteGitHubLoginCommand(code, "signed-state", "state-nonce"), CancellationToken.None);
 
         result.RedirectUrl.Should().Be($"{WebRedirectUrl}#error={ErrorCodes.AuthenticationCodeMissing}");
         await _userRepository.DidNotReceive().SaveChangesAsync(Arg.Any<CancellationToken>());
@@ -44,9 +46,9 @@ public sealed class CompleteGitHubLoginHandlerFailureTests
     [Fact]
     public async Task Handle_ShouldRedirectWithStateInvalid_WhenStateIsInvalid()
     {
-        _oAuthStateProtector.Validate(Arg.Any<string?>()).Returns(OAuthStateStatus.Invalid);
+        _oAuthStateProtector.Validate(Arg.Any<string?>(), Arg.Any<string?>()).Returns(OAuthStateStatus.Invalid);
 
-        var result = await _sut.Handle(new CompleteGitHubLoginCommand("github-code", "tampered"), CancellationToken.None);
+        var result = await _sut.Handle(new CompleteGitHubLoginCommand("github-code", "tampered", "state-nonce"), CancellationToken.None);
 
         result.RedirectUrl.Should().Be($"{WebRedirectUrl}#error={ErrorCodes.AuthenticationStateInvalid}");
     }
@@ -54,19 +56,30 @@ public sealed class CompleteGitHubLoginHandlerFailureTests
     [Fact]
     public async Task Handle_ShouldNotCallGitHub_WhenStateIsInvalid()
     {
-        _oAuthStateProtector.Validate(Arg.Any<string?>()).Returns(OAuthStateStatus.Invalid);
+        _oAuthStateProtector.Validate(Arg.Any<string?>(), Arg.Any<string?>()).Returns(OAuthStateStatus.Invalid);
 
-        await _sut.Handle(new CompleteGitHubLoginCommand("github-code", "tampered"), CancellationToken.None);
+        await _sut.Handle(new CompleteGitHubLoginCommand("github-code", "tampered", "state-nonce"), CancellationToken.None);
 
+        await _gitHubOAuthClient.DidNotReceive().ExchangeCodeForAccessTokenAsync(Arg.Any<string>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task Handle_ShouldRedirectWithStateInvalid_WhenTheBrowserNonceIsMissing()
+    {
+        _oAuthStateProtector.Validate(Arg.Any<string?>(), Arg.Is<string?>(nonce => string.IsNullOrWhiteSpace(nonce))).Returns(OAuthStateStatus.Invalid);
+
+        var result = await _sut.Handle(new CompleteGitHubLoginCommand("github-code", "signed-state", null), CancellationToken.None);
+
+        result.RedirectUrl.Should().Be($"{WebRedirectUrl}#error={ErrorCodes.AuthenticationStateInvalid}");
         await _gitHubOAuthClient.DidNotReceive().ExchangeCodeForAccessTokenAsync(Arg.Any<string>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]
     public async Task Handle_ShouldRedirectWithStateExpired_WhenStateIsExpired()
     {
-        _oAuthStateProtector.Validate(Arg.Any<string?>()).Returns(OAuthStateStatus.Expired);
+        _oAuthStateProtector.Validate(Arg.Any<string?>(), Arg.Any<string?>()).Returns(OAuthStateStatus.Expired);
 
-        var result = await _sut.Handle(new CompleteGitHubLoginCommand("github-code", "old-state"), CancellationToken.None);
+        var result = await _sut.Handle(new CompleteGitHubLoginCommand("github-code", "old-state", "state-nonce"), CancellationToken.None);
 
         result.RedirectUrl.Should().Be($"{WebRedirectUrl}#error={ErrorCodes.AuthenticationStateExpired}");
     }
@@ -76,7 +89,7 @@ public sealed class CompleteGitHubLoginHandlerFailureTests
     {
         _gitHubOAuthClient.ExchangeCodeForAccessTokenAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns((string?)null);
 
-        var result = await _sut.Handle(new CompleteGitHubLoginCommand("github-code", "signed-state"), CancellationToken.None);
+        var result = await _sut.Handle(new CompleteGitHubLoginCommand("github-code", "signed-state", "state-nonce"), CancellationToken.None);
 
         result.RedirectUrl.Should().Be($"{WebRedirectUrl}#error={ErrorCodes.GitHubTokenExchangeFailed}");
         await _gitHubOAuthClient.DidNotReceive().GetProfileAsync(Arg.Any<string>(), Arg.Any<CancellationToken>());
@@ -88,7 +101,7 @@ public sealed class CompleteGitHubLoginHandlerFailureTests
     {
         _gitHubOAuthClient.GetProfileAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns((GitHubProfile?)null);
 
-        var result = await _sut.Handle(new CompleteGitHubLoginCommand("github-code", "signed-state"), CancellationToken.None);
+        var result = await _sut.Handle(new CompleteGitHubLoginCommand("github-code", "signed-state", "state-nonce"), CancellationToken.None);
 
         result.RedirectUrl.Should().Be($"{WebRedirectUrl}#error={ErrorCodes.GitHubProfileFetchFailed}");
         _tokenService.DidNotReceive().GenerateTokenAsync(Arg.Any<List<Claim>>());
@@ -101,7 +114,7 @@ public sealed class CompleteGitHubLoginHandlerFailureTests
     {
         _gitHubOAuthClient.GetProfileAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(GitHubProfileFactory.Default(id: id));
 
-        var result = await _sut.Handle(new CompleteGitHubLoginCommand("github-code", "signed-state"), CancellationToken.None);
+        var result = await _sut.Handle(new CompleteGitHubLoginCommand("github-code", "signed-state", "state-nonce"), CancellationToken.None);
 
         result.RedirectUrl.Should().Be($"{WebRedirectUrl}#error={ErrorCodes.GitHubProfileInvalid}");
         await _userRepository.DidNotReceive().AddAsync(Arg.Any<User>(), Arg.Any<CancellationToken>());
@@ -115,7 +128,7 @@ public sealed class CompleteGitHubLoginHandlerFailureTests
     {
         _gitHubOAuthClient.GetProfileAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(GitHubProfileFactory.Default(login: login));
 
-        var result = await _sut.Handle(new CompleteGitHubLoginCommand("github-code", "signed-state"), CancellationToken.None);
+        var result = await _sut.Handle(new CompleteGitHubLoginCommand("github-code", "signed-state", "state-nonce"), CancellationToken.None);
 
         result.RedirectUrl.Should().Be($"{WebRedirectUrl}#error={ErrorCodes.GitHubProfileInvalid}");
         await _userRepository.DidNotReceive().AddAsync(Arg.Any<User>(), Arg.Any<CancellationToken>());
@@ -124,9 +137,9 @@ public sealed class CompleteGitHubLoginHandlerFailureTests
     [Fact]
     public async Task Handle_ShouldRedirectToTheConfiguredWebUrl_WhenAFailureOccurs()
     {
-        _oAuthStateProtector.Validate(Arg.Any<string?>()).Returns(OAuthStateStatus.Invalid);
+        _oAuthStateProtector.Validate(Arg.Any<string?>(), Arg.Any<string?>()).Returns(OAuthStateStatus.Invalid);
 
-        var result = await _sut.Handle(new CompleteGitHubLoginCommand("github-code", "tampered"), CancellationToken.None);
+        var result = await _sut.Handle(new CompleteGitHubLoginCommand("github-code", "tampered", "state-nonce"), CancellationToken.None);
 
         result.RedirectUrl.Should().StartWith(WebRedirectUrl);
         result.RedirectUrl.Should().NotContain("github.com");

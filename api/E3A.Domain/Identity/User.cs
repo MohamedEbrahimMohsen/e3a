@@ -38,7 +38,7 @@ public class User : IdentityUser<Guid>, IAuditEntity
     }
 
 
-    public static User CreateFromGitHub(long gitHubId, string gitHubLogin, string? displayName, string? avatarUrl)
+    public static User CreateFromGitHub(long gitHubId, string gitHubLogin, string userName, string? displayName, string? avatarUrl)
     {
         var id = Guid.NewGuid();
 
@@ -49,8 +49,8 @@ public class User : IdentityUser<Guid>, IAuditEntity
             GitHubLogin = gitHubLogin,
             DisplayName = displayName,
             AvatarUrl = avatarUrl,
-            UserName = gitHubLogin,
-            NormalizedUserName = gitHubLogin.ToUpperInvariant(),
+            UserName = userName,
+            NormalizedUserName = userName.ToUpperInvariant(),
             SecurityStamp = Guid.NewGuid().ToString(),
         };
     }

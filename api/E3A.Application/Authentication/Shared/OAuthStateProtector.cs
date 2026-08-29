@@ -16,19 +16,19 @@ public sealed class OAuthStateProtector(IOptions<GitHubAuthenticationOptions> gi
 
     private const int ExpectedSegmentCount = 3;
 
-    public string Create()
+    public OAuthState Create()
     {
         var options = gitHubAuthenticationOptions.Value;
         var nonce = generator.Generate(options.StateNonceSize);
         var expiresAtUnixSeconds = DateTimeOffset.UtcNow.AddMinutes(options.StateExpirationMinutes).ToUnixTimeSeconds();
         var payload = $"{nonce}{PayloadSeparator}{expiresAtUnixSeconds}";
 
-        return $"{payload}{PayloadSeparator}{Sign(payload)}";
+        return new OAuthState($"{payload}{PayloadSeparator}{Sign(payload)}", nonce);
     }
 
-    public OAuthStateStatus Validate(string? state)
+    public OAuthStateStatus Validate(string? state, string? nonce)
     {
-        if (string.IsNullOrWhiteSpace(state))
+        if (string.IsNullOrWhiteSpace(state) || string.IsNullOrWhiteSpace(nonce))
         {
             return OAuthStateStatus.Invalid;
         }
@@ -36,6 +36,11 @@ public sealed class OAuthStateProtector(IOptions<GitHubAuthenticationOptions> gi
         var segments = state.Split(PayloadSeparator);
 
         if (segments.Length != ExpectedSegmentCount)
+        {
+            return OAuthStateStatus.Invalid;
+        }
+
+        if (!CryptographicOperations.FixedTimeEquals(Encoding.UTF8.GetBytes(segments[0]), Encoding.UTF8.GetBytes(nonce)))
         {
             return OAuthStateStatus.Invalid;
         }

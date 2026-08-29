@@ -9,8 +9,8 @@ public static class UserFactory
     public const string DefaultDisplayName = "The Octocat";
     public const string DefaultAvatarUrl = "https://avatars.githubusercontent.com/u/4242";
 
-    public static User GitHub(long gitHubId = DefaultGitHubId, string login = DefaultLogin, string? displayName = DefaultDisplayName, string? avatarUrl = DefaultAvatarUrl)
+    public static User GitHub(long gitHubId = DefaultGitHubId, string login = DefaultLogin, string? userName = null, string? displayName = DefaultDisplayName, string? avatarUrl = DefaultAvatarUrl)
     {
-        return User.CreateFromGitHub(gitHubId, login, displayName, avatarUrl);
+        return User.CreateFromGitHub(gitHubId, login, userName ?? login, displayName, avatarUrl);
     }
 }
