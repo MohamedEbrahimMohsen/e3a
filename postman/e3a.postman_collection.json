@@ -16,6 +16,89 @@
   },
   "item": [
     {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "GitHub Login",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/github/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "github",
+                "login"
+              ]
+            }
+          },
+          "protocolProfileBehavior": {
+            "followRedirects": false
+          }
+        },
+        {
+          "name": "GitHub Callback",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/github/callback?code={{gitHubCode}}&state={{gitHubState}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "github",
+                "callback"
+              ],
+              "query": [
+                {
+                  "key": "code",
+                  "value": "{{gitHubCode}}"
+                },
+                {
+                  "key": "state",
+                  "value": "{{gitHubState}}"
+                }
+              ]
+            }
+          },
+          "protocolProfileBehavior": {
+            "followRedirects": false
+          }
+        },
+        {
+          "name": "Get Current User",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "me"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
       "name": "Engineers",
       "item": [
         {

@@ -13,6 +13,11 @@ public class User : IdentityUser<Guid>, IAuditEntity
     public bool IsDeleted { get; set; }
     public DateTimeOffset? DeletedAt { get; set; }
 
+    public long? GitHubId { get; private set; }
+    public string? GitHubLogin { get; private set; }
+    public string? DisplayName { get; private set; }
+    public string? AvatarUrl { get; private set; }
+
     public User() { }
     private User(Guid id) : base()
     {
@@ -32,6 +37,30 @@ public class User : IdentityUser<Guid>, IAuditEntity
         };
     }
 
+
+    public static User CreateFromGitHub(long gitHubId, string gitHubLogin, string? displayName, string? avatarUrl)
+    {
+        var id = Guid.NewGuid();
+
+        return new User(id)
+        {
+            Id = id,
+            GitHubId = gitHubId,
+            GitHubLogin = gitHubLogin,
+            DisplayName = displayName,
+            AvatarUrl = avatarUrl,
+            UserName = gitHubLogin,
+            NormalizedUserName = gitHubLogin.ToUpperInvariant(),
+            SecurityStamp = Guid.NewGuid().ToString(),
+        };
+    }
+
+    public void UpdateGitHubProfile(string? displayName, string? avatarUrl)
+    {
+        DisplayName = displayName;
+        AvatarUrl = avatarUrl;
+        UpdationDate = DateTimeOffset.UtcNow;
+    }
 
     public void MarkDeleted()
     {

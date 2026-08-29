@@ -1,3 +1,4 @@
+using E3A.Application.Authentication.Shared;
 using E3A.Application.Options;
 using FluentValidation;
 using Microsoft.Extensions.Configuration;
@@ -16,6 +17,9 @@ public static class DependencyInjection
         services.Configure<AzureOptions>(configuration.GetSection(AzureOptions.SectionName));
         services.Configure<CatalogOptions>(configuration.GetSection(CatalogOptions.SectionName));
         services.Configure<PublishingOptions>(configuration.GetSection(PublishingOptions.SectionName));
+        services.Configure<GitHubAuthenticationOptions>(configuration.GetSection(GitHubAuthenticationOptions.SectionName));
+
+        services.AddScoped<IOAuthStateProtector, OAuthStateProtector>();
 
         return services;
     }
