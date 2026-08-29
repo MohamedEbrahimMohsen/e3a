@@ -16,6 +16,91 @@
   },
   "item": [
     {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "GitHub Login",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "description": "302 to GitHub. Also sets the Secure, HttpOnly, SameSite=Lax e3a_oauth_state cookie on /api/auth carrying the state nonce. Run this before GitHub Callback so the cookie jar holds the nonce.",
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/github/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "github",
+                "login"
+              ]
+            }
+          },
+          "protocolProfileBehavior": {
+            "followRedirects": false
+          }
+        },
+        {
+          "name": "GitHub Callback",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "description": "302 to the web app with #token= on success or #error=<ERROR_CODE> on failure. Requires the e3a_oauth_state cookie set by GitHub Login in the same cookie jar; a missing or mismatched nonce redirects with #error=AUTHENTICATION_STATE_INVALID. The cookie is cleared only on callbacks where the nonce matched the state (including ones that fail later); a callback that validated nothing leaves it in place.",
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/github/callback?code={{gitHubCode}}&state={{gitHubState}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "github",
+                "callback"
+              ],
+              "query": [
+                {
+                  "key": "code",
+                  "value": "{{gitHubCode}}"
+                },
+                {
+                  "key": "state",
+                  "value": "{{gitHubState}}"
+                }
+              ]
+            }
+          },
+          "protocolProfileBehavior": {
+            "followRedirects": false
+          }
+        },
+        {
+          "name": "Get Current User",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "me"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
       "name": "Engineers",
       "item": [
         {

@@ -14,7 +14,7 @@ using System.Text.Json;
 
 namespace E3A.Infrastructure.Data.Context;
 
-public class AppDbContext(DbContextOptions options, IMediator mediator, IOptions<EngineersOptions> engineersOptions, IOptions<TeamsOptions> teamsOptions, IOptions<PublishingOptions> publishingOptions) : CoreDbContext<User, Role, Guid>(options, mediator)
+public class AppDbContext(DbContextOptions options, IMediator mediator, IOptions<EngineersOptions> engineersOptions, IOptions<TeamsOptions> teamsOptions, IOptions<PublishingOptions> publishingOptions, IOptions<GitHubAuthenticationOptions> gitHubAuthenticationOptions) : CoreDbContext<User, Role, Guid>(options, mediator)
 {
     // Enum-as-string columns share one width; not tunable — widening requires a migration anyway.
     private const int EnumColumnMaxLength = 50;
@@ -31,11 +31,25 @@ public class AppDbContext(DbContextOptions options, IMediator mediator, IOptions
     {
         base.OnModelCreating(modelBuilder);
 
+        ConfigureUsers(modelBuilder);
         ConfigureEngineers(modelBuilder);
         ConfigureTeams(modelBuilder);
         ConfigureItemVersions(modelBuilder);
 
         ApplyGlobalFilterToIgnoreSoftDeletionInAllQueries(modelBuilder);
+    }
+
+    private void ConfigureUsers(ModelBuilder modelBuilder)
+    {
+        var gitHubAuthenticationSchema = gitHubAuthenticationOptions.Value;
+
+        modelBuilder.Entity<User>(builder =>
+        {
+            builder.Property(x => x.GitHubLogin).HasMaxLength(gitHubAuthenticationSchema.GitHubLoginMaxLength);
+            builder.Property(x => x.DisplayName).HasMaxLength(gitHubAuthenticationSchema.DisplayNameMaxLength);
+            builder.Property(x => x.AvatarUrl).HasMaxLength(gitHubAuthenticationSchema.AvatarUrlMaxLength);
+            builder.HasIndex(x => x.GitHubId).IsUnique().HasFilter("[GitHubId] IS NOT NULL AND [IsDeleted] = 0");
+        });
     }
 
     private void ConfigureEngineers(ModelBuilder modelBuilder)
