@@ -10,6 +10,8 @@
 
 Plugin name: `e3a-{slug}` — the creator types the slug when creating the engineer; it is globally unique, editable only while the item has never been published, and permanently frozen afterwards. GitHub login is no longer part of the plugin name; attribution lives in the `author` field.
 
+Team plugin name: `e3a-team-{slug}` — the `team-` infix keeps team and engineer plugin names in one flat namespace.
+
 ## Ingestion: the `.claude` → plugin mapping
 
 Verified against official Claude Code plugin docs. Every upload produces an **import

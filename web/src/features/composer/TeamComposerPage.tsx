@@ -29,7 +29,7 @@ export function TeamComposerPage() {
   };
 
   return (
-    <ComposerShell title="New team" lastSaved={lastSaved} onSaveDraft={() => setLastSaved('just now')}>
+    <ComposerShell title="New team" lastSaved={lastSaved} onSaveDraft={() => { setLastSaved('just now'); showToast('Draft saved'); }} onPublish={() => showToast('Team publishing is not wired up yet')}>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.2fr', flex: 1 }}>
         <div style={{ padding: '36px 40px', borderRight: '1px solid var(--border)', display: 'flex', flexDirection: 'column', gap: 22 }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
