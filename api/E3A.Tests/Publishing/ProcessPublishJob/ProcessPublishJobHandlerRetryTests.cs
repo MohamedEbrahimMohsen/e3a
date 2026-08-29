@@ -7,6 +7,7 @@ using E3A.Application.Publishing.Shared;
 using E3A.Domain.Engineers;
 using E3A.Domain.Identity;
 using E3A.Domain.Publishing;
+using E3A.Domain.Teams;
 using E3A.Tests.Engineers.Shared;
 using E3A.Tests.Publishing.Shared;
 using FluentAssertions;
@@ -41,7 +42,7 @@ public sealed class ProcessPublishJobHandlerRetryTests
         _storageBlobClient.ListByPrefixAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns([]);
         _storageBlobClient.ListByPrefixAsync(Arg.Any<string>(), Arg.Any<string>(), _azureOptions.DraftsBlobContainerName, draftPrefix, Arg.Any<CancellationToken>()).Returns([$"{draftPrefix}agents/reviewer.md"]);
         _storageBlobClient.DownloadAsync(Arg.Any<string>(), Arg.Any<string>(), _azureOptions.DraftsBlobContainerName, $"{draftPrefix}agents/reviewer.md", Arg.Any<CancellationToken>()).Returns(Encoding.UTF8.GetBytes("reviewer agent"));
-        _sut = new ProcessPublishJobHandler(_itemVersionRepository, _engineerRepository, _userRepository, _storageBlobClient, Options.Create(_azureOptions), Options.Create(_publishingOptions));
+        _sut = new ProcessPublishJobHandler(_itemVersionRepository, _engineerRepository, Substitute.For<ITeamRepository>(), _userRepository, _storageBlobClient, Options.Create(_azureOptions), Options.Create(_publishingOptions));
     }
 
     [Fact]

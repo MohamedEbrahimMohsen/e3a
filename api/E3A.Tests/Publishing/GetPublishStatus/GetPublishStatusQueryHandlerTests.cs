@@ -4,6 +4,7 @@ using E3A.Application.Exceptions;
 using E3A.Application.Publishing.GetPublishStatus;
 using E3A.Domain.Engineers;
 using E3A.Domain.Publishing;
+using E3A.Domain.Teams;
 using E3A.Tests.Engineers.Shared;
 using E3A.Tests.Publishing.Shared;
 using FluentAssertions;
@@ -17,6 +18,7 @@ public sealed class GetPublishStatusQueryHandlerTests
 {
     private readonly IItemVersionRepository _itemVersionRepository = Substitute.For<IItemVersionRepository>();
     private readonly IEngineerRepository _engineerRepository = Substitute.For<IEngineerRepository>();
+    private readonly ITeamRepository _teamRepository = Substitute.For<ITeamRepository>();
     private readonly ICurrentUserService _currentUserService = Substitute.For<ICurrentUserService>();
     private readonly Guid _ownerUserId = Guid.NewGuid();
     private readonly Engineer _engineer;
@@ -30,7 +32,7 @@ public sealed class GetPublishStatusQueryHandlerTests
         _currentUserService.UserId.Returns(_ownerUserId);
         _itemVersionRepository.GetByIdAsync(_version.Id, Arg.Any<CancellationToken>(), asNoTracking: true).Returns(_version);
         _engineerRepository.GetByIdAsync(_engineer.Id, Arg.Any<CancellationToken>(), asNoTracking: true).Returns(_engineer);
-        _sut = new GetPublishStatusQueryHandler(_itemVersionRepository, _engineerRepository, _currentUserService, Options.Create(PublishingOptionsFactory.Default()));
+        _sut = new GetPublishStatusQueryHandler(_itemVersionRepository, _engineerRepository, _teamRepository, _currentUserService, Options.Create(PublishingOptionsFactory.Default()));
     }
 
     [Fact]
@@ -39,7 +41,7 @@ public sealed class GetPublishStatusQueryHandlerTests
         var result = await _sut.Handle(new GetPublishStatusQuery(_version.Id), CancellationToken.None);
 
         result.VersionId.Should().Be(_version.Id);
-        result.EngineerId.Should().Be(_engineer.Id);
+        result.ItemId.Should().Be(_engineer.Id);
         result.Status.Should().Be(nameof(ItemVersionStatus.Published));
         result.SemanticVersion.Should().Be(ItemVersionFactory.DefaultSemanticVersion);
         result.ZipUrl.Should().Be($"{PublishingOptionsFactory.PublicSiteUrl}/{ItemVersionFactory.DefaultZipBlobPath}");

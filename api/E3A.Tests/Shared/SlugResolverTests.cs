@@ -1,17 +1,22 @@
 using Core.Utilities.Generator;
-using E3A.Application.Engineers.Shared;
+using E3A.Application.Shared;
 using E3A.Domain.Engineers;
+using E3A.Domain.SharedKernel;
+using E3A.Tests.Engineers.Shared;
 using FluentAssertions;
 using NSubstitute;
 using Xunit;
 
-namespace E3A.Tests.Engineers.Shared;
+namespace E3A.Tests.Shared;
 
-public sealed class EngineerSlugResolverTests
+public sealed class SlugResolverTests
 {
     private const string BaseSlug = "mmohsen";
     private const string FirstCandidate = "mmohsen-ab12";
     private const string SecondCandidate = "mmohsen-cd34";
+
+    private static readonly int SlugMaxLength = EngineerFactory.CreateEngineersOptions().SlugMaxLength;
+    private static readonly int SlugSuffixSize = EngineerFactory.CreateEngineersOptions().SlugSuffixSize;
 
     private readonly IEngineerRepository _engineerRepository = Substitute.For<IEngineerRepository>();
     private readonly IGenerator _generator = Substitute.For<IGenerator>();
@@ -21,7 +26,7 @@ public sealed class EngineerSlugResolverTests
     {
         _engineerRepository.IsSlugExistsAsync(BaseSlug, Arg.Any<CancellationToken>()).Returns(false);
 
-        var result = await EngineerSlugResolver.ResolveUniqueAsync(BaseSlug, _engineerRepository, _generator, EngineerFactory.CreateEngineersOptions(), CancellationToken.None);
+        var result = await SlugResolver.ResolveUniqueAsync(BaseSlug, _engineerRepository.IsSlugExistsAsync, _generator, SlugMaxLength, SlugSuffixSize, CancellationToken.None);
 
         result.Should().Be(BaseSlug);
         _generator.DidNotReceive().Generate(Arg.Any<string>(), Arg.Any<int>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>());
@@ -34,10 +39,10 @@ public sealed class EngineerSlugResolverTests
         _engineerRepository.IsSlugExistsAsync(FirstCandidate, Arg.Any<CancellationToken>()).Returns(false);
         _generator.Generate(BaseSlug, Arg.Any<int>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>()).Returns($"{FirstCandidate}-");
 
-        var result = await EngineerSlugResolver.ResolveUniqueAsync(BaseSlug, _engineerRepository, _generator, EngineerFactory.CreateEngineersOptions(), CancellationToken.None);
+        var result = await SlugResolver.ResolveUniqueAsync(BaseSlug, _engineerRepository.IsSlugExistsAsync, _generator, SlugMaxLength, SlugSuffixSize, CancellationToken.None);
 
         result.Should().Be(FirstCandidate);
-        EngineerSlugGenerator.IsValidFormat(result).Should().BeTrue();
+        SlugGenerator.IsValidFormat(result).Should().BeTrue();
     }
 
     [Fact]
@@ -48,7 +53,7 @@ public sealed class EngineerSlugResolverTests
         _engineerRepository.IsSlugExistsAsync(SecondCandidate, Arg.Any<CancellationToken>()).Returns(false);
         _generator.Generate(BaseSlug, Arg.Any<int>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>()).Returns($"{FirstCandidate}-", $"{SecondCandidate}-");
 
-        var result = await EngineerSlugResolver.ResolveUniqueAsync(BaseSlug, _engineerRepository, _generator, EngineerFactory.CreateEngineersOptions(), CancellationToken.None);
+        var result = await SlugResolver.ResolveUniqueAsync(BaseSlug, _engineerRepository.IsSlugExistsAsync, _generator, SlugMaxLength, SlugSuffixSize, CancellationToken.None);
 
         result.Should().Be(SecondCandidate);
         _generator.Received(2).Generate(BaseSlug, Arg.Any<int>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>());
@@ -61,7 +66,7 @@ public sealed class EngineerSlugResolverTests
         _engineerRepository.IsSlugExistsAsync(longSlug, Arg.Any<CancellationToken>()).Returns(true);
         _generator.Generate(Arg.Any<string>(), Arg.Any<int>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>()).Returns($"{FirstCandidate}-");
 
-        await EngineerSlugResolver.ResolveUniqueAsync(longSlug, _engineerRepository, _generator, EngineerFactory.CreateEngineersOptions(), CancellationToken.None);
+        await SlugResolver.ResolveUniqueAsync(longSlug, _engineerRepository.IsSlugExistsAsync, _generator, SlugMaxLength, SlugSuffixSize, CancellationToken.None);
 
         _generator.Received(1).Generate(Arg.Is<string>(prefix => prefix.Length == 95), Arg.Any<int>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>());
     }

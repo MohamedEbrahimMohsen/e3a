@@ -71,6 +71,15 @@ public sealed class UpdateEngineerSlugValidatorTests
     }
 
     [Fact]
+    public void Validate_ShouldFail_WhenSlugUsesTheTeamNamespacePrefix()
+    {
+        var result = _sut.Validate(new UpdateEngineerCommand(Guid.NewGuid(), "team-alpha", EngineerFactory.DefaultDisplayName, null, []));
+
+        result.IsValid.Should().BeFalse();
+        result.Errors.Should().Contain(x => x.ErrorCode == ErrorCodes.EngineerSlugReserved);
+    }
+
+    [Fact]
     public void Validate_ShouldPass_WhenSlugDiffersOnlyByCaseOrWhitespace()
     {
         var result = _sut.Validate(new UpdateEngineerCommand(Guid.NewGuid(), "  MMohsen  ", EngineerFactory.DefaultDisplayName, null, []));

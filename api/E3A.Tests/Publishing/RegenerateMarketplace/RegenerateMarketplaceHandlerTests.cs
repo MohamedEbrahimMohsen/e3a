@@ -10,6 +10,7 @@ using E3A.Application.Publishing.Shared;
 using E3A.Domain.Engineers;
 using E3A.Domain.Identity;
 using E3A.Domain.Publishing;
+using E3A.Domain.Teams;
 using E3A.Tests.Engineers.Shared;
 using E3A.Tests.Publishing.Shared;
 using FluentAssertions;
@@ -22,6 +23,7 @@ namespace E3A.Tests.Publishing.RegenerateMarketplace;
 public sealed class RegenerateMarketplaceHandlerTests
 {
     private readonly IEngineerRepository _engineerRepository = Substitute.For<IEngineerRepository>();
+    private readonly ITeamRepository _teamRepository = Substitute.For<ITeamRepository>();
     private readonly IItemVersionRepository _itemVersionRepository = Substitute.For<IItemVersionRepository>();
     private readonly IUserRepository _userRepository = Substitute.For<IUserRepository>();
     private readonly IStorageBlobClient _storageBlobClient = Substitute.For<IStorageBlobClient>();
@@ -34,6 +36,7 @@ public sealed class RegenerateMarketplaceHandlerTests
     {
         _itemVersionRepository.FindAsync(Arg.Any<Expression<Func<ItemVersion, bool>>>(), Arg.Any<CancellationToken>(), Arg.Any<Func<IQueryable<ItemVersion>, IQueryable<ItemVersion>>?>(), Arg.Any<Func<IQueryable<ItemVersion>, IOrderedQueryable<ItemVersion>>?>(), Arg.Any<bool>()).Returns(_ => _publishedVersions);
         _userRepository.FindAsync(Arg.Any<Expression<Func<User, bool>>>(), Arg.Any<CancellationToken>(), Arg.Any<Func<IQueryable<User>, IQueryable<User>>?>(), Arg.Any<Func<IQueryable<User>, IOrderedQueryable<User>>?>(), Arg.Any<bool>()).Returns([]);
+        _teamRepository.FindPaginatedAsync(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<CancellationToken>(), Arg.Any<Expression<Func<Team, bool>>>(), Arg.Any<Func<IQueryable<Team>, IQueryable<Team>>>(), Arg.Any<Func<IQueryable<Team>, IOrderedQueryable<Team>>>(), Arg.Any<bool>()).Returns(new PageData<Team> { Items = [], TotalPages = 0 });
         _storageBlobClient
             .When(x => x.UploadAsync(Arg.Any<Stream>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), PublishBlobPaths.RootMarketplaceBlobName, Arg.Any<string>(), Arg.Any<string>(), Arg.Any<bool>(), Arg.Any<CancellationToken>()))
             .Do(call => _uploadedJson = new StreamReader((Stream)call[0]!, Encoding.UTF8).ReadToEnd());
@@ -111,7 +114,7 @@ public sealed class RegenerateMarketplaceHandlerTests
 
     private RegenerateMarketplaceHandler Sut(int marketplaceMaxPages = 50)
     {
-        return new RegenerateMarketplaceHandler(_engineerRepository, _itemVersionRepository, _userRepository, _storageBlobClient, Options.Create(_azureOptions), Options.Create(PublishingOptionsFactory.Default(marketplaceMaxPages: marketplaceMaxPages)));
+        return new RegenerateMarketplaceHandler(_engineerRepository, _teamRepository, _itemVersionRepository, _userRepository, _storageBlobClient, Options.Create(_azureOptions), Options.Create(PublishingOptionsFactory.Default(marketplaceMaxPages: marketplaceMaxPages)));
     }
 
     private Engineer PublishedEngineer(string slug, bool versionIsPublished = true)

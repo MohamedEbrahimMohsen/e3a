@@ -8,9 +8,7 @@
 
 ## Naming
 
-Plugin name: `e3a-{slug}` — the creator types the slug when creating the engineer; it is globally unique, editable only while the item has never been published, and permanently frozen afterwards. GitHub login is no longer part of the plugin name; attribution lives in the `author` field.
-
-Team plugin name: `e3a-team-{slug}` — the `team-` infix keeps team and engineer plugin names in one flat namespace.
+Plugin name: `e3a-{slug}` for engineers and `e3a-team-{slug}` for teams — the creator types the slug when creating the item; it is unique within its own table, editable only while the item has never been published, and permanently frozen afterwards. Engineer and team slugs are **separate namespaces**: because the `team-` segment namespaces every team plugin, a team slug may repeat an engineer slug without any collision. GitHub login is no longer part of the plugin name; attribution lives in the `author` field.
 
 ## Ingestion: the `.claude` → plugin mapping
 
@@ -70,10 +68,26 @@ hooks/hooks.json (+ scripts)   # when present in the upload
 ## Team plugin layout
 
 One plugin bundling member engineers at **pinned versions** (snapshots taken at engineer
-publish time — teams are immutable until the team owner republishes). Merge rules:
+publish time — teams are immutable until the team owner republishes). The ordered roster is
+**frozen into the team version row** at publish time, so a member engineer publishing a newer
+version cannot alter an already-published team. Republishing on its own does **not** adopt newer
+member versions: a member with no explicit `pinnedVersionId` falls back to its existing pin, so the
+owner must first send the new `pinnedVersionId` to `PUT /api/teams/{teamId}/members` and then
+republish. Prompting the owner automatically when a member has a newer version is deferred to the
+`team-compile-merge` slice. Merge rules:
 
-- `agents/`, `commands/`: merged; file names prefixed `{member-slug}--` on collision.
-- `skills/`: merged as `skills/{member-slug}--{skill-slug}/` (double-hyphen namespacing).
+**Merged today (the `teams` slice):**
+
+- `agents/`, `commands/`: merged. On a file-name collision **every** colliding member's file is
+  prefixed `{member-slug}--`, not just the later one, so the output does not depend on member
+  order. Non-colliding names stay unprefixed.
+- `skills/`: merged as `skills/{member-slug}--{skill-slug}/` (double-hyphen namespacing),
+  applied **unconditionally**, whether or not the skill name collides.
+
+**Deferred to the `team-compile-merge` slice — not merged today.** A member's hooks, `.mcp.json`,
+`.lsp.json`, `output-styles/`, `monitors/`, `bin/` and `themes/` are dropped from the team plugin
+in the current build; only the three roots above are carried. The target rules are:
+
 - hooks: concatenated into one `hooks/hooks.json`; the team page carries the combined
   hook warning listing which member each hook came from.
 - `.mcp.json` / `.lsp.json`: merged by server name; name collisions are prefixed with the
@@ -106,16 +120,18 @@ requires a wrapper around the entries:
 }
 ```
 
-Only latest published versions are listed; unlisted engineers drop out of the root document
-while their zips and pinned marketplaces keep resolving, so existing installs never break.
+Published **teams are listed alongside engineers**, under their `e3a-team-{slug}` names and with
+`author.url` pointing at `https://<domain>/t/{slug}`; the combined list is ordered ordinally by
+plugin name. Only latest published versions are listed; unlisted engineers drop out of the root
+document while their zips and pinned marketplaces keep resolving, so existing installs never break.
 Older zips remain at immutable URLs, and each version also gets a pinned single-plugin
 marketplace at `/m/{plugin}/{version}/marketplace.json` — identical wrapper, one-element
 `plugins` array. `archive` sources are used because relative paths do not resolve for
 URL-added marketplaces.
 
 Attribution before GitHub OAuth: `author.name` is the creator's Identity `UserName`, falling
-back to the engineer slug when it is empty, and `author.url` is the e3a catalog page
-`https://<domain>/e/{slug}`. The GitHub login and GitHub profile URL arrive with the OAuth slice.
+back to the engineer or team slug when it is empty, and `author.url` is the e3a catalog page
+`https://<domain>/e/{slug}` for an engineer and `https://<domain>/t/{slug}` for a team. The GitHub login and GitHub profile URL arrive with the OAuth slice.
 
 ## Upload constraints
 

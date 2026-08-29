@@ -165,6 +165,90 @@
   <data name="MARKETPLACE_ENGINEER_LIMIT_EXCEEDED" xml:space="preserve">
     <value>The marketplace has more engineers than the generator can process.</value>
   </data>
+  <data name="TEAM_NOT_FOUND" xml:space="preserve">
+    <value>We couldn't find that team.</value>
+  </data>
+  <data name="TEAM_NOT_OWNED" xml:space="preserve">
+    <value>This team belongs to another creator.</value>
+  </data>
+  <data name="TEAM_LIMIT_REACHED" xml:space="preserve">
+    <value>You have reached the limit of {limit} teams.</value>
+  </data>
+  <data name="TEAM_ID_REQUIRED" xml:space="preserve">
+    <value>The team is required.</value>
+  </data>
+  <data name="TEAM_DISPLAY_NAME_REQUIRED" xml:space="preserve">
+    <value>The team name is required.</value>
+  </data>
+  <data name="TEAM_DISPLAY_NAME_TOO_LONG" xml:space="preserve">
+    <value>The team name is too long.</value>
+  </data>
+  <data name="TEAM_DISPLAY_NAME_INVALID" xml:space="preserve">
+    <value>The team name must contain at least one English letter or digit.</value>
+  </data>
+  <data name="TEAM_DESCRIPTION_TOO_LONG" xml:space="preserve">
+    <value>The team description is too long.</value>
+  </data>
+  <data name="TEAM_TOO_MANY_TAGS" xml:space="preserve">
+    <value>The team has too many tags.</value>
+  </data>
+  <data name="TEAM_TAG_REQUIRED" xml:space="preserve">
+    <value>A tag cannot be empty.</value>
+  </data>
+  <data name="TEAM_TAG_TOO_LONG" xml:space="preserve">
+    <value>A tag is too long.</value>
+  </data>
+  <data name="TEAM_SLUG_REQUIRED" xml:space="preserve">
+    <value>The team slug is required.</value>
+  </data>
+  <data name="TEAM_SLUG_TOO_SHORT" xml:space="preserve">
+    <value>The team slug is too short.</value>
+  </data>
+  <data name="TEAM_SLUG_TOO_LONG" xml:space="preserve">
+    <value>The team slug is too long.</value>
+  </data>
+  <data name="TEAM_SLUG_INVALID" xml:space="preserve">
+    <value>The team slug must be lowercase letters, digits and single hyphens.</value>
+  </data>
+  <data name="TEAM_SLUG_RESERVED" xml:space="preserve">
+    <value>That team slug is reserved.</value>
+  </data>
+  <data name="TEAM_SLUG_FROZEN" xml:space="preserve">
+    <value>A slug cannot be changed after the team has been published.</value>
+  </data>
+  <data name="TEAM_EMPTY" xml:space="preserve">
+    <value>A team needs at least one member before it can be published.</value>
+  </data>
+  <data name="TEAM_MEMBER_LIMIT_REACHED" xml:space="preserve">
+    <value>A team cannot have more members than the allowed limit.</value>
+  </data>
+  <data name="TEAM_MEMBER_DUPLICATE" xml:space="preserve">
+    <value>The same engineer cannot be added to a team twice.</value>
+  </data>
+  <data name="TEAM_MEMBER_ENGINEER_ID_REQUIRED" xml:space="preserve">
+    <value>Each team member needs an engineer.</value>
+  </data>
+  <data name="TEAM_MEMBER_NOT_PUBLISHED" xml:space="preserve">
+    <value>Engineer {engineerId} has no published version to pin.</value>
+  </data>
+  <data name="TEAM_MEMBER_VERSION_NOT_PUBLISHED" xml:space="preserve">
+    <value>The pinned version for engineer {engineerId} is not a published version of that engineer.</value>
+  </data>
+  <data name="TEAM_MEMBER_SNAPSHOT_EMPTY" xml:space="preserve">
+    <value>A pinned member version has no stored content.</value>
+  </data>
+  <data name="TEAM_MEMBER_MANIFEST_INVALID" xml:space="preserve">
+    <value>A pinned member version has an unreadable import manifest.</value>
+  </data>
+  <data name="TEAM_ROSTER_INVALID" xml:space="preserve">
+    <value>The frozen team roster could not be read.</value>
+  </data>
+  <data name="PLUGIN_DUPLICATE_PATH" xml:space="preserve">
+    <value>The plugin contains two files with the same path.</value>
+  </data>
+  <data name="MARKETPLACE_TEAM_LIMIT_EXCEEDED" xml:space="preserve">
+    <value>The marketplace has more teams than the generator can process.</value>
+  </data>
   <data name="AUTHENTICATION_CODE_MISSING" xml:space="preserve">
     <value>GitHub did not send an authorization code.</value>
   </data>

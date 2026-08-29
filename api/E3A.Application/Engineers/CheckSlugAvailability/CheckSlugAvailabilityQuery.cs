@@ -1,4 +1,4 @@
-using E3A.Application.Engineers.Shared;
+using E3A.Application.Shared;
 using MediatR;
 
 namespace E3A.Application.Engineers.CheckSlugAvailability;

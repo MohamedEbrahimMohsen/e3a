@@ -1,10 +1,10 @@
-using E3A.Domain.Engineers;
+using E3A.Domain.SharedKernel;
 using FluentAssertions;
 using Xunit;
 
-namespace E3A.Tests.Engineers;
+namespace E3A.Tests.SharedKernel;
 
-public sealed class EngineerSlugGeneratorTypedInputTests
+public sealed class SlugGeneratorTypedInputTests
 {
     [Theory]
     [InlineData("  MMohsen ", "mmohsen")]
@@ -12,13 +12,13 @@ public sealed class EngineerSlugGeneratorTypedInputTests
     [InlineData("mmohsen", "mmohsen")]
     public void NormalizeTypedSlug_ShouldTrimAndLowercase_WhenInputHasCaseOrWhitespace(string slug, string expected)
     {
-        EngineerSlugGenerator.NormalizeTypedSlug(slug).Should().Be(expected);
+        SlugGenerator.NormalizeTypedSlug(slug).Should().Be(expected);
     }
 
     [Fact]
     public void NormalizeTypedSlug_ShouldReturnEmpty_WhenInputIsNull()
     {
-        EngineerSlugGenerator.NormalizeTypedSlug(null).Should().BeEmpty();
+        SlugGenerator.NormalizeTypedSlug(null).Should().BeEmpty();
     }
 
     [Theory]
@@ -28,7 +28,7 @@ public sealed class EngineerSlugGeneratorTypedInputTests
     [InlineData("a-1-b")]
     public void IsValidFormat_ShouldReturnTrue_WhenSlugIsKebabCase(string slug)
     {
-        EngineerSlugGenerator.IsValidFormat(slug).Should().BeTrue();
+        SlugGenerator.IsValidFormat(slug).Should().BeTrue();
     }
 
     [Theory]
@@ -42,6 +42,6 @@ public sealed class EngineerSlugGeneratorTypedInputTests
     [InlineData("abc!")]
     public void IsValidFormat_ShouldReturnFalse_WhenSlugIsNotKebabCase(string slug)
     {
-        EngineerSlugGenerator.IsValidFormat(slug).Should().BeFalse();
+        SlugGenerator.IsValidFormat(slug).Should().BeFalse();
     }
 }
