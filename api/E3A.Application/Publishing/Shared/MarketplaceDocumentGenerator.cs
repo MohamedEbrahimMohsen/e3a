@@ -1,6 +1,7 @@
 using E3A.Application.Options;
 using E3A.Domain.Engineers;
 using E3A.Domain.Publishing;
+using E3A.Domain.Teams;
 
 namespace E3A.Application.Publishing.Shared;
 
@@ -11,10 +12,18 @@ public static class MarketplaceDocumentGenerator
 
     public static MarketplacePlugin GeneratePlugin(Engineer engineer, ItemVersion version, string authorName, PublishingOptions options)
     {
-        var author = new PluginAuthor(authorName, $"{options.PublicSiteUrl.TrimEnd('/')}/e/{engineer.Slug}");
+        var author = new PluginAuthor(authorName, PublicCatalogUrl.ForEngineer(options.PublicSiteUrl, engineer.Slug));
         var source = new MarketplaceSource(ArchiveSourceType, PublishBlobPaths.ZipUrl(options.PublicSiteUrl, version.ZipBlobPath!), version.ZipSha256!);
 
-        return new MarketplacePlugin(PluginName.For(engineer.Slug), engineer.Description, version.SemanticVersion, author, [.. engineer.Tags], source);
+        return new MarketplacePlugin(PluginName.ForEngineer(engineer.Slug), engineer.Description, version.SemanticVersion, author, [.. engineer.Tags], source);
+    }
+
+    public static MarketplacePlugin GeneratePlugin(Team team, ItemVersion version, string authorName, PublishingOptions options)
+    {
+        var author = new PluginAuthor(authorName, PublicCatalogUrl.ForTeam(options.PublicSiteUrl, team.Slug));
+        var source = new MarketplaceSource(ArchiveSourceType, PublishBlobPaths.ZipUrl(options.PublicSiteUrl, version.ZipBlobPath!), version.ZipSha256!);
+
+        return new MarketplacePlugin(PluginName.ForTeam(team.Slug), team.Description, version.SemanticVersion, author, [.. team.Tags], source);
     }
 
     public static string Generate(List<MarketplacePlugin> plugins, PublishingOptions options)

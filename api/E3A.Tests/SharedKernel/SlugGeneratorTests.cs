@@ -1,18 +1,18 @@
-using E3A.Domain.Engineers;
+using E3A.Domain.SharedKernel;
 using E3A.Tests.Engineers.Shared;
 using FluentAssertions;
 using Xunit;
 
-namespace E3A.Tests.Engineers;
+namespace E3A.Tests.SharedKernel;
 
-public sealed class EngineerSlugGeneratorTests
+public sealed class SlugGeneratorTests
 {
     private static readonly int SlugMaxLength = EngineerFactory.CreateEngineersOptions().SlugMaxLength;
 
     [Fact]
     public void Normalize_ShouldReturnKebabCaseSlug_WhenDisplayNameHasMixedCaseAndSpaces()
     {
-        var slug = EngineerSlugGenerator.Normalize("Dive Backend Engineer", SlugMaxLength);
+        var slug = SlugGenerator.Normalize("Dive Backend Engineer", SlugMaxLength);
 
         slug.Should().Be("dive-backend-engineer");
     }
@@ -23,7 +23,7 @@ public sealed class EngineerSlugGeneratorTests
     [InlineData("a@@@b", "a-b")]
     public void Normalize_ShouldCollapseAndTrimSeparators_WhenDisplayNameHasPunctuation(string displayName, string expectedSlug)
     {
-        var slug = EngineerSlugGenerator.Normalize(displayName, SlugMaxLength);
+        var slug = SlugGenerator.Normalize(displayName, SlugMaxLength);
 
         slug.Should().Be(expectedSlug);
     }
@@ -31,7 +31,7 @@ public sealed class EngineerSlugGeneratorTests
     [Fact]
     public void Normalize_ShouldDropNonAsciiCharacters_WhenDisplayNameIsNotEnglish()
     {
-        var slug = EngineerSlugGenerator.Normalize("مهندس Backend", SlugMaxLength);
+        var slug = SlugGenerator.Normalize("مهندس Backend", SlugMaxLength);
 
         slug.Should().Be("backend");
     }
@@ -39,7 +39,7 @@ public sealed class EngineerSlugGeneratorTests
     [Fact]
     public void Normalize_ShouldTruncateToMaxLength_WhenDisplayNameIsTooLong()
     {
-        var slug = EngineerSlugGenerator.Normalize(new string('a', 150), SlugMaxLength);
+        var slug = SlugGenerator.Normalize(new string('a', 150), SlugMaxLength);
 
         slug.Should().HaveLength(SlugMaxLength);
         slug.Should().NotEndWith("-");

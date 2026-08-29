@@ -4,7 +4,9 @@ using Core.Utilities.Generator;
 using E3A.Application.Engineers.Shared;
 using E3A.Application.Exceptions;
 using E3A.Application.Options;
+using E3A.Application.Shared;
 using E3A.Domain.Engineers;
+using E3A.Domain.SharedKernel;
 using MediatR;
 using Microsoft.Extensions.Options;
 
@@ -56,7 +58,7 @@ public sealed class UpdateEngineerHandler(IEngineerRepository engineerRepository
             return null;
         }
 
-        var requestedSlug = EngineerSlugGenerator.NormalizeTypedSlug(request.Slug);
+        var requestedSlug = SlugGenerator.NormalizeTypedSlug(request.Slug);
 
         if (requestedSlug == engineer.Slug)
         {
@@ -68,6 +70,6 @@ public sealed class UpdateEngineerHandler(IEngineerRepository engineerRepository
             throw new BusinessRuleViolationCoreException(ErrorCodes.EngineerSlugFrozen);
         }
 
-        return await EngineerSlugResolver.ResolveUniqueAsync(requestedSlug, engineerRepository, generator, engineersOptions.Value, cancellationToken).ConfigureAwait(false);
+        return await SlugResolver.ResolveUniqueAsync(requestedSlug, engineerRepository.IsSlugExistsAsync, generator, engineersOptions.Value.SlugMaxLength, engineersOptions.Value.SlugSuffixSize, cancellationToken).ConfigureAwait(false);
     }
 }

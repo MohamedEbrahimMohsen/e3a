@@ -4,7 +4,9 @@ using Core.Utilities.Generator;
 using E3A.Application.Engineers.Shared;
 using E3A.Application.Exceptions;
 using E3A.Application.Options;
+using E3A.Application.Shared;
 using E3A.Domain.Engineers;
+using E3A.Domain.SharedKernel;
 using MediatR;
 using Microsoft.Extensions.Options;
 
@@ -30,7 +32,7 @@ public sealed class CreateEngineerHandler(IEngineerRepository engineerRepository
             throw new BusinessRuleViolationCoreException(ErrorCodes.EngineerLimitReached, context: new Dictionary<string, object> { ["limit"] = options.MaxEngineersPerCreator });
         }
 
-        var slug = await EngineerSlugResolver.ResolveUniqueAsync(EngineerSlugGenerator.NormalizeTypedSlug(request.Slug), engineerRepository, generator, options, cancellationToken).ConfigureAwait(false);
+        var slug = await SlugResolver.ResolveUniqueAsync(SlugGenerator.NormalizeTypedSlug(request.Slug), engineerRepository.IsSlugExistsAsync, generator, options.SlugMaxLength, options.SlugSuffixSize, cancellationToken).ConfigureAwait(false);
         var engineer = Engineer.Create(ownerUserId, slug, request.DisplayName, request.Description, request.Tags);
 
         await engineerRepository.AddAsync(engineer, cancellationToken).ConfigureAwait(false);

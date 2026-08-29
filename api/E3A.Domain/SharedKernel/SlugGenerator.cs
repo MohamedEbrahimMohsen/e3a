@@ -1,10 +1,10 @@
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace E3A.Domain.Engineers;
+namespace E3A.Domain.SharedKernel;
 
 // Kebab-case normalization only — uniqueness suffixes come from Core.Utilities IGenerator.
-public static class EngineerSlugGenerator
+public static class SlugGenerator
 {
     // A match timeout is mandatory (Sonar S6444); the pattern cannot backtrack, so any bound suffices.
     private static readonly TimeSpan SlugFormatMatchTimeout = TimeSpan.FromMilliseconds(100);
