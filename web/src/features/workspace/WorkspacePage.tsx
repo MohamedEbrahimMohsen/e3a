@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { emojiFor } from '../../lib/api';
 import { listMyEngineers, type Engineer } from '../../lib/workspaceApi';
 
@@ -75,9 +75,9 @@ export function WorkspacePage() {
               <span className="mono" style={{ fontSize: 12, color: 'var(--text-secondary)' }}>{engineer.installCount.toLocaleString('en-US')}</span>
               <span style={{ color: 'var(--text-muted)', fontSize: 12.5 }}>{formatUpdated(engineer.updatedAt)}</span>
               <span style={{ display: 'flex', gap: 14, justifyContent: 'flex-end', fontSize: 12.5 }}>
-                <span onClick={() => navigate(`/workspace/engineers/${engineer.id}`)} className="link-violet">Edit</span>
-                <span onClick={() => navigate(engineer.latestVersionId ? `/workspace/publish?versionId=${engineer.latestVersionId}` : `/workspace/engineers/${engineer.id}`)} className="link-accent-hover" style={{ color: 'var(--accent)', cursor: 'pointer' }}>{engineer.latestVersionId ? 'View status' : 'Publish'}</span>
-                <span onClick={() => navigate(engineer.status === 'Published' ? `/e/${engineer.slug}` : `/workspace/engineers/${engineer.id}`)} className="link-quiet" style={{ color: 'var(--text-secondary)', cursor: 'pointer' }}>View</span>
+                <Link to={`/workspace/engineers/${engineer.id}`} className="link-violet">Edit</Link>
+                <Link to={engineer.latestVersionId ? `/workspace/publish?versionId=${engineer.latestVersionId}` : `/workspace/engineers/${engineer.id}`} className="link-accent-hover" style={{ color: 'var(--accent)', cursor: 'pointer' }}>{engineer.latestVersionId ? 'View status' : 'Publish'}</Link>
+                <Link to={engineer.status === 'Published' ? `/e/${engineer.slug}` : `/workspace/engineers/${engineer.id}`} className="link-quiet" style={{ color: 'var(--text-secondary)', cursor: 'pointer' }}>View</Link>
               </span>
             </div>
           ))}

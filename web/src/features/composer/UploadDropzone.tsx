@@ -1,5 +1,7 @@
 import { useRef, useState } from 'react';
 
+const pickerStyle: React.CSSProperties = { background: 'none', border: 'none', padding: 0, fontFamily: 'inherit', fontSize: 13, fontWeight: 600, color: 'var(--text-soft)' };
+
 export function UploadDropzone({ onFile, disabled, busy, maxMegabytes }: { onFile: (file: File) => void; disabled: boolean; busy: boolean; maxMegabytes: number }) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [dragActive, setDragActive] = useState(false);
@@ -25,6 +27,11 @@ export function UploadDropzone({ onFile, disabled, busy, maxMegabytes }: { onFil
     }
   };
 
+  const openPicker = (event: React.MouseEvent) => {
+    event.stopPropagation();
+    inputRef.current?.click();
+  };
+
   const borderColor = dragActive ? 'rgba(139,92,246,0.55)' : 'var(--border-strong)';
 
   return (
@@ -42,7 +49,7 @@ export function UploadDropzone({ onFile, disabled, busy, maxMegabytes }: { onFil
         : (
           <>
             <span style={{ fontSize: 20, color: disabled ? 'var(--text-muted)' : 'var(--primary)' }}>↑</span>
-            <span style={{ fontSize: 13, color: 'var(--text-soft)', fontWeight: 600 }}>Drop your zipped .claude folder</span>
+            <button type="button" onClick={openPicker} disabled={disabled || busy} style={{ ...pickerStyle, cursor: disabled || busy ? 'default' : 'pointer' }}>Drop your zipped .claude folder</button>
             <span style={{ fontSize: 11.5, color: 'var(--text-muted)' }}>{disabled ? 'Save the draft first' : `.zip · max ${maxMegabytes} MB`}</span>
           </>
         )}

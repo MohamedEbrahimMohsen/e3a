@@ -343,13 +343,13 @@ Run from `D:\Personal\_e3a\web`.
 
 - `npm run build` — passed. `tsc -b && vite build`, 67 modules transformed, **zero TypeScript
   errors**. `dist/assets/index-Butcx_Ua.js` 313.39 kB (gzip 92.11 kB); the changed hash and the
-  0.07 kB growth over round 2's `index-nYcqelUk.js` are the one added map entry.
+  0.07 kB growth over round 1's `index-nYcqelUk.js` are the one added map entry.
 - `npm run test` — `Test Files 10 passed (10)` · `Tests 58 passed (58)`. **58**, unchanged from round
-  2 by design: the fix added assertions inside two existing `it` blocks rather than new blocks, so
+  1 by design: the fix added assertions inside two existing `it` blocks rather than new blocks, so
   the count the reviewer measured is arithmetically unchanged. I checked the new assertions actually
   bite by deleting the map line and re-running the file: `Tests 1 failed | 8 passed (9)`, then
   restored it. Worth being precise about **which** assertion failed — see note 4.
-- `npx oxlint` — **8 warnings, 0 errors**, identical to round 2 (the same two
+- `npx oxlint` — **8 warnings, 0 errors**, identical to round 1 (the same two
   `react(set-state-in-effect)` at `AuthContext.tsx:59` and `AuthCallbackPage.tsx:30` over the
   baseline six). Grep for `eslint-disable`, `oxlint-disable`, `@ts-ignore`, `@ts-expect-error`
   across `web/src` returns **zero** — nothing was silenced.

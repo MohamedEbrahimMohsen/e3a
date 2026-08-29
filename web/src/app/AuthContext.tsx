@@ -10,7 +10,7 @@ interface AuthContextValue {
   signedIn: boolean;
   login: string;
   user: CurrentUser | null;
-  completeSignIn: (token: string) => Promise<void>;
+  completeSignIn: (token: string) => Promise<AuthStatus>;
   signOut: () => void;
 }
 
@@ -19,7 +19,7 @@ const AuthContext = createContext<AuthContextValue>({
   signedIn: false,
   login: '',
   user: null,
-  completeSignIn: async () => undefined,
+  completeSignIn: async () => 'signedOut',
   signOut: () => undefined,
 });
 
@@ -27,21 +27,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<CurrentUser | null>(null);
   const [status, setStatus] = useState<AuthStatus>('loading');
 
-  const loadSession = useCallback(async () => {
+  const loadSession = useCallback(async (): Promise<AuthStatus> => {
     if (!readToken()) {
       setUser(null);
       setStatus('signedOut');
-      return;
+      return 'signedOut';
     }
     try {
       setUser(await getCurrentUser());
       setStatus('signedIn');
+      return 'signedIn';
     } catch (error) {
       if (error instanceof ApiError && (error.status === 401 || error.status === 403)) {
         clearToken();
       }
       setUser(null);
       setStatus('signedOut');
+      return 'signedOut';
     }
   }, []);
 
@@ -51,9 +53,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setStatus('signedOut');
   }, []);
 
-  const completeSignIn = useCallback(async (token: string) => {
+  const completeSignIn = useCallback(async (token: string): Promise<AuthStatus> => {
     writeToken(token);
-    await loadSession();
+    return loadSession();
   }, [loadSession]);
 
   useEffect(() => { void loadSession(); }, [loadSession]);

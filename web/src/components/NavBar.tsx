@@ -1,4 +1,4 @@
-import { NavLink, useNavigate } from 'react-router-dom';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../app/AuthContext';
 import { useToast } from '../app/ToastContext';
 import { gitHubLoginUrl } from '../lib/authApi';
@@ -6,6 +6,8 @@ import { config } from '../lib/config';
 import { initialsFor } from '../lib/initials';
 
 const AVATAR_SIZE = 32;
+
+const signOutStyle: React.CSSProperties = { padding: 0, background: 'none', border: 'none', fontFamily: 'inherit', fontWeight: 400, fontSize: 13.5, color: 'var(--text-secondary)' };
 
 function navLinkStyle(isActive: boolean): React.CSSProperties {
   return { color: isActive ? 'var(--text)' : 'var(--text-secondary)', fontSize: 14, transition: 'color 0.15s ease' };
@@ -21,8 +23,6 @@ export function NavBar() {
     showToast('Signed out');
     navigate('/');
   };
-
-  const openProfile = () => navigate(`/u/${login}`);
 
   return (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 48px', height: 64, borderBottom: '1px solid var(--border)', position: 'sticky', top: 0, background: 'rgba(11,11,15,0.85)', backdropFilter: 'blur(12px)', zIndex: 20 }}>
@@ -40,10 +40,12 @@ export function NavBar() {
         {status === 'signedOut' && <a className="btn-primary" style={{ padding: '8px 18px', fontSize: 13.5 }} href={gitHubLoginUrl()}>Sign in with GitHub</a>}
         {status === 'signedIn' && (
           <>
-            <span onClick={handleSignOut} className="link-quiet" style={{ fontSize: 13.5, color: 'var(--text-secondary)' }}>Sign out</span>
-            {user?.avatarUrl
-              ? <img onClick={openProfile} src={user.avatarUrl} alt="" width={AVATAR_SIZE} height={AVATAR_SIZE} className="hover-border-violet" style={{ borderRadius: '50%', border: '1px solid var(--border)', cursor: 'pointer' }} />
-              : <div onClick={openProfile} className="hover-border-violet" style={{ width: AVATAR_SIZE, height: AVATAR_SIZE, borderRadius: '50%', background: 'linear-gradient(135deg,#3f3f46,#1d1d23)', border: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 700, color: 'var(--text-secondary)', cursor: 'pointer' }}>{initialsFor(user?.displayName ?? login)}</div>}
+            <button type="button" onClick={handleSignOut} className="link-quiet" style={signOutStyle}>Sign out</button>
+            <Link to={`/u/${login}`} aria-label="Open your profile" style={{ display: 'inline-flex' }}>
+              {user?.avatarUrl
+                ? <img src={user.avatarUrl} alt="" width={AVATAR_SIZE} height={AVATAR_SIZE} className="hover-border-violet" style={{ borderRadius: '50%', border: '1px solid var(--border)', cursor: 'pointer' }} />
+                : <div className="hover-border-violet" style={{ width: AVATAR_SIZE, height: AVATAR_SIZE, borderRadius: '50%', background: 'linear-gradient(135deg,#3f3f46,#1d1d23)', border: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 700, color: 'var(--text-secondary)', cursor: 'pointer' }}>{initialsFor(user?.displayName ?? login)}</div>}
+            </Link>
           </>
         )}
       </div>

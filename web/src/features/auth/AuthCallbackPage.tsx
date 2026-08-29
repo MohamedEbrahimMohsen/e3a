@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../app/AuthContext';
 import { clearAuthFragment, parseAuthFragment } from '../../lib/authFragment';
 import { gitHubLoginUrl } from '../../lib/authApi';
-import { messageForApiError, messageForErrorCode } from '../../lib/errorMessages';
+import { GENERIC_ERROR_MESSAGE, messageForApiError, messageForErrorCode } from '../../lib/errorMessages';
 
 export function AuthCallbackPage() {
   const navigate = useNavigate();
@@ -22,7 +22,13 @@ export function AuthCallbackPage() {
 
     if (fragment.token) {
       completeSignIn(fragment.token)
-        .then(() => navigate('/workspace', { replace: true }))
+        .then(status => {
+          if (status === 'signedIn') {
+            navigate('/workspace', { replace: true });
+            return;
+          }
+          setErrorMessage(GENERIC_ERROR_MESSAGE);
+        })
         .catch(error => setErrorMessage(messageForApiError(error)));
       return;
     }

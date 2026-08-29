@@ -11,17 +11,17 @@ interface ComposerShellProps {
   onSaveDraft: () => void;
   children: ReactNode;
   onPublish?: () => void;
+  saveDisabled?: boolean;
   publishDisabled?: boolean;
   publishLabel?: string;
   statusLabel?: string;
 }
 
-export function ComposerShell({ title, lastSaved, onSaveDraft, children, onPublish, publishDisabled = false, publishLabel = 'Publish', statusLabel = 'Draft' }: ComposerShellProps) {
+export function ComposerShell({ title, lastSaved, onSaveDraft, children, onPublish, saveDisabled = false, publishDisabled = false, publishLabel = 'Publish', statusLabel = 'Draft' }: ComposerShellProps) {
   const navigate = useNavigate();
   const { login, user } = useAuth();
 
   const publish = onPublish ?? (() => navigate('/workspace/publish'));
-  const openProfile = () => navigate(`/u/${login}`);
   const avatarStyle: React.CSSProperties = { width: AVATAR_SIZE, height: AVATAR_SIZE, borderRadius: '50%', border: '1px solid var(--border)', cursor: 'pointer' };
 
   return (
@@ -34,15 +34,17 @@ export function ComposerShell({ title, lastSaved, onSaveDraft, children, onPubli
           <span style={{ fontSize: 14, fontWeight: 600 }}>{title}</span>
           <span style={{ fontSize: 11.5, color: 'var(--text-secondary)', background: 'var(--surface-elevated)', border: '1px solid var(--border)', borderRadius: 999, padding: '3px 11px' }}>{statusLabel}</span>
         </div>
-        {user?.avatarUrl
-          ? <img onClick={openProfile} src={user.avatarUrl} alt="" width={AVATAR_SIZE} height={AVATAR_SIZE} className="hover-border-violet" style={avatarStyle} />
-          : <div onClick={openProfile} className="hover-border-violet" style={{ ...avatarStyle, background: 'linear-gradient(135deg,#3f3f46,#1d1d23)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 700, color: 'var(--text-secondary)' }}>{initialsFor(user?.displayName ?? login)}</div>}
+        <Link to={`/u/${login}`} aria-label="Open your profile" style={{ display: 'inline-flex' }}>
+          {user?.avatarUrl
+            ? <img src={user.avatarUrl} alt="" width={AVATAR_SIZE} height={AVATAR_SIZE} className="hover-border-violet" style={avatarStyle} />
+            : <div className="hover-border-violet" style={{ ...avatarStyle, background: 'linear-gradient(135deg,#3f3f46,#1d1d23)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 700, color: 'var(--text-secondary)' }}>{initialsFor(user?.displayName ?? login)}</div>}
+        </Link>
       </div>
       {children}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 40px', borderTop: '1px solid var(--border)', background: 'var(--bg-deep)', position: 'sticky', bottom: 0 }}>
         <span style={{ fontSize: 12.5, color: 'var(--text-muted)' }}>Last saved {lastSaved}</span>
         <div style={{ display: 'flex', gap: 12 }}>
-          <button onClick={onSaveDraft} className="btn-secondary" style={{ padding: '9px 22px' }}>Save draft</button>
+          <button onClick={onSaveDraft} disabled={saveDisabled} className="btn-secondary" style={{ padding: '9px 22px' }}>Save draft</button>
           {publishDisabled
             ? <button disabled style={{ background: 'var(--border)', color: 'var(--text-muted)', border: 'none', borderRadius: 999, padding: '9px 22px', fontSize: 13.5, fontWeight: 600 }}>{publishLabel}</button>
             : <button onClick={publish} className="btn-primary" style={{ padding: '9px 22px' }}>{publishLabel}</button>}

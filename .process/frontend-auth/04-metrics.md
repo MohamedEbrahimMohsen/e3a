@@ -1,6 +1,6 @@
 # Metrics — `frontend-auth`
 
-**Base branch:** `main` (OAuth merged; teams still in review as PR #7)
+**Base branch at run start (2026-08-29):** `main` (OAuth merged; teams still in review as PR #7)
 **Feature branch:** `feature/frontend-auth`
 **Stage 0 acceptance:** PROXIED by the orchestrator under blanket dev authorisation (see `00-acceptance.md`).
 
@@ -20,3 +20,18 @@
 | 6 | Review r2 | feature-reviewer (fresh) | OPUS 5 | 2026-08-29 | 2026-08-29 | 6m 47s | 113,891 | 35 | CHANGES_REQUESTED (1 blocking: the teams merge added a 7th validator code the map did not know) |
 
 | 7 | Rework r2 | feature-implementer | OPUS 5 | 2026-08-29 | 2026-08-29 | 4m 12s | 53,608 | 29 | `PLUGIN_DUPLICATE_PATH` mapped + completeness sweep; 58 passing |
+| 8 | PR + CodeRabbit | external | — | 2026-08-29 | 2026-08-29 | ~6m | — | — | PR #9 opened; 13 inline comments |
+
+| 9 | Triage | feature-reviewer (fresh) | OPUS 5 | 2026-08-29 | 2026-08-29 | 10m 07s | 153,939 | 37 | 7 implement, 5 rejected, 1 dev-decision; RC13 refuted (stale base), RC12 escalated (dev's own decision) |
+
+| 10 | CodeRabbit rework | feature-implementer | OPUS 5 | 2026-08-29 | 2026-08-29 | 9m 01s | 111,106 | 44 | silent sign-in loop, double-save, accessibility cluster; 58 held, 8 warnings held |
+
+| 11 | CodeRabbit verify | feature-reviewer (fresh) | OPUS 5 | 2026-08-29 | 2026-08-29 | 7m 36s | 91,392 | 37 | **APPROVED** — re-measured every gate; verified visual parity by CSS specificity |
+
+
+## Summary
+
+- **Review rounds used:** 2 internal + 1 CodeRabbit cycle
+- **Outcome:** APPROVED, merged
+- **Tests:** 0 -> 58 web cases (vitest added; the repo had no frontend test runner)
+- **Found in pre-existing code:** `web/src/features/publish/` was git-ignored and had never been committed; `.env.example` pointed at a stale port

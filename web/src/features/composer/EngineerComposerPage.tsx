@@ -72,6 +72,9 @@ export function EngineerComposerPage() {
   }, [routeEngineerId]);
 
   const handleSaveDraft = () => {
+    if (saving) {
+      return;
+    }
     const input = { slug, displayName, description: description || null, tags };
     setSaving(true);
     const saved = engineerId ? updateEngineer(engineerId, input) : createEngineer(input);
@@ -135,6 +138,7 @@ export function EngineerComposerPage() {
       onPublish={handlePublish}
       publishDisabled={!engineerId || manifest === null || publishing}
       publishLabel={publishing ? 'Publishing…' : 'Publish'}
+      saveDisabled={saving}
       statusLabel={saving ? 'Saving…' : 'Draft'}
     >
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', flex: 1 }}>
