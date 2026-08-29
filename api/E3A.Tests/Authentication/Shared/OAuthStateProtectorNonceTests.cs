@@ -63,4 +63,17 @@ public sealed class OAuthStateProtectorNonceTests
         _sut.Validate(firstBrowserState.Value, secondBrowserState.Nonce).Should().Be(OAuthStateStatus.Invalid);
         _sut.Validate(firstBrowserState.Value, firstBrowserState.Nonce).Should().Be(OAuthStateStatus.Valid);
     }
+
+    [Fact]
+    public void Validate_ShouldReturnInvalid_WhenTheNonceDoesNotMatchAnExpiredState()
+    {
+        var expiredProtector = new OAuthStateProtector(Options.Create(GitHubAuthenticationOptionsFactory.Default(stateExpirationMinutes: -1)), Options.Create(new JwtOptions { Key = "state-signing-key-that-is-long-enough" }), _generator);
+
+        var expiredState = expiredProtector.Create();
+
+        var result = expiredProtector.Validate(expiredState.Value, SecondBrowserNonce);
+
+        result.Should().Be(OAuthStateStatus.Invalid);
+        result.Should().NotBe(OAuthStateStatus.Expired);
+    }
 }
