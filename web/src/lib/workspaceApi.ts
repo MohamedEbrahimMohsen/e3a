@@ -21,6 +21,19 @@ export interface EngineerInput {
   tags: string[];
 }
 
+export interface Team {
+  id: string;
+  slug: string;
+  displayName: string;
+  description: string | null;
+  tags: string[];
+  status: string;
+  latestVersionId: string | null;
+  memberCount: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface ImportedItem {
   sourcePath: string;
   targetPath: string;
@@ -66,6 +79,10 @@ export interface PublishStatus {
 
 export function listMyEngineers(): Promise<Engineer[]> {
   return requestJson<Engineer[]>('/engineers/mine');
+}
+
+export function listMyTeams(): Promise<Team[]> {
+  return requestJson<Team[]>('/teams/mine');
 }
 
 export function getEngineer(engineerId: string): Promise<Engineer> {
