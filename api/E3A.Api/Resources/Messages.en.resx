@@ -270,4 +270,7 @@
   <data name="GITHUB_PROFILE_INVALID" xml:space="preserve">
     <value>Your GitHub profile is missing the details we need.</value>
   </data>
+  <data name="UNHANDLED_EXCEPTION" xml:space="preserve">
+    <value>Something went wrong on our side. Please try again.</value>
+  </data>
 </root>
