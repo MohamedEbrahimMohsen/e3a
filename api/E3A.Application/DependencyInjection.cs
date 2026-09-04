@@ -19,6 +19,7 @@ public static class DependencyInjection
         services.Configure<CatalogOptions>(configuration.GetSection(CatalogOptions.SectionName));
         services.Configure<PublishingOptions>(configuration.GetSection(PublishingOptions.SectionName));
         services.Configure<GitHubAuthenticationOptions>(configuration.GetSection(GitHubAuthenticationOptions.SectionName));
+        services.Configure<ReportsOptions>(configuration.GetSection(ReportsOptions.SectionName));
 
         services.AddScoped<IOAuthStateProtector, OAuthStateProtector>();
 

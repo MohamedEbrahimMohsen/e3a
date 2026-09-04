@@ -270,6 +270,27 @@
   <data name="GITHUB_PROFILE_INVALID" xml:space="preserve">
     <value>ملفك الشخصي على جيت هب ينقصه البيانات المطلوبة.</value>
   </data>
+  <data name="REPORT_ITEM_ID_REQUIRED" xml:space="preserve">
+    <value>العنصر المبلغ عنه مطلوب.</value>
+  </data>
+  <data name="REPORT_ITEM_TYPE_INVALID" xml:space="preserve">
+    <value>نوع العنصر المبلغ عنه غير صالح.</value>
+  </data>
+  <data name="REPORT_REASON_INVALID" xml:space="preserve">
+    <value>سبب البلاغ غير صالح.</value>
+  </data>
+  <data name="REPORT_DETAILS_REQUIRED" xml:space="preserve">
+    <value>من فضلك اشرح ما وجدته.</value>
+  </data>
+  <data name="REPORT_DETAILS_TOO_LONG" xml:space="preserve">
+    <value>تفاصيل البلاغ طويلة جدا.</value>
+  </data>
+  <data name="REPORT_ITEM_NOT_FOUND" xml:space="preserve">
+    <value>لم نتمكن من العثور على العنصر المبلغ عنه.</value>
+  </data>
+  <data name="REPORT_LIMIT_REACHED" xml:space="preserve">
+    <value>تم الابلاغ عن هذا العنصر {limit} مرة وهو في انتظار المراجعة.</value>
+  </data>
   <data name="UNHANDLED_EXCEPTION" xml:space="preserve">
     <value>حدث خطا لدينا. برجاء المحاولة مرة اخرى.</value>
   </data>

@@ -1,11 +1,9 @@
 import { Link, useNavigate } from 'react-router-dom';
 import type { CatalogItem } from '../../lib/types';
 import { formatInstalls } from '../../lib/catalog';
-import { useReport } from '../../app/ReportContext';
 
 export function DetailHeader({ item }: { item: CatalogItem }) {
   const navigate = useNavigate();
-  const { openReport } = useReport();
 
   return (
     <>
@@ -31,7 +29,6 @@ export function DetailHeader({ item }: { item: CatalogItem }) {
             <span>{formatInstalls(item.installs)}</span>
           </div>
         </div>
-        <span onClick={() => openReport(item.name)} className="link-danger-hover" style={{ marginLeft: 'auto', fontSize: 13, color: 'var(--text-muted)' }}>Report</span>
       </div>
     </>
   );
