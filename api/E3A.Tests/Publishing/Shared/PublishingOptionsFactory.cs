@@ -4,7 +4,7 @@ namespace E3A.Tests.Publishing.Shared;
 
 public static class PublishingOptionsFactory
 {
-    public const string PublicSiteUrl = "https://e3a.dev";
+    public const string PublicSiteUrl = "https://example.test";
     public const string MarketplaceCacheControl = "public, max-age=60";
     public const string ZipCacheControl = "public, max-age=31536000, immutable";
 

@@ -21,7 +21,7 @@ public sealed class MarketplaceDocumentGeneratorTests
 
         plugin.Name.Should().Be("e3a-dive-backend-engineer");
         plugin.Source.Source.Should().Be("archive");
-        plugin.Source.Url.Should().Be("https://e3a.dev/z/e3a-dive-backend-engineer/1.0.0.zip");
+        plugin.Source.Url.Should().Be($"{PublishingOptionsFactory.PublicSiteUrl}/z/e3a-dive-backend-engineer/1.0.0.zip");
         plugin.Source.Sha256.Should().Be(version.ZipSha256);
         plugin.Keywords.Should().Equal(engineer.Tags);
     }
@@ -36,7 +36,7 @@ public sealed class MarketplaceDocumentGeneratorTests
 
         json.Should().Contain("\"name\": \"e3a\"");
         json.Should().Contain("\"owner\"");
-        json.Should().Contain("\"url\": \"https://e3a.dev\"");
+        json.Should().Contain($"\"url\": \"{PublishingOptionsFactory.PublicSiteUrl}\"");
         json.Should().Contain("\"plugins\"");
         json.Should().Contain("\"e3a-dive-backend-engineer\"");
     }

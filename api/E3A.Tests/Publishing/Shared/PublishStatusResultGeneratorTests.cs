@@ -20,7 +20,7 @@ public sealed class PublishStatusResultGeneratorTests
 
         var result = PublishStatusResultGenerator.Generate(version, _options);
 
-        result.ZipUrl.Should().Be("https://e3a.dev/z/e3a-dive-backend-engineer/1.0.0.zip");
+        result.ZipUrl.Should().Be($"{PublishingOptionsFactory.PublicSiteUrl}/z/e3a-dive-backend-engineer/1.0.0.zip");
         result.Status.Should().Be("Published");
         result.UpdatedAt.Should().Be(version.UpdationDate);
         result.ItemId.Should().Be(_engineerId);
