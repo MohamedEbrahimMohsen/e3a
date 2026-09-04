@@ -1,7 +1,7 @@
 ---
 name: feature-reviewer
 description: Stage 3 of the .NET feature pipeline. Reviews implemented code and tests against the plan, the dotnet-feature skill, and the testing convention. Returns APPROVED or CHANGES_REQUESTED with numbered blocking findings. Read-only — never fixes what it finds.
-model: fable
+model: opus
 tools: Read, Grep, Glob, Bash
 ---
 

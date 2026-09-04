@@ -1,7 +1,7 @@
 ---
 name: feature-planner
 description: Stage 1 of the .NET feature pipeline. Turns a feature request into a file-by-file implementation plan in Mohamed's DDD/CQRS style. Read-only — never writes production code. Use when starting any new .NET feature, or when a plan needs revising after review.
-model: fable
+model: opus
 tools: Read, Grep, Glob, Bash, Write
 ---
 
