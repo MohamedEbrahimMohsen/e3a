@@ -31,7 +31,8 @@ Browser ──► Azure Static Web Apps (React SPA, free tier)
 ## Publish pipeline (queue worker)
 
 dequeue → ignore unless the version is `Queued`/`Building` → mark Building → **branch on
-`ItemType` to build the plugin tree** → validate structure → *(security scan — next slice)* →
+`ItemType` to build the plugin tree** → validate structure → security-scan the composed tree (any Block
+finding → version `Rejected`, nothing uploaded) →
 deterministic zip + sha256 → upload `public/z/{pluginName}/{semanticVersion}.zip` →
 write the pinned `public/m/{pluginName}/{semanticVersion}/marketplace.json` →
 persist Published + set the engineer's or team's `LatestVersionId` →
@@ -65,11 +66,12 @@ Poison queue after `maxDequeueCount` (5) total attempts, including the first.
 DDD/CQRS vertical slices on the AppTemplate: `E3A.Api` (thin controllers + resx resources)
 → `E3A.Application` (`{Area}/{UseCase}/{Command,Handler,Validator}` via MediatR 14 +
 Core.CQRS pipeline) → `E3A.Domain` (Core.DDD aggregates, repository interfaces) →
-`E3A.Infrastructure` (single `AppDbContext`, repositories, Blob/Queue/GitHub clients,
-scanner) · `E3A.Jobs` (isolated Functions worker whose functions are thin `mediator.Send`
+`E3A.Infrastructure` (single `AppDbContext`, repositories, Blob/Queue/GitHub clients) ·
+`E3A.Jobs` (isolated Functions worker whose functions are thin `mediator.Send`
 shells) · `E3A.Tests`
 (xUnit + NSubstitute + FluentAssertions per `conventions/dotnet-testing.md`). The plugin
-builder and the marketplace generator are pure units in `E3A.Application/Publishing/Shared`,
+builder and the marketplace generator are pure units in `E3A.Application/Publishing/Shared`, and
+the security scanner is a pure unit in `E3A.Application/Publishing/Security`,
 so the worker's whole pipeline is testable without a Functions host. Full
 patterns: `.claude/skills/dotnet-feature/SKILL.md`; features are built through the
 feature pipeline (`.process/{feature}/` plan → implementation → review artifacts).

@@ -115,6 +115,7 @@ public class AppDbContext(DbContextOptions options, IMediator mediator, IOptions
             builder.Property(x => x.ZipBlobPath).HasMaxLength(publishingSchema.BlobPathMaxLength);
             builder.Property(x => x.ZipSha256).HasMaxLength(Sha256HexLength);
             builder.Property(x => x.FailureReason).HasMaxLength(publishingSchema.FailureReasonMaxLength);
+            builder.Property(x => x.ScanReportJson);
             builder.HasIndex(x => new { x.ItemType, x.ItemId, x.VersionNumber }).IsUnique().HasFilter("[IsDeleted] = 0");
             builder.HasIndex(x => x.ItemId);
         });

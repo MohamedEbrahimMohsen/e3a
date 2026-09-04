@@ -103,6 +103,7 @@ public static class ErrorCodes
     public const string PluginSkillMissingSkillFile = "PLUGIN_SKILL_MISSING_SKILL_FILE";
     public const string PluginTooManyFiles = "PLUGIN_TOO_MANY_FILES";
     public const string PluginTooLarge = "PLUGIN_TOO_LARGE";
+    public const string PluginSecurityScanBlocked = "PLUGIN_SECURITY_SCAN_BLOCKED";
     public const string MarketplaceEngineerLimitExceeded = "MARKETPLACE_ENGINEER_LIMIT_EXCEEDED";
     public const string PluginDuplicatePath = "PLUGIN_DUPLICATE_PATH";
     public const string MarketplaceTeamLimitExceeded = "MARKETPLACE_TEAM_LIMIT_EXCEEDED";

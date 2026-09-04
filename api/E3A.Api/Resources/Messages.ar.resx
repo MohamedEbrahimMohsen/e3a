@@ -162,6 +162,9 @@
   <data name="PLUGIN_TOO_LARGE" xml:space="preserve">
     <value>حجم الملحق اكبر من الحجم المسموح.</value>
   </data>
+  <data name="PLUGIN_SECURITY_SCAN_BLOCKED" xml:space="preserve">
+    <value>تم رفض هذا الاصدار بواسطة الفحص الامني. صحح الملاحظات المذكورة في التقرير ثم انشر مرة اخرى.</value>
+  </data>
   <data name="MARKETPLACE_ENGINEER_LIMIT_EXCEEDED" xml:space="preserve">
     <value>عدد المهندسين في السوق اكبر مما يستطيع المولد معالجته.</value>
   </data>

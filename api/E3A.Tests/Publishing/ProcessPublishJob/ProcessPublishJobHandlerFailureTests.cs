@@ -35,7 +35,7 @@ public sealed class ProcessPublishJobHandlerFailureTests
         _engineer = EngineerFactory.Draft(_ownerUserId);
         _engineerRepository.GetByIdAsync(_engineer.Id, Arg.Any<CancellationToken>()).Returns(_engineer);
         _storageBlobClient.ListByPrefixAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns([]);
-        _sut = new ProcessPublishJobHandler(_itemVersionRepository, _engineerRepository, Substitute.For<ITeamRepository>(), _userRepository, _storageBlobClient, Options.Create(_azureOptions), Options.Create(PublishingOptionsFactory.Default()));
+        _sut = new ProcessPublishJobHandler(_itemVersionRepository, _engineerRepository, Substitute.For<ITeamRepository>(), _userRepository, _storageBlobClient, Options.Create(_azureOptions), Options.Create(PublishingOptionsFactory.Default()), Options.Create(UploadsOptionsFactory.Default()));
     }
 
     [Fact]

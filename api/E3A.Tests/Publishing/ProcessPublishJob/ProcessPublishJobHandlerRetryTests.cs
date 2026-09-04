@@ -42,7 +42,7 @@ public sealed class ProcessPublishJobHandlerRetryTests
         _storageBlobClient.ListByPrefixAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns([]);
         _storageBlobClient.ListByPrefixAsync(Arg.Any<string>(), Arg.Any<string>(), _azureOptions.DraftsBlobContainerName, draftPrefix, Arg.Any<CancellationToken>()).Returns([$"{draftPrefix}agents/reviewer.md"]);
         _storageBlobClient.DownloadAsync(Arg.Any<string>(), Arg.Any<string>(), _azureOptions.DraftsBlobContainerName, $"{draftPrefix}agents/reviewer.md", Arg.Any<CancellationToken>()).Returns(Encoding.UTF8.GetBytes("reviewer agent"));
-        _sut = new ProcessPublishJobHandler(_itemVersionRepository, _engineerRepository, Substitute.For<ITeamRepository>(), _userRepository, _storageBlobClient, Options.Create(_azureOptions), Options.Create(_publishingOptions));
+        _sut = new ProcessPublishJobHandler(_itemVersionRepository, _engineerRepository, Substitute.For<ITeamRepository>(), _userRepository, _storageBlobClient, Options.Create(_azureOptions), Options.Create(_publishingOptions), Options.Create(UploadsOptionsFactory.Default()));
     }
 
     [Fact]

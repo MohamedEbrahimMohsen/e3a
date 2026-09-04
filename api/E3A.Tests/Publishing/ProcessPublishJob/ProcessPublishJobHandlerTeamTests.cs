@@ -11,6 +11,7 @@ using E3A.Domain.Engineers;
 using E3A.Domain.Identity;
 using E3A.Domain.Publishing;
 using E3A.Domain.Teams;
+using E3A.Tests.Engineers.Shared;
 using E3A.Tests.Publishing.Shared;
 using E3A.Tests.Teams.Shared;
 using FluentAssertions;
@@ -43,7 +44,7 @@ public sealed class ProcessPublishJobHandlerTeamTests
         _teamRepository.GetByIdAsync(_team.Id, Arg.Any<CancellationToken>(), Arg.Any<Func<IQueryable<Team>, IQueryable<Team>>>(), Arg.Any<bool>()).Returns(_team);
         _storageBlobClient.ListByPrefixAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns([]);
         _storageBlobClient.DownloadAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(Encoding.UTF8.GetBytes("content"));
-        _sut = new ProcessPublishJobHandler(_itemVersionRepository, _engineerRepository, _teamRepository, _userRepository, _storageBlobClient, Options.Create(_azureOptions), Options.Create(_publishingOptions));
+        _sut = new ProcessPublishJobHandler(_itemVersionRepository, _engineerRepository, _teamRepository, _userRepository, _storageBlobClient, Options.Create(_azureOptions), Options.Create(_publishingOptions), Options.Create(UploadsOptionsFactory.Default()));
     }
 
     [Fact]

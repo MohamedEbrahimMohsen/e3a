@@ -18,4 +18,9 @@ public sealed class PublishingOptions
     public int SemanticVersionMaxLength { get; set; }
     public int BlobPathMaxLength { get; set; }
     public int FailureReasonMaxLength { get; set; }
+    public int MaxScanFindings { get; set; }
+    public int ScanExcerptMaxLength { get; set; }
+    public int ScanReportJsonMaxLength { get; set; }
+    public long MaxPluginFileBytes { get; set; }
+    public int ScanMaxLineLength { get; set; }
 }
