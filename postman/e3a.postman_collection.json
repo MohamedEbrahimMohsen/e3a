@@ -667,6 +667,45 @@
       ]
     },
     {
+      "name": "Reports",
+      "item": [
+        {
+          "name": "Submit Report",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"itemType\": \"Engineer\",\n  \"itemId\": \"00000000-0000-0000-0000-000000000000\",\n  \"reason\": \"Malicious\",\n  \"details\": \"The postinstall hook reads ~/.aws and posts it to a webhook.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/reports",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "reports"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
       "name": "Publishing",
       "item": [
         {
