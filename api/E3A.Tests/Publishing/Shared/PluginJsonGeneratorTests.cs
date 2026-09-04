@@ -23,7 +23,7 @@ public sealed class PluginJsonGeneratorTests
         json.Should().Contain("\"name\": \"e3a-dive-backend-engineer\"");
         json.Should().Contain("\"version\": \"1.2.3\"");
         json.Should().Contain("\"name\": \"mohamed\"");
-        json.Should().Contain("\"url\": \"https://e3a.dev/e/dive-backend-engineer\"");
+        json.Should().Contain($"\"url\": \"{PublishingOptionsFactory.PublicSiteUrl}/e/dive-backend-engineer\"");
     }
 
     [Fact]
