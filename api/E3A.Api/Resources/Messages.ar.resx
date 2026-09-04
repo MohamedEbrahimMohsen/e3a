@@ -270,4 +270,7 @@
   <data name="GITHUB_PROFILE_INVALID" xml:space="preserve">
     <value>ملفك الشخصي على جيت هب ينقصه البيانات المطلوبة.</value>
   </data>
+  <data name="UNHANDLED_EXCEPTION" xml:space="preserve">
+    <value>حدث خطا لدينا. برجاء المحاولة مرة اخرى.</value>
+  </data>
 </root>

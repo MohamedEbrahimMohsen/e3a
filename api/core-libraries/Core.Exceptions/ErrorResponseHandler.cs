@@ -1,8 +1,9 @@
 ﻿using Core.Localization;
+using Microsoft.Extensions.Hosting;
 
 namespace Core.Exceptions;
 
-public sealed class ErrorResponseHandler(ILocalizer localizer) : IErrorResponseHandler
+public sealed class ErrorResponseHandler(ILocalizer localizer, IHostEnvironment environment) : IErrorResponseHandler
 {
     public ErrorResponse GenerateErrorResponse(string code, string message)
     {
@@ -29,7 +30,20 @@ public sealed class ErrorResponseHandler(ILocalizer localizer) : IErrorResponseH
         {
             Code = exceptionDetails.Code,
             Message = localizer.GetMessage(exceptionDetails.Code, exceptionDetails.Message, exceptionDetails.Context),
-            Data = $"{exceptionDetails.Exception?.Message} - {exceptionDetails.Exception?.StackTrace}"
+            Data = GenerateDiagnosticData(exceptionDetails.Exception)
         };
+    }
+
+    // Exception message and stack trace expose absolute source paths and internal call structure.
+    // Outside Development they belong in the log only - the 5xx branch of CoreExceptionMiddleware
+    // already logs the full exception - never in a body an anonymous client can read.
+    private string? GenerateDiagnosticData(Exception? exception)
+    {
+        if (!environment.IsDevelopment())
+        {
+            return null;
+        }
+
+        return $"{exception?.Message} - {exception?.StackTrace}";
     }
 }

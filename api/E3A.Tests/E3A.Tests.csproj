@@ -14,6 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="../core-libraries/Core.Exceptions/Core.Exceptions.csproj" />
     <ProjectReference Include="../E3A.Application/E3A.Application.csproj" />
     <ProjectReference Include="../E3A.Domain/E3A.Domain.csproj" />
   </ItemGroup>
