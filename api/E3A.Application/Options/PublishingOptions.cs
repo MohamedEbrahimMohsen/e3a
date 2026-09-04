@@ -23,6 +23,4 @@ public sealed class PublishingOptions
     public int ScanReportJsonMaxLength { get; set; }
     public long MaxPluginFileBytes { get; set; }
     public int ScanMaxLineLength { get; set; }
-    public int ScanOpaqueLineMaxLength { get; set; }
-    public int ScanOpaqueLineWrapperMaxLength { get; set; }
 }

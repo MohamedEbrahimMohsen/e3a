@@ -1,7 +1,8 @@
 using Core.Validation.Extensions;
 using E3A.Application.Exceptions;
 using E3A.Application.Options;
-using E3A.Domain.Engineers;
+using E3A.Application.Publishing.Shared;
+using E3A.Domain.SharedKernel;
 using FluentValidation;
 using Microsoft.Extensions.Options;
 
@@ -20,25 +21,31 @@ public sealed class UpdateEngineerValidator : AbstractValidator<UpdateEngineerCo
             .When(x => x.Slug != null);
 
         RuleFor(x => x.Slug)
-            .Must(slug => EngineerSlugGenerator.NormalizeTypedSlug(slug).Length >= options.SlugMinLength)
+            .Must(slug => SlugGenerator.NormalizeTypedSlug(slug).Length >= options.SlugMinLength)
             .WithMessage($"{{PropertyName}} must be at least {options.SlugMinLength} characters.")
             .WithErrorCode(ErrorCodes.EngineerSlugTooShort)
             .When(x => x.Slug != null && !string.IsNullOrWhiteSpace(x.Slug));
 
         RuleFor(x => x.Slug)
-            .Must(slug => EngineerSlugGenerator.NormalizeTypedSlug(slug).Length <= options.SlugMaxLength)
+            .Must(slug => SlugGenerator.NormalizeTypedSlug(slug).Length <= options.SlugMaxLength)
             .WithMessage($"{{PropertyName}} must not exceed {options.SlugMaxLength} characters.")
             .WithErrorCode(ErrorCodes.EngineerSlugTooLong)
             .When(x => x.Slug != null && !string.IsNullOrWhiteSpace(x.Slug));
 
         RuleFor(x => x.Slug)
-            .Must(slug => EngineerSlugGenerator.IsValidFormat(EngineerSlugGenerator.NormalizeTypedSlug(slug)))
+            .Must(slug => SlugGenerator.IsValidFormat(SlugGenerator.NormalizeTypedSlug(slug)))
             .WithMessage("{PropertyName} must be lowercase letters, digits and single hyphens.")
             .WithErrorCode(ErrorCodes.EngineerSlugInvalid)
             .When(x => x.Slug != null && !string.IsNullOrWhiteSpace(x.Slug));
 
         RuleFor(x => x.Slug)
-            .Must(slug => !options.ReservedSlugs.Contains(EngineerSlugGenerator.NormalizeTypedSlug(slug), StringComparer.OrdinalIgnoreCase))
+            .Must(slug => !options.ReservedSlugs.Contains(SlugGenerator.NormalizeTypedSlug(slug), StringComparer.OrdinalIgnoreCase))
+            .WithMessage("{PropertyName} is reserved.")
+            .WithErrorCode(ErrorCodes.EngineerSlugReserved)
+            .When(x => x.Slug != null && !string.IsNullOrWhiteSpace(x.Slug));
+
+        RuleFor(x => x.Slug)
+            .Must(slug => !PluginName.IsTeamNamespaced(SlugGenerator.NormalizeTypedSlug(slug)))
             .WithMessage("{PropertyName} is reserved.")
             .WithErrorCode(ErrorCodes.EngineerSlugReserved)
             .When(x => x.Slug != null && !string.IsNullOrWhiteSpace(x.Slug));

@@ -1,0 +1,25 @@
+fix(teams): close the cross-type plugin name collision
+
+CodeRabbit RC4, upgraded to Critical on triage. An engineer with slug
+team-alpha and a team with slug alpha both produced the plugin name
+e3a-team-alpha, falsifying the "structurally impossible" claim that
+justified scoping slug uniqueness per table.
+
+The real failure was silent artifact adoption, not a blocked overwrite:
+the worker skips the upload when the zip path already exists, so the
+overwrite:false guard never fires, and the version is marked Published
+with a sha256 that does not match the bytes served at that URL. The
+pinned marketplace is overwritten and the root marketplace gains two
+entries with the same name. Reachable cross-owner.
+
+Fixed one-directionally - a team can only ever produce e3a-team-{x}, so
+reserving the team- prefix on engineer slugs makes the namespaces
+disjoint both ways. team and teams remain valid engineer slugs.
+
+Also fixed a second vacuous test: with a Queued team-version fixture,
+deleting the ItemType check from TeamMemberPinResolver left the suite
+green. Proven both ways.
+
+604 -> 614 tests.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>

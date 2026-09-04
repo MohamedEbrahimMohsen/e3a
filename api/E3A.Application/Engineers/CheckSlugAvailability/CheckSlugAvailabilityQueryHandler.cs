@@ -1,10 +1,11 @@
 using Core.Errors;
 using Core.Identity.Tokens.CurrentUser;
 using Core.Utilities.Generator;
-using E3A.Application.Engineers.Shared;
 using E3A.Application.Exceptions;
 using E3A.Application.Options;
+using E3A.Application.Shared;
 using E3A.Domain.Engineers;
+using E3A.Domain.SharedKernel;
 using MediatR;
 using Microsoft.Extensions.Options;
 
@@ -21,14 +22,14 @@ public sealed class CheckSlugAvailabilityQueryHandler(IEngineerRepository engine
             throw new UnauthorizedCoreException(ErrorCodes.UserNotAuthenticated);
         }
 
-        var slug = EngineerSlugGenerator.NormalizeTypedSlug(request.Slug);
+        var slug = SlugGenerator.NormalizeTypedSlug(request.Slug);
 
         if (!await engineerRepository.IsSlugExistsAsync(slug, cancellationToken).ConfigureAwait(false))
         {
             return new SlugAvailabilityResult(slug, true, null);
         }
 
-        var suggestedSlug = await EngineerSlugResolver.ResolveUniqueAsync(slug, engineerRepository, generator, engineersOptions.Value, cancellationToken).ConfigureAwait(false);
+        var suggestedSlug = await SlugResolver.ResolveUniqueAsync(slug, engineerRepository.IsSlugExistsAsync, generator, engineersOptions.Value.SlugMaxLength, engineersOptions.Value.SlugSuffixSize, cancellationToken).ConfigureAwait(false);
 
         return new SlugAvailabilityResult(slug, false, suggestedSlug);
     }

@@ -168,4 +168,106 @@
   <data name="MARKETPLACE_ENGINEER_LIMIT_EXCEEDED" xml:space="preserve">
     <value>عدد المهندسين في السوق اكبر مما يستطيع المولد معالجته.</value>
   </data>
+  <data name="TEAM_NOT_FOUND" xml:space="preserve">
+    <value>لم نتمكن من العثور على هذا الفريق.</value>
+  </data>
+  <data name="TEAM_NOT_OWNED" xml:space="preserve">
+    <value>هذا الفريق يخص منشئا اخر.</value>
+  </data>
+  <data name="TEAM_LIMIT_REACHED" xml:space="preserve">
+    <value>لقد وصلت الى الحد الاقصى وهو {limit} فريق.</value>
+  </data>
+  <data name="TEAM_ID_REQUIRED" xml:space="preserve">
+    <value>الفريق مطلوب.</value>
+  </data>
+  <data name="TEAM_DISPLAY_NAME_REQUIRED" xml:space="preserve">
+    <value>اسم الفريق مطلوب.</value>
+  </data>
+  <data name="TEAM_DISPLAY_NAME_TOO_LONG" xml:space="preserve">
+    <value>اسم الفريق طويل جدا.</value>
+  </data>
+  <data name="TEAM_DISPLAY_NAME_INVALID" xml:space="preserve">
+    <value>يجب ان يحتوي اسم الفريق على حرف انجليزي او رقم على الاقل.</value>
+  </data>
+  <data name="TEAM_DESCRIPTION_TOO_LONG" xml:space="preserve">
+    <value>وصف الفريق طويل جدا.</value>
+  </data>
+  <data name="TEAM_TOO_MANY_TAGS" xml:space="preserve">
+    <value>عدد وسوم الفريق اكثر من المسموح.</value>
+  </data>
+  <data name="TEAM_TAG_REQUIRED" xml:space="preserve">
+    <value>لا يمكن ان يكون الوسم فارغا.</value>
+  </data>
+  <data name="TEAM_TAG_TOO_LONG" xml:space="preserve">
+    <value>الوسم طويل جدا.</value>
+  </data>
+  <data name="TEAM_SLUG_REQUIRED" xml:space="preserve">
+    <value>الاسم المختصر للفريق مطلوب.</value>
+  </data>
+  <data name="TEAM_SLUG_TOO_SHORT" xml:space="preserve">
+    <value>الاسم المختصر للفريق قصير جدا.</value>
+  </data>
+  <data name="TEAM_SLUG_TOO_LONG" xml:space="preserve">
+    <value>الاسم المختصر للفريق طويل جدا.</value>
+  </data>
+  <data name="TEAM_SLUG_INVALID" xml:space="preserve">
+    <value>يجب ان يتكون الاسم المختصر للفريق من حروف صغيرة وارقام وشرطات مفردة.</value>
+  </data>
+  <data name="TEAM_SLUG_RESERVED" xml:space="preserve">
+    <value>هذا الاسم المختصر محجوز.</value>
+  </data>
+  <data name="TEAM_SLUG_FROZEN" xml:space="preserve">
+    <value>لا يمكن تغيير الاسم المختصر بعد نشر الفريق.</value>
+  </data>
+  <data name="TEAM_EMPTY" xml:space="preserve">
+    <value>يحتاج الفريق الى عضو واحد على الاقل قبل النشر.</value>
+  </data>
+  <data name="TEAM_MEMBER_LIMIT_REACHED" xml:space="preserve">
+    <value>لا يمكن ان يتجاوز عدد اعضاء الفريق الحد المسموح.</value>
+  </data>
+  <data name="TEAM_MEMBER_DUPLICATE" xml:space="preserve">
+    <value>لا يمكن اضافة نفس المهندس الى الفريق مرتين.</value>
+  </data>
+  <data name="TEAM_MEMBER_ENGINEER_ID_REQUIRED" xml:space="preserve">
+    <value>كل عضو في الفريق يحتاج الى مهندس.</value>
+  </data>
+  <data name="TEAM_MEMBER_NOT_PUBLISHED" xml:space="preserve">
+    <value>المهندس {engineerId} ليس له اصدار منشور لتثبيته.</value>
+  </data>
+  <data name="TEAM_MEMBER_VERSION_NOT_PUBLISHED" xml:space="preserve">
+    <value>الاصدار المثبت للمهندس {engineerId} ليس اصدارا منشورا لهذا المهندس.</value>
+  </data>
+  <data name="TEAM_MEMBER_SNAPSHOT_EMPTY" xml:space="preserve">
+    <value>احد اصدارات الاعضاء المثبتة لا يحتوي على اي محتوى مخزن.</value>
+  </data>
+  <data name="TEAM_MEMBER_MANIFEST_INVALID" xml:space="preserve">
+    <value>احد اصدارات الاعضاء المثبتة يحتوي على بيان استيراد غير قابل للقراءة.</value>
+  </data>
+  <data name="TEAM_ROSTER_INVALID" xml:space="preserve">
+    <value>تعذرت قراءة قائمة اعضاء الفريق المجمدة.</value>
+  </data>
+  <data name="PLUGIN_DUPLICATE_PATH" xml:space="preserve">
+    <value>تحتوي الاضافة على ملفين بنفس المسار.</value>
+  </data>
+  <data name="MARKETPLACE_TEAM_LIMIT_EXCEEDED" xml:space="preserve">
+    <value>يحتوي السوق على فرق اكثر مما يستطيع المولد معالجته.</value>
+  </data>
+  <data name="AUTHENTICATION_CODE_MISSING" xml:space="preserve">
+    <value>لم ترسل جيت هب كود التفويض.</value>
+  </data>
+  <data name="AUTHENTICATION_STATE_INVALID" xml:space="preserve">
+    <value>تعذر التحقق من طلب تسجيل الدخول. برجاء المحاولة مرة اخرى.</value>
+  </data>
+  <data name="AUTHENTICATION_STATE_EXPIRED" xml:space="preserve">
+    <value>انتهت صلاحية طلب تسجيل الدخول. برجاء المحاولة مرة اخرى.</value>
+  </data>
+  <data name="GITHUB_TOKEN_EXCHANGE_FAILED" xml:space="preserve">
+    <value>تعذر اكمال تسجيل الدخول عن طريق جيت هب.</value>
+  </data>
+  <data name="GITHUB_PROFILE_FETCH_FAILED" xml:space="preserve">
+    <value>تعذر قراءة ملفك الشخصي على جيت هب.</value>
+  </data>
+  <data name="GITHUB_PROFILE_INVALID" xml:space="preserve">
+    <value>ملفك الشخصي على جيت هب ينقصه البيانات المطلوبة.</value>
+  </data>
 </root>

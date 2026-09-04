@@ -851,6 +851,51 @@ builder.HasIndex(x => x.Slug).IsUnique().HasFilter("[IsDeleted] = 0");
 var engineers = await repository.FindAsync(x => !x.IsDeleted && ..., cancellationToken);
 ```
 
+### 8.6 One JSON contract — every serialization path uses the same options
+
+This app has **more than one** place that turns objects into JSON, and they do not share defaults. Configuring one and forgetting the others has now shipped two real bugs:
+
+- `ConfigureHttpJsonOptions` configures **minimal APIs**; MVC **controllers** read `Mvc.JsonOptions`. Only the former was configured, so `POST /publish` could not bind `{"increment":"Patch"}` — a string enum — while every test passed.
+- `CoreExceptionMiddleware` serialized errors with a bare `JsonSerializer.Serialize(response)`, which is **PascalCase**, while MVC serializes successes as **camelCase**. Every client reading `code` off a failure body got `undefined`, so a normal 404 could not be told apart from any other error.
+
+```csharp
+// ❌ DON'T — a bare Serialize call anywhere a client will read the result
+await context.Response.WriteAsync(JsonSerializer.Serialize(response));
+
+// ❌ DON'T — configure one pipeline and assume the other inherits it
+builder.Services.ConfigureHttpJsonOptions(options => options.SerializerOptions.Converters.Add(new JsonStringEnumConverter()));
+
+// ✅ DO — configure MVC explicitly when controllers are the surface
+builder.Services.AddControllers().AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
+
+// ✅ DO — hand-rolled serialization states its options, matching the API's dialect
+private static readonly JsonSerializerOptions ErrorSerializerOptions = new(JsonSerializerDefaults.Web);
+await context.Response.WriteAsync(JsonSerializer.Serialize(response, ErrorSerializerOptions));
+```
+
+**Both bugs are invisible to unit tests** — the handler and the middleware are correct in isolation; only the wire format is wrong. When you change a serialization path, verify the emitted JSON, not the object.
+
+### 8.7 An expected 4xx is a result, not an application fault
+
+A status the caller asked for is normal flow. Logging it at `Error` with a stack trace makes ordinary behaviour indistinguishable from failure and buries the 5xx that need attention.
+
+```csharp
+// ❌ DON'T — every exception logged the same way
+logger.LogError(exception, $"StatusCode: {details.StatusCode}, ErrorCode: {details.Code}");
+
+// ✅ DO — 4xx is the caller's outcome; 5xx is ours
+if (details.StatusCode is >= 400 and < 500)
+{
+    logger.LogWarning($"StatusCode: {details.StatusCode}, ErrorCode: {details.Code}, ErrorMessage: {details.Message}");
+}
+else
+{
+    logger.LogError(exception, $"StatusCode: {details.StatusCode}, ErrorCode: {details.Code}, ErrorMessage: {details.Message}");
+}
+```
+
+Related design point: when a state is genuinely normal — "this engineer has no upload yet" — prefer letting the caller **avoid the request** (expose `HasDraft` on the result) over making them provoke and catch a 404. Never leak `Exception.StackTrace` into a response body outside Development.
+
 ---
 
 ## 9. Checklist — Adding a New Feature
@@ -900,6 +945,7 @@ var engineers = await repository.FindAsync(x => !x.IsDeleted && ..., cancellatio
 
 **Cross-cutting**
 - [ ] File-scoped namespaces everywhere; no file exceeds ~100 lines
-- [ ] Every DO/DON'T catalog entry (§8) honoured: caps in `[Area]Options` not entity constants · `IGenerator` for identifiers · `Is…ExistsAsync` + suffix loop for unique slugs · `Deleted` not `Removed` · soft-delete filter only in the global method
+- [ ] Every DO/DON'T catalog entry (§8) honoured: caps in `[Area]Options` not entity constants · `IGenerator` for identifiers · `Is…ExistsAsync` + suffix loop for unique slugs · `Deleted` not `Removed` · soft-delete filter only in the global method · one JSON contract across every serialization path · expected 4xx logged as `Warning`, not `Error`
+- [ ] If a serialization path changed, the **emitted JSON** was inspected — not just the object it came from (§8.6)
 - [ ] `dotnet build` zero new warnings · `dotnet test` green
 - [ ] `/docs` updated when behavior/scope changed (`.claude/rules/docs-sync.md`)

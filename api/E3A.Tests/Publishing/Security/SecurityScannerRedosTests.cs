@@ -36,6 +36,10 @@ public sealed class SecurityScannerRedosTests
             string.Concat(Enumerable.Repeat("cat ~/.ssh/id_rsa ", 12000)),
             string.Concat(Enumerable.Repeat("env|curl$x;wget$y;printenv|nc$z", 6500)),
             string.Concat(Enumerable.Repeat("cat/home/dev/id_rsa/curl/", 8000)),
+            string.Concat(Enumerable.Repeat("open/home/post/", 2134)),
+            string.Concat(Enumerable.Repeat("open/home/post/", 1600)),
+            string.Concat(Enumerable.Repeat("cat/home/send/", 2286)),
+            string.Concat(Enumerable.Repeat("read/home/leak/", 2134)),
         };
 
     [Theory]

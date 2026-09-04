@@ -18,7 +18,7 @@ export function TeamDetailPage() {
   return (
     <div className="page fade-in" style={{ gap: 28 }}>
       <DetailHeader item={item} />
-      <InstallBlock line2={installCommand(item.name)} />
+      <InstallBlock line2={installCommand(item.name, 'Team')} />
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: 32, alignItems: 'start' }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 28 }}>
           <p style={{ fontSize: 14.5, lineHeight: 1.7, color: 'var(--text-soft)' }}>{item.description} One install brings every member below, each frozen at the version it was published with.</p>

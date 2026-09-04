@@ -9,6 +9,7 @@ using E3A.Application.Publishing.Shared;
 using E3A.Domain.Engineers;
 using E3A.Domain.Identity;
 using E3A.Domain.Publishing;
+using E3A.Domain.Teams;
 using E3A.Tests.Engineers.Shared;
 using E3A.Tests.Publishing.Shared;
 using FluentAssertions;
@@ -43,7 +44,7 @@ public sealed class ProcessPublishJobHandlerScanTests
 
         _engineerRepository.GetByIdAsync(_engineer.Id, Arg.Any<CancellationToken>()).Returns(_engineer);
         _storageBlobClient.ListByPrefixAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns([]);
-        _sut = new ProcessPublishJobHandler(_itemVersionRepository, _engineerRepository, _userRepository, _storageBlobClient, Options.Create(_azureOptions), Options.Create(_publishingOptions), Options.Create(UploadsOptionsFactory.Default()));
+        _sut = new ProcessPublishJobHandler(_itemVersionRepository, _engineerRepository, Substitute.For<ITeamRepository>(), _userRepository, _storageBlobClient, Options.Create(_azureOptions), Options.Create(_publishingOptions), Options.Create(UploadsOptionsFactory.Default()));
     }
 
     [Fact]
@@ -103,7 +104,7 @@ public sealed class ProcessPublishJobHandlerScanTests
         report.Should().NotBeNull();
         report!.HasWarnings.Should().BeTrue();
         report.IsBlocked.Should().BeFalse();
-        await _storageBlobClient.Received(1).UploadAsync(Arg.Any<Stream>(), Arg.Any<string>(), Arg.Any<string>(), _azureOptions.PublicBlobContainerName, PublishBlobPaths.Zip(PluginName.For(_engineer.Slug), version.SemanticVersion), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<bool>(), Arg.Any<CancellationToken>());
+        await _storageBlobClient.Received(1).UploadAsync(Arg.Any<Stream>(), Arg.Any<string>(), Arg.Any<string>(), _azureOptions.PublicBlobContainerName, PublishBlobPaths.Zip(PluginName.ForEngineer(_engineer.Slug), version.SemanticVersion), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<bool>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]

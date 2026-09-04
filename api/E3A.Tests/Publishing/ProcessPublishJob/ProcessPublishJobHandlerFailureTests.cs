@@ -9,6 +9,7 @@ using E3A.Application.Publishing.Shared;
 using E3A.Domain.Engineers;
 using E3A.Domain.Identity;
 using E3A.Domain.Publishing;
+using E3A.Domain.Teams;
 using E3A.Tests.Engineers.Shared;
 using E3A.Tests.Publishing.Shared;
 using FluentAssertions;
@@ -34,7 +35,7 @@ public sealed class ProcessPublishJobHandlerFailureTests
         _engineer = EngineerFactory.Draft(_ownerUserId);
         _engineerRepository.GetByIdAsync(_engineer.Id, Arg.Any<CancellationToken>()).Returns(_engineer);
         _storageBlobClient.ListByPrefixAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns([]);
-        _sut = new ProcessPublishJobHandler(_itemVersionRepository, _engineerRepository, _userRepository, _storageBlobClient, Options.Create(_azureOptions), Options.Create(PublishingOptionsFactory.Default()), Options.Create(UploadsOptionsFactory.Default()));
+        _sut = new ProcessPublishJobHandler(_itemVersionRepository, _engineerRepository, Substitute.For<ITeamRepository>(), _userRepository, _storageBlobClient, Options.Create(_azureOptions), Options.Create(PublishingOptionsFactory.Default()), Options.Create(UploadsOptionsFactory.Default()));
     }
 
     [Fact]
@@ -47,7 +48,7 @@ public sealed class ProcessPublishJobHandlerFailureTests
 
         version.Status.Should().Be(ItemVersionStatus.Failed);
         version.FailureReason.Should().Be(ErrorCodes.EngineerNotFound);
-        await _itemVersionRepository.Received(1).SaveChangesAsync(Arg.Any<CancellationToken>());
+        await _itemVersionRepository.Received(2).SaveChangesAsync(Arg.Any<CancellationToken>());
     }
 
     [Fact]

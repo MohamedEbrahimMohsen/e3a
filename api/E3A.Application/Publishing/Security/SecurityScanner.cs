@@ -47,8 +47,8 @@ public static class SecurityScanner
 
         for (var index = 0; index < lines.Length; index++)
         {
-            // Scan cost tracks the number of candidate token pairs on the line, not its length: the worst many-token shape costs 51 ms at 8 000 characters and throws past 64 000, while one opaque token stays under a millisecond at any length.
-            if (lines[index].Length > options.ScanMaxLineLength && !IsScannableOpaqueLine(lines[index], options))
+            // Scan cost tracks candidate token pairs, not length, and three attempts to predict cost from a line's shape were each broken by a denser adversarial unit. Shape is a proxy for cost and proxies lose to crafted input, so every over-length line takes the block path instead.
+            if (lines[index].Length > options.ScanMaxLineLength)
             {
                 findings.Add(HygieneRules.LineOverCap(path, lines[index], index + 1, options));
                 continue;
@@ -60,12 +60,6 @@ public static class SecurityScanner
         }
 
         return findings;
-    }
-
-    // A blob with a small wrapper has almost no candidate pairs, but past ScanOpaqueLineMaxLength that stops being cheap enough to be sure: a slash-separated command chain is one token run too, and at 200 000 characters it exceeds the match timeout.
-    private static bool IsScannableOpaqueLine(string line, PublishingOptions options)
-    {
-        return line.Length <= options.ScanOpaqueLineMaxLength && PluginFileText.IsSingleOpaqueToken(line, options.ScanOpaqueLineWrapperMaxLength);
     }
 
     private static ScanReport Report(List<ScanFinding> findings, int hookScriptCount, int scannedFileCount, PublishingOptions options)

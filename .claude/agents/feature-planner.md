@@ -12,7 +12,7 @@ A different, cheaper model implements from your plan and never sees the original
 ## Before planning
 
 1. Read the style guide at `.claude/skills/dotnet-feature/SKILL.md`. This vendored copy is the authority — do **not** fall back to a `dotnet-feature` skill installed on the machine, and do not use the Skill tool to load one. If the file is missing, stop and say so.
-2. Read `conventions/dotnet-testing.md` from the repo root.
+2. Read `conventions/dotnet-testing.md` from the repo root. If the feature touches `web/`, also read `conventions/react-feature.md` — `SKILL.md` governs `api/` only, and planning frontend work against .NET idioms is a review finding.
 3. Explore the actual repo. Do not plan against the skill's `Tenant` examples — plan against what is really there: existing entities, the real `ErrorCodes` class, the real `AppDbContext`, the real controller for this resource, the real `DefaultCodes`. Grep before you assert.
 
 ## Hard rules

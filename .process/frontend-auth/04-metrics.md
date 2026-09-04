@@ -1,0 +1,37 @@
+# Metrics — `frontend-auth`
+
+**Base branch at run start (2026-08-29):** `main` (OAuth merged; teams still in review as PR #7)
+**Feature branch:** `feature/frontend-auth`
+**Stage 0 acceptance:** PROXIED by the orchestrator under blanket dev authorisation (see `00-acceptance.md`).
+
+## Run log
+
+| # | Stage | Agent | Model | Started | Finished | Duration | Tokens | Tool uses | Outcome |
+|---|-------|-------|-------|---------|----------|----------|--------|-----------|---------|
+| 0 | Acceptance | orchestrator (proxied) | — | — | — | — | — | — | accepted |
+| 1 | Plan | feature-planner | OPUS 5 | 2026-08-29 | 2026-08-29 | 17m 09s | 174,594 | 42 | plan written (22 decisions, 26 new files, 48 tests, 2 docs edits) |
+
+| 2 | Gate | orchestrator (proxied) | — | — | — | — | — | — | APPROVED — verified CORS has no `AllowCredentials` (which is what makes decision 1's anchor reasoning correct), the stale `.env.example` port, and that `PublishStatusResult` still declares `EngineerId` on this branch |
+| 3 | Implement | feature-implementer | OPUS 5 | 2026-08-29 | 2026-08-29 | 13m 49s | 168,992 | 66 | 26 files created, 17 modified, 54 test cases green; 5 declared deviations; **found `web/src/features/publish/` was git-ignored and never committed** |
+| 4 | Review r1 | feature-reviewer | OPUS 5 | 2026-08-29 | 2026-08-29 | 11m 54s | 163,780 | 80 | CHANGES_REQUESTED (1 blocking: publish-failure panel rendered raw error codes — a plan defect) |
+
+| 5 | Rework r1 | feature-implementer | OPUS 5 | 2026-08-29 | 2026-08-29 | 5m 21s | 78,388 | 40 | `failureText()` + 9 mapped codes; merged `origin/main`; 54 -> 58 |
+
+| 6 | Review r2 | feature-reviewer (fresh) | OPUS 5 | 2026-08-29 | 2026-08-29 | 6m 47s | 113,891 | 35 | CHANGES_REQUESTED (1 blocking: the teams merge added a 7th validator code the map did not know) |
+
+| 7 | Rework r2 | feature-implementer | OPUS 5 | 2026-08-29 | 2026-08-29 | 4m 12s | 53,608 | 29 | `PLUGIN_DUPLICATE_PATH` mapped + completeness sweep; 58 passing |
+| 8 | PR + CodeRabbit | external | — | 2026-08-29 | 2026-08-29 | ~6m | — | — | PR #9 opened; 13 inline comments |
+
+| 9 | Triage | feature-reviewer (fresh) | OPUS 5 | 2026-08-29 | 2026-08-29 | 10m 07s | 153,939 | 37 | 7 implement, 5 rejected, 1 dev-decision; RC13 refuted (stale base), RC12 escalated (dev's own decision) |
+
+| 10 | CodeRabbit rework | feature-implementer | OPUS 5 | 2026-08-29 | 2026-08-29 | 9m 01s | 111,106 | 44 | silent sign-in loop, double-save, accessibility cluster; 58 held, 8 warnings held |
+
+| 11 | CodeRabbit verify | feature-reviewer (fresh) | OPUS 5 | 2026-08-29 | 2026-08-29 | 7m 36s | 91,392 | 37 | **APPROVED** — re-measured every gate; verified visual parity by CSS specificity |
+
+
+## Summary
+
+- **Review rounds used:** 2 internal + 1 CodeRabbit cycle
+- **Outcome:** APPROVED, merged
+- **Tests:** 0 -> 58 web cases (vitest added; the repo had no frontend test runner)
+- **Found in pre-existing code:** `web/src/features/publish/` was git-ignored and had never been committed; `.env.example` pointed at a stale port

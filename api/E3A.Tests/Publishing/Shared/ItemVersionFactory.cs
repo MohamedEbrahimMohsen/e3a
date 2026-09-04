@@ -15,6 +15,11 @@ public static class ItemVersionFactory
         return ItemVersion.Create(ItemType.Engineer, engineerId, versionNumber, semanticVersion, frozenManifestJson, Guid.NewGuid());
     }
 
+    public static ItemVersion QueuedTeam(Guid teamId, int versionNumber = 1, string semanticVersion = DefaultSemanticVersion, string frozenManifestJson = DefaultFrozenManifestJson)
+    {
+        return ItemVersion.Create(ItemType.Team, teamId, versionNumber, semanticVersion, frozenManifestJson, Guid.NewGuid());
+    }
+
     public static ItemVersion Building(Guid engineerId, int versionNumber = 1, string semanticVersion = DefaultSemanticVersion, string frozenManifestJson = DefaultFrozenManifestJson)
     {
         var version = Queued(engineerId, versionNumber, semanticVersion, frozenManifestJson);
@@ -36,6 +41,14 @@ public static class ItemVersionFactory
         var version = Queued(engineerId, versionNumber, semanticVersion);
         version.RecordScanReport(scanReportJson);
         version.MarkRejected(failureReason);
+
+        return version;
+    }
+
+    public static ItemVersion PublishedTeam(Guid teamId, int versionNumber = 1, string semanticVersion = DefaultSemanticVersion, string zipBlobPath = DefaultZipBlobPath)
+    {
+        var version = QueuedTeam(teamId, versionNumber, semanticVersion);
+        version.MarkPublished(zipBlobPath, DefaultZipSha256, DefaultSizeBytes);
 
         return version;
     }

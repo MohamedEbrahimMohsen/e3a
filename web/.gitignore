@@ -22,3 +22,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# The root .gitignore excludes publish/ as .NET build output; this source folder is not that.
+!src/features/publish/

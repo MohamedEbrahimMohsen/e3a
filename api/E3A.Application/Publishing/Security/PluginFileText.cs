@@ -31,34 +31,10 @@ public static class PluginFileText
         return [.. text.Split('\n').Select(x => x.TrimEnd('\r'))];
     }
 
-    public static bool IsSingleOpaqueToken(string line, int wrapperMaxLength)
-    {
-        return line.Length - LongestTokenRun(line) <= wrapperMaxLength;
-    }
-
     public static string Excerpt(string line, int maxLength)
     {
         var trimmed = line.Trim();
 
         return trimmed.Length <= maxLength ? trimmed : trimmed[..maxLength];
-    }
-
-    private static int LongestTokenRun(string line)
-    {
-        var longest = 0;
-        var current = 0;
-
-        foreach (var character in line)
-        {
-            current = IsTokenCharacter(character) ? current + 1 : 0;
-            longest = Math.Max(longest, current);
-        }
-
-        return longest;
-    }
-
-    private static bool IsTokenCharacter(char character)
-    {
-        return char.IsAsciiLetterOrDigit(character) || character is '+' or '/' or '=' or '-' or '_';
     }
 }

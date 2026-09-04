@@ -1,3 +1,4 @@
+using E3A.Application.Authentication.Shared;
 using E3A.Application.Options;
 using FluentValidation;
 using Microsoft.Extensions.Configuration;
@@ -12,10 +13,14 @@ public static class DependencyInjection
         services.AddMediatR(mediatRConfiguration => mediatRConfiguration.RegisterServicesFromAssembly(typeof(DependencyInjection).Assembly));
         services.AddValidatorsFromAssembly(typeof(DependencyInjection).Assembly);
         services.Configure<EngineersOptions>(configuration.GetSection(EngineersOptions.SectionName));
+        services.Configure<TeamsOptions>(configuration.GetSection(TeamsOptions.SectionName));
         services.Configure<UploadsOptions>(configuration.GetSection(UploadsOptions.SectionName));
         services.Configure<AzureOptions>(configuration.GetSection(AzureOptions.SectionName));
         services.Configure<CatalogOptions>(configuration.GetSection(CatalogOptions.SectionName));
         services.Configure<PublishingOptions>(configuration.GetSection(PublishingOptions.SectionName));
+        services.Configure<GitHubAuthenticationOptions>(configuration.GetSection(GitHubAuthenticationOptions.SectionName));
+
+        services.AddScoped<IOAuthStateProtector, OAuthStateProtector>();
 
         return services;
     }

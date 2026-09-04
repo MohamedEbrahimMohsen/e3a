@@ -213,7 +213,27 @@ Validators are pure — no substitutes, no async.
 
 ---
 
-## 9. Test-code checklist
+## 9. Prove the test bites — a passing test is not evidence
+
+A test that *claims* to lock an invariant frequently does not, and a vacuous assertion reads exactly like a real one. Four shipped into review in a single run, each written by a competent author, each named as the proof of the property it did not test:
+
+| Claimed | What it actually did |
+|---|---|
+| Locks signature-before-expiry ordering | Used a *future* expiry, so it passed under either ordering |
+| Proves a member republish cannot mutate a published team | Built the newer snapshot and never passed it to anything |
+| Rejects a team version where an engineer version is required | Used a `Queued` fixture, so deleting the type check changed nothing |
+| Proves the collector filters correctly | Could not fail at all — see the predicate rule below |
+
+**For any test that is the stated proof of an invariant, mutate the production code so the invariant is violated, run the suite, and confirm that test — ideally only that test — fails.** Record both observed outcomes in the report. Restore from a byte-exact copy and verify with `md5sum`/`cmp`, never by re-editing from memory.
+
+Two traps that make a test unfalsifiable no matter how it is written:
+
+- **Wrong level.** A pure function over already-correct inputs has no channel through which the defect can flow, so no mutation of it expresses the failure. Test the unit that *chooses* the inputs, not the one that consumes them.
+- **Substituted repositories never execute their predicates.** NSubstitute matches on `Arg.Any<Expression<...>>` rather than invoking it, so a deliberately wrong filter passed to a stubbed `FindAsync` / `FirstOrDefaultAsync` / `CountAsync` / `FindPaginatedAsync` changes nothing. **No test of that shape can constrain a query predicate — never claim one does.** Pin such behaviour with `Received`/`DidNotReceive` on the collaborator instead, and say plainly what remains unproven.
+
+---
+
+## 10. Test-code checklist
 
 - [ ] Test project mirrors module folder structure; one test class per production class
 - [ ] `sealed class` test classes; `_sut` and substitute naming followed
@@ -225,3 +245,5 @@ Validators are pure — no substitutes, no async.
 - [ ] Validator has a passing case plus one failing case per rule
 - [ ] No `DateTime`, no wall-clock assertions, no inter-test ordering
 - [ ] No file exceeds ~100 lines — split by behaviour group if it does
+- [ ] Any test named as the proof of an invariant was **mutation-checked** — the production code was broken, the test observed failing, then restored (§9)
+- [ ] No test claims to constrain a repository query predicate (§9)

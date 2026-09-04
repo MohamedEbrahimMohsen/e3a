@@ -7,6 +7,7 @@ using E3A.Domain.Engineers;
 using E3A.Domain.Identity;
 using E3A.Domain.Publishing;
 using E3A.Tests.Engineers.Shared;
+using E3A.Domain.Teams;
 using E3A.Tests.Publishing.Shared;
 using FluentAssertions;
 using Microsoft.Extensions.Options;
@@ -26,7 +27,7 @@ public sealed class ProcessPublishJobHandlerGuardTests
 
     public ProcessPublishJobHandlerGuardTests()
     {
-        _sut = new ProcessPublishJobHandler(_itemVersionRepository, _engineerRepository, _userRepository, _storageBlobClient, Options.Create(new AzureOptions()), Options.Create(PublishingOptionsFactory.Default()), Options.Create(UploadsOptionsFactory.Default()));
+        _sut = new ProcessPublishJobHandler(_itemVersionRepository, _engineerRepository, Substitute.For<ITeamRepository>(), _userRepository, _storageBlobClient, Options.Create(new AzureOptions()), Options.Create(PublishingOptionsFactory.Default()), Options.Create(UploadsOptionsFactory.Default()));
     }
 
     [Fact]

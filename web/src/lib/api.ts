@@ -1,4 +1,6 @@
-import { config } from './config';
+import { requestJson } from './http';
+
+export { ApiError } from './http';
 
 export interface PageData<T> {
   items: T[];
@@ -46,23 +48,6 @@ export interface CatalogQuery {
   pageSize?: number;
 }
 
-async function getJson<T>(path: string): Promise<T> {
-  const response = await fetch(`${config.apiBaseUrl}${path}`);
-  if (!response.ok) {
-    throw new ApiError(response.status);
-  }
-  return (await response.json()) as T;
-}
-
-export class ApiError extends Error {
-  readonly status: number;
-
-  constructor(status: number) {
-    super(`API request failed with status ${status}`);
-    this.status = status;
-  }
-}
-
 export function getCatalog(query: CatalogQuery): Promise<PageData<CatalogEngineer>> {
   const parameters = new URLSearchParams();
   if (query.searchText) {
@@ -81,15 +66,15 @@ export function getCatalog(query: CatalogQuery): Promise<PageData<CatalogEnginee
     parameters.set('pageSize', String(query.pageSize));
   }
   const queryString = parameters.toString();
-  return getJson(`/catalog${queryString ? `?${queryString}` : ''}`);
+  return requestJson(`/catalog${queryString ? `?${queryString}` : ''}`);
 }
 
 export function getCatalogEngineer(slug: string): Promise<CatalogEngineerDetail> {
-  return getJson(`/catalog/${encodeURIComponent(slug)}`);
+  return requestJson(`/catalog/${encodeURIComponent(slug)}`);
 }
 
 export function getCatalogTags(): Promise<CatalogTag[]> {
-  return getJson('/catalog/tags');
+  return requestJson('/catalog/tags');
 }
 
 const cardEmojis = ['🧱', '⚛️', '🛡️', '🧪', '📐', '🚀', '🗃️', '✍️', '🔍', '💳', '🧭', '🤖'];
