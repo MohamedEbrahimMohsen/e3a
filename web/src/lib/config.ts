@@ -1,10 +1,12 @@
 const DEFAULT_MAX_UPLOAD_MEGABYTES = 20;
+const DEFAULT_MAX_TEAM_MEMBERS = 10;
 
 export const config = {
   siteUrl: (import.meta.env.VITE_SITE_URL as string | undefined) ?? 'https://e3a.ai',
   apiBaseUrl: (import.meta.env.VITE_API_BASE_URL as string | undefined) ?? 'https://localhost:62935/api',
   githubOrgUrl: (import.meta.env.VITE_GITHUB_ORG_URL as string | undefined) ?? 'https://github.com/e3a-registry',
   maxUploadMegabytes: Number(import.meta.env.VITE_MAX_UPLOAD_MEGABYTES ?? DEFAULT_MAX_UPLOAD_MEGABYTES),
+  maxTeamMembers: Number(import.meta.env.VITE_MAX_TEAM_MEMBERS ?? DEFAULT_MAX_TEAM_MEMBERS),
 } as const;
 
 const siteHost = config.siteUrl.replace(/^https?:\/\//, '');

@@ -34,6 +34,39 @@ export interface Team {
   updatedAt: string;
 }
 
+export interface TeamInput {
+  slug: string;
+  displayName: string;
+  description: string | null;
+  tags: string[];
+}
+
+export interface TeamMember {
+  engineerId: string;
+  engineerSlug: string;
+  pinnedVersionId: string;
+  pinnedSemanticVersion: string;
+  sortOrder: number;
+}
+
+export interface TeamDetail {
+  id: string;
+  slug: string;
+  displayName: string;
+  description: string | null;
+  tags: string[];
+  status: string;
+  latestVersionId: string | null;
+  members: TeamMember[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface TeamMemberSelectionInput {
+  engineerId: string;
+  pinnedVersionId: string | null;
+}
+
 export interface ImportedItem {
   sourcePath: string;
   targetPath: string;
@@ -113,4 +146,24 @@ export function publishEngineer(engineerId: string, increment: VersionIncrement)
 
 export function getPublishStatus(versionId: string): Promise<PublishStatus> {
   return requestJson<PublishStatus>(`/publish/${encodeURIComponent(versionId)}/status`);
+}
+
+export function getTeam(teamId: string): Promise<TeamDetail> {
+  return requestJson<TeamDetail>(`/teams/${encodeURIComponent(teamId)}`);
+}
+
+export function createTeam(input: TeamInput): Promise<Team> {
+  return requestJson<Team>('/teams', { method: 'POST', body: input });
+}
+
+export function updateTeam(teamId: string, input: TeamInput): Promise<Team> {
+  return requestJson<Team>(`/teams/${encodeURIComponent(teamId)}`, { method: 'PUT', body: input });
+}
+
+export function setTeamMembers(teamId: string, members: TeamMemberSelectionInput[]): Promise<TeamDetail> {
+  return requestJson<TeamDetail>(`/teams/${encodeURIComponent(teamId)}/members`, { method: 'PUT', body: { members } });
+}
+
+export function publishTeam(teamId: string, increment: VersionIncrement): Promise<PublishStatus> {
+  return requestJson<PublishStatus>(`/teams/${encodeURIComponent(teamId)}/publish`, { method: 'POST', body: { increment } });
 }
