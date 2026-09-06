@@ -69,6 +69,7 @@ export function App() {
                 <Route path="/workspace/new-engineer" element={<EngineerComposerPage />} />
                 <Route path="/workspace/engineers/:engineerId" element={<EngineerComposerPage />} />
                 <Route path="/workspace/new-team" element={<TeamComposerPage />} />
+                <Route path="/workspace/teams/:teamId" element={<TeamComposerPage />} />
               </Route>
             </Route>
           </Routes>

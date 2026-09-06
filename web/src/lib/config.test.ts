@@ -15,6 +15,10 @@ describe('config', () => {
   it('should fall back to the production site url when VITE_SITE_URL is unset', () => {
     expect(config.siteUrl).toBe('https://e3a.ai');
   });
+
+  it('should fall back to ten team members when VITE_MAX_TEAM_MEMBERS is unset', () => {
+    expect(config.maxTeamMembers).toBe(10);
+  });
 });
 
 describe('marketplaceAddCommand', () => {

@@ -3,8 +3,9 @@ import { Link, useSearchParams } from 'react-router-dom';
 import { InstallBlock } from '../../components/InstallBlock';
 import { installCommand } from '../../lib/config';
 import { messageForApiError } from '../../lib/errorMessages';
-import { getEngineer, getPublishStatus, type Engineer, type PublishStatus } from '../../lib/workspaceApi';
+import { getEngineer, getPublishStatus, getTeam, type PublishStatus } from '../../lib/workspaceApi';
 import { failureText, isFailedStatus, isTerminalStatus, PUBLISH_STEP_LABELS, stepIndexFor } from './publishStage';
+import { publishTargetFor } from './publishTarget';
 
 const POLL_INTERVAL_MS = 2000;
 const POLL_MAX_ATTEMPTS = 60;
@@ -13,7 +14,7 @@ const POLL_TIMEOUT_MESSAGE = 'This publish is taking longer than expected. Refre
 export function PublishStatusPage() {
   const versionId = useSearchParams()[0].get('versionId');
   const [status, setStatus] = useState<PublishStatus | null>(null);
-  const [engineer, setEngineer] = useState<Engineer | null>(null);
+  const [publishedSlug, setPublishedSlug] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   useEffect(() => {
@@ -33,7 +34,10 @@ export function PublishStatusPage() {
         setStatus(result);
         if (isTerminalStatus(result.status)) {
           if (result.status === 'Published') {
-            getEngineer(result.itemId).then(loaded => { if (!cancelled) { setEngineer(loaded); } }).catch(() => undefined);
+            const load = result.itemType === 'Team'
+              ? getTeam(result.itemId).then(team => team.slug)
+              : getEngineer(result.itemId).then(engineer => engineer.slug);
+            load.then(loadedSlug => { if (!cancelled) { setPublishedSlug(loadedSlug); } }).catch(() => undefined);
           }
           return;
         }
@@ -63,6 +67,7 @@ export function PublishStatusPage() {
     );
   }
 
+  const target = status === null ? null : publishTargetFor(status.itemType, status.itemId);
   const stage = status ? stepIndexFor(status.status) : -1;
   const failed = status !== null && isFailedStatus(status.status);
 
@@ -92,27 +97,29 @@ export function PublishStatusPage() {
         </div>
         <div className="mono" style={{ fontSize: 12, color: 'var(--text-muted)' }}>{status ? `${status.status} · v${status.semanticVersion}` : 'Checking status…'}</div>
       </div>
-      {status !== null && status.status === 'Published' && (
+      {status !== null && target !== null && status.status === 'Published' && (
         <div style={{ animation: 'fadeIn 0.25s ease', background: 'rgba(52,211,153,0.04)', border: '1px solid rgba(52,211,153,0.25)', borderRadius: 16, padding: '28px 32px', display: 'flex', flexDirection: 'column', gap: 18 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
             <span style={{ width: 36, height: 36, borderRadius: '50%', background: 'rgba(52,211,153,0.12)', border: '1px solid rgba(52,211,153,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--success)', fontSize: 17 }}>✓</span>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
               <span style={{ fontSize: 16, fontWeight: 700 }}>Published</span>
-              <span style={{ fontSize: 13, color: 'var(--text-secondary)' }}>{engineer ? `${engineer.slug} is live in the catalog` : 'Your engineer is live in the catalog'}</span>
+              <span style={{ fontSize: 13, color: 'var(--text-secondary)' }}>{publishedSlug !== null ? `${publishedSlug} is live in the catalog` : `Your ${target.noun} is live in the catalog`}</span>
             </div>
             <span className="version-badge" style={{ marginLeft: 'auto', fontSize: 12, padding: '3px 9px' }}>v{status.semanticVersion}</span>
           </div>
-          {engineer !== null && (
+          {publishedSlug !== null && (
             <>
-              <InstallBlock single line2={installCommand(engineer.slug, 'Engineer')} />
-              <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end' }}>
-                <Link to="/catalog"><button className="btn-secondary" style={{ padding: '8px 18px', fontSize: 13 }}>View in catalog</button></Link>
-              </div>
+              <InstallBlock single line2={installCommand(publishedSlug, target.itemType)} />
+              {target.itemType === 'Engineer' && (
+                <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end' }}>
+                  <Link to="/catalog"><button type="button" className="btn-secondary" style={{ padding: '8px 18px', fontSize: 13 }}>View in catalog</button></Link>
+                </div>
+              )}
             </>
           )}
         </div>
       )}
-      {failed && status !== null && (
+      {failed && status !== null && target !== null && (
         <div style={{ animation: 'fadeIn 0.25s ease', background: 'rgba(248,113,113,0.04)', border: '1px solid rgba(248,113,113,0.3)', borderRadius: 16, padding: '28px 32px', display: 'flex', flexDirection: 'column', gap: 18 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
             <span style={{ width: 36, height: 36, borderRadius: '50%', background: 'rgba(248,113,113,0.12)', border: '1px solid rgba(248,113,113,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--danger)', fontSize: 16 }}>✕</span>
@@ -122,7 +129,7 @@ export function PublishStatusPage() {
             </div>
           </div>
           <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-            <Link to={`/workspace/engineers/${status.itemId}`}><button className="btn-primary" style={{ padding: '9px 22px' }}>Fix and republish</button></Link>
+            <Link to={target.composerPath}><button type="button" className="btn-primary" style={{ padding: '9px 22px' }}>Fix and republish</button></Link>
           </div>
         </div>
       )}

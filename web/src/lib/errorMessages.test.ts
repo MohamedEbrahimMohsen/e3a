@@ -12,6 +12,33 @@ const callbackErrorCodes = [
   'USER_NOT_AUTHENTICATED',
 ];
 
+const teamErrorCodes = [
+  'TEAM_NOT_FOUND',
+  'TEAM_NOT_OWNED',
+  'TEAM_LIMIT_REACHED',
+  'TEAM_EMPTY',
+  'TEAM_SLUG_FROZEN',
+  'TEAM_SLUG_RESERVED',
+  'TEAM_SLUG_INVALID',
+  'TEAM_SLUG_TOO_SHORT',
+  'TEAM_SLUG_TOO_LONG',
+  'TEAM_DISPLAY_NAME_REQUIRED',
+  'TEAM_DISPLAY_NAME_TOO_LONG',
+  'TEAM_DISPLAY_NAME_INVALID',
+  'TEAM_DESCRIPTION_TOO_LONG',
+  'TEAM_TOO_MANY_TAGS',
+  'TEAM_TAG_TOO_LONG',
+  'TEAM_MEMBER_LIMIT_REACHED',
+  'TEAM_MEMBER_DUPLICATE',
+  'TEAM_MEMBER_NOT_PUBLISHED',
+  'TEAM_MEMBER_VERSION_NOT_PUBLISHED',
+  'TEAM_MEMBER_SNAPSHOT_EMPTY',
+  'TEAM_MEMBER_MANIFEST_INVALID',
+  'TEAM_ROSTER_INVALID',
+  'PLUGIN_SECURITY_SCAN_BLOCKED',
+  'MARKETPLACE_TEAM_LIMIT_EXCEEDED',
+];
+
 describe('messageForErrorCode', () => {
   it.each(callbackErrorCodes)('should map every callback error code to readable text', code => {
     const message = messageForErrorCode(code);
@@ -19,6 +46,15 @@ describe('messageForErrorCode', () => {
     expect(message.length).toBeGreaterThan(0);
     expect(message).not.toBe(code);
     expect(message).not.toContain('_');
+  });
+
+  it.each(teamErrorCodes)('should map every team error code to readable text', code => {
+    const message = messageForErrorCode(code);
+
+    expect(message.length).toBeGreaterThan(0);
+    expect(message).not.toBe(code);
+    expect(message).not.toContain('_');
+    expect(message).not.toBe(GENERIC_ERROR_MESSAGE);
   });
 
   it('should return the generic message for an unknown code', () => {

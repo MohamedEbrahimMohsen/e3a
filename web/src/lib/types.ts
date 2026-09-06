@@ -24,12 +24,6 @@ export interface TeamMemberInfo {
   pinnedVersion: string;
 }
 
-export interface CrewMember {
-  emoji: string;
-  name: string;
-  pinnedVersion: string;
-}
-
 export interface FaqEntry {
   question: string;
   answer: string;

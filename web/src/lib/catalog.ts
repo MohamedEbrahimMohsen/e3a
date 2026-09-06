@@ -86,8 +86,6 @@ export const faqEntries: FaqEntry[] = [
   { question: 'Can I unpublish something?', answer: 'Yes, from your workspace. Existing installs keep working; the item just stops being discoverable and installable.' },
 ];
 
-export const memberSearchPool: CatalogItem[] = [engineers[2], engineers[8], engineers[0], engineers[3]];
-
 export function formatInstalls(installs: number): string {
   return `${installs >= 50 ? installs.toLocaleString('en-US') : installs} installs`;
 }
