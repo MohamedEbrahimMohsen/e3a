@@ -2,6 +2,7 @@ using E3A.Application.Options;
 using E3A.Domain.Engineers;
 using E3A.Domain.Identity;
 using E3A.Domain.Publishing;
+using E3A.Domain.Reports;
 using E3A.Domain.Teams;
 using Core.Auditing.Entities;
 using Core.EntityFrameworkCore.Context;
@@ -14,7 +15,7 @@ using System.Text.Json;
 
 namespace E3A.Infrastructure.Data.Context;
 
-public class AppDbContext(DbContextOptions options, IMediator mediator, IOptions<EngineersOptions> engineersOptions, IOptions<TeamsOptions> teamsOptions, IOptions<PublishingOptions> publishingOptions, IOptions<GitHubAuthenticationOptions> gitHubAuthenticationOptions) : CoreDbContext<User, Role, Guid>(options, mediator)
+public class AppDbContext(DbContextOptions options, IMediator mediator, IOptions<EngineersOptions> engineersOptions, IOptions<TeamsOptions> teamsOptions, IOptions<PublishingOptions> publishingOptions, IOptions<GitHubAuthenticationOptions> gitHubAuthenticationOptions, IOptions<ReportsOptions> reportsOptions) : CoreDbContext<User, Role, Guid>(options, mediator)
 {
     // Enum-as-string columns share one width; not tunable — widening requires a migration anyway.
     private const int EnumColumnMaxLength = 50;
@@ -26,6 +27,7 @@ public class AppDbContext(DbContextOptions options, IMediator mediator, IOptions
     public DbSet<Team> Teams { get; set; }
     public DbSet<TeamMember> TeamMembers { get; set; }
     public DbSet<ItemVersion> ItemVersions { get; set; }
+    public DbSet<Report> Reports { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -35,6 +37,7 @@ public class AppDbContext(DbContextOptions options, IMediator mediator, IOptions
         ConfigureEngineers(modelBuilder);
         ConfigureTeams(modelBuilder);
         ConfigureItemVersions(modelBuilder);
+        ConfigureReports(modelBuilder);
 
         ApplyGlobalFilterToIgnoreSoftDeletionInAllQueries(modelBuilder);
     }
@@ -121,6 +124,21 @@ public class AppDbContext(DbContextOptions options, IMediator mediator, IOptions
         });
     }
 
+    private void ConfigureReports(ModelBuilder modelBuilder)
+    {
+        var reportSchema = reportsOptions.Value;
+
+        modelBuilder.Entity<Report>(builder =>
+        {
+            builder.Property(x => x.ItemType).HasConversion<string>().HasMaxLength(EnumColumnMaxLength);
+            builder.Property(x => x.Reason).HasConversion<string>().HasMaxLength(EnumColumnMaxLength);
+            builder.Property(x => x.Status).HasConversion<string>().HasMaxLength(EnumColumnMaxLength);
+            builder.Property(x => x.Details).HasMaxLength(reportSchema.DetailsMaxLength);
+            builder.HasIndex(x => new { x.ItemType, x.ItemId });
+            builder.HasIndex(x => x.ReporterUserId);
+        });
+    }
+
     /// <summary>
     /// Every soft-deletable entity is registered here. Filtering deleted rows
     /// inside a query instead means this registration is missing — fix it here.
@@ -132,5 +150,6 @@ public class AppDbContext(DbContextOptions options, IMediator mediator, IOptions
         modelBuilder.Entity<Team>().HasQueryFilter(x => !x.IsDeleted);
         modelBuilder.Entity<TeamMember>().HasQueryFilter(x => !x.IsDeleted);
         modelBuilder.Entity<ItemVersion>().HasQueryFilter(x => !x.IsDeleted);
+        modelBuilder.Entity<Report>().HasQueryFilter(x => !x.IsDeleted);
     }
 }
