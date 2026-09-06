@@ -10,6 +10,8 @@ const errorMessages: Record<string, string> = {
   GITHUB_PROFILE_FETCH_FAILED: 'We could not read your GitHub profile. Please try again.',
   GITHUB_PROFILE_INVALID: 'Your GitHub profile is missing details we need (a login and an id).',
   USER_NOT_AUTHENTICATED: 'Your session has ended. Please sign in again.',
+  USER_NOT_FOUND: "We couldn't find that account.",
+  CATALOG_CREATOR_LOGIN_TOO_LONG: 'That creator login is longer than we allow.',
   ENGINEER_NOT_FOUND: "We couldn't find that engineer.",
   ENGINEER_DRAFT_NOT_UPLOADED: 'No draft has been uploaded for this engineer yet.',
   ENGINEER_SNAPSHOT_EMPTY: 'The uploaded draft has no files to publish.',

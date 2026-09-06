@@ -77,6 +77,33 @@ export function getCatalogTags(): Promise<CatalogTag[]> {
   return requestJson('/catalog/tags');
 }
 
+export interface CreatorProfileTeam {
+  id: string;
+  slug: string;
+  displayName: string;
+  description: string | null;
+  tags: string[];
+  memberSlugs: string[];
+  latestVersionId: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreatorProfile {
+  id: string;
+  gitHubLogin: string;
+  displayName: string | null;
+  avatarUrl: string | null;
+  createdAt: string;
+  totalInstalls: number;
+  engineers: CatalogEngineer[];
+  teams: CreatorProfileTeam[];
+}
+
+export function getCreatorProfile(login: string): Promise<CreatorProfile> {
+  return requestJson(`/catalog/creators/${encodeURIComponent(login)}`);
+}
+
 const cardEmojis = ['🧱', '⚛️', '🛡️', '🧪', '📐', '🚀', '🗃️', '✍️', '🔍', '💳', '🧭', '🤖'];
 
 export function emojiFor(slug: string): string {

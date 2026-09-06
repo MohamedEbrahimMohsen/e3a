@@ -1,82 +1,51 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { useAuth } from '../../app/AuthContext';
 import { EngineerCard } from '../../components/EngineerCard';
-import { emojiFor } from '../../lib/api';
+import { getCreatorProfile, type CreatorProfile } from '../../lib/api';
 import { messageForApiError } from '../../lib/errorMessages';
 import { initialsFor } from '../../lib/initials';
 import type { CatalogItem } from '../../lib/types';
-import { listMyEngineers, listMyTeams, type Engineer, type Team } from '../../lib/workspaceApi';
+import { formatTotalInstalls, joinedLabel, toEngineerItem, toTeamItem } from './profileItems';
 
 const tabs = ['Engineers', 'Teams'] as const;
 type ProfileTab = (typeof tabs)[number];
 
-const PUBLISHED_STATUS = 'Published';
-
-function toEngineerItem(engineer: Engineer): CatalogItem {
-  return { emoji: emojiFor(engineer.slug), name: engineer.slug, description: engineer.description ?? '', tags: engineer.tags, installs: engineer.installCount };
-}
-
-function toTeamItem(team: Team): CatalogItem {
-  return { emoji: emojiFor(team.slug), name: team.slug, description: team.description ?? '', tags: team.tags, installs: 0, team: true };
-}
-
-function joinedLabel(createdAt: string | undefined): string {
-  if (!createdAt) {
-    return '';
-  }
-  const joined = new Date(createdAt);
-  return Number.isNaN(joined.getTime()) ? '' : joined.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-}
-
 export function ProfilePage() {
   const { login = '' } = useParams();
-  const { status, user } = useAuth();
   const [tab, setTab] = useState<ProfileTab>('Engineers');
-  const [engineers, setEngineers] = useState<Engineer[] | null>(null);
-  const [teams, setTeams] = useState<Team[] | null>(null);
+  const [profile, setProfile] = useState<CreatorProfile | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [reloadToken, setReloadToken] = useState(0);
 
-  const isOwnProfile = status === 'signedIn' && (user?.gitHubLogin ?? '').toLowerCase() === login.toLowerCase();
-
   useEffect(() => {
-    if (!isOwnProfile) {
-      return;
-    }
     let cancelled = false;
-    Promise.all([listMyEngineers(), listMyTeams()])
-      .then(([myEngineers, myTeams]) => {
-        if (!cancelled) {
-          setEngineers(myEngineers);
-          setTeams(myTeams);
-          setErrorMessage(null);
-        }
-      })
+    getCreatorProfile(login)
+      .then(result => { if (!cancelled) { setProfile(result); setErrorMessage(null); } })
       .catch(error => { if (!cancelled) { setErrorMessage(messageForApiError(error)); } });
     return () => { cancelled = true; };
-  }, [isOwnProfile, reloadToken]);
+  }, [login, reloadToken]);
 
-  const ownEngineers = (engineers ?? []).filter(engineer => engineer.status === PUBLISHED_STATUS);
-  const ownTeams = (teams ?? []).filter(team => team.status === PUBLISHED_STATUS);
-  const items: CatalogItem[] = tab === 'Engineers' ? ownEngineers.map(toEngineerItem) : ownTeams.map(toTeamItem);
-  const totalInstalls = ownEngineers.reduce((total, engineer) => total + engineer.installCount, 0).toLocaleString('en-US');
-  const counts: Record<ProfileTab, number> = { Engineers: ownEngineers.length, Teams: ownTeams.length };
-  const joined = isOwnProfile ? joinedLabel(user?.createdAt) : '';
-  const loading = isOwnProfile && engineers === null && errorMessage === null;
+  const engineers = profile?.engineers ?? [];
+  const teams = profile?.teams ?? [];
+  const items: CatalogItem[] = tab === 'Engineers' ? engineers.map(toEngineerItem) : teams.map(toTeamItem);
+  const counts: Record<ProfileTab, number> = { Engineers: engineers.length, Teams: teams.length };
+  const loading = profile === null && errorMessage === null;
+  const joined = joinedLabel(profile?.createdAt);
+  const totalInstalls = formatTotalInstalls(profile?.totalInstalls ?? 0);
+  const displayedLogin = profile?.gitHubLogin ?? login;
 
   return (
     <div className="page fade-in" style={{ paddingTop: 48, gap: 32 }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 22 }}>
-        {isOwnProfile && user?.avatarUrl
-          ? <img src={user.avatarUrl} alt="" width={76} height={76} style={{ borderRadius: '50%', border: '1px solid var(--border)' }} />
-          : <div style={{ width: 76, height: 76, borderRadius: '50%', background: 'linear-gradient(135deg,#3f3f46,#1d1d23)', border: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 26, fontWeight: 700, color: 'var(--text-secondary)' }}>{initialsFor(login)}</div>}
+        {profile?.avatarUrl
+          ? <img src={profile.avatarUrl} alt="" width={76} height={76} style={{ borderRadius: '50%', border: '1px solid var(--border)' }} />
+          : <div style={{ width: 76, height: 76, borderRadius: '50%', background: 'linear-gradient(135deg,#3f3f46,#1d1d23)', border: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 26, fontWeight: 700, color: 'var(--text-secondary)' }}>{initialsFor(profile?.displayName ?? login)}</div>}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-          <h1 style={{ fontSize: 26, fontWeight: 700 }}>@{login}</h1>
+          <h1 style={{ fontSize: 26, fontWeight: 700 }}>{profile?.displayName ?? `@${displayedLogin}`}</h1>
           <div style={{ display: 'flex', alignItems: 'center', gap: 16, fontSize: 13.5, color: 'var(--text-secondary)' }}>
-            <a href={`https://github.com/${encodeURIComponent(login)}`} target="_blank" rel="noreferrer" style={{ fontSize: 13.5 }}>github.com/{login} ↗</a>
+            <a href={`https://github.com/${encodeURIComponent(displayedLogin)}`} target="_blank" rel="noreferrer" style={{ fontSize: 13.5 }}>github.com/{displayedLogin} ↗</a>
             {joined && <><span style={{ color: 'var(--text-muted)' }}>·</span><span>Joined {joined}</span></>}
-            {isOwnProfile && <><span style={{ color: 'var(--text-muted)' }}>·</span><span className="mono" style={{ fontSize: 12.5 }}>{totalInstalls} total installs</span></>}
+            {profile !== null && <><span style={{ color: 'var(--text-muted)' }}>·</span><span className="mono" style={{ fontSize: 12.5 }}>{totalInstalls} total installs</span></>}
           </div>
         </div>
       </div>
@@ -102,11 +71,7 @@ export function ProfilePage() {
       ) : (
         <div style={{ padding: 48, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10, textAlign: 'center' }}>
           <span style={{ fontSize: 15, fontWeight: 700 }}>Nothing here yet</span>
-          <span style={{ fontSize: 13.5, color: 'var(--text-secondary)' }}>
-            {isOwnProfile
-              ? `You haven't published any ${tab.toLowerCase()} yet.`
-              : `Public profiles aren't available yet — sign in to see your own published ${tab.toLowerCase()}.`}
-          </span>
+          <span style={{ fontSize: 13.5, color: 'var(--text-secondary)' }}>@{displayedLogin} hasn't published any {tab.toLowerCase()} yet.</span>
         </div>
       )}
     </div>

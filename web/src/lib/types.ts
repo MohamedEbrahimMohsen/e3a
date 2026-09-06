@@ -5,7 +5,7 @@ export interface CatalogItem {
   description: string;
   tags: string[];
   version?: string;
-  installs: number;
+  installs?: number;
   team?: boolean;
   members?: string[];
 }

@@ -663,6 +663,28 @@
               ]
             }
           }
+        },
+        {
+          "name": "Get Creator Profile",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/catalog/creators/MohamedEbrahimMohsen",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "catalog",
+                "creators",
+                "MohamedEbrahimMohsen"
+              ]
+            }
+          }
         }
       ]
     },

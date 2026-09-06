@@ -1,6 +1,7 @@
 using E3A.Application.Catalog.GetCatalog;
 using E3A.Application.Catalog.GetCatalogEngineer;
 using E3A.Application.Catalog.GetCatalogTags;
+using E3A.Application.Catalog.GetCreatorProfile;
 using E3A.Application.Catalog.Shared;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -24,6 +25,13 @@ public class CatalogController(IMediator mediator) : ControllerBase
     public async Task<ActionResult> GetCatalogTags(CancellationToken cancellationToken)
     {
         var result = await mediator.Send(new GetCatalogTagsQuery(), cancellationToken);
+        return Ok(result);
+    }
+
+    [HttpGet("creators/{login}")]
+    public async Task<ActionResult> GetCreatorProfile([FromRoute] string login, CancellationToken cancellationToken)
+    {
+        var result = await mediator.Send(new GetCreatorProfileQuery(login), cancellationToken);
         return Ok(result);
     }
 

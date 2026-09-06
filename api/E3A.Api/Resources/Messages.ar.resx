@@ -120,6 +120,12 @@
   <data name="CATALOG_SLUG_REQUIRED" xml:space="preserve">
     <value>المعرف النصي للمهندس مطلوب.</value>
   </data>
+  <data name="CATALOG_CREATOR_LOGIN_REQUIRED" xml:space="preserve">
+    <value>اسم المستخدم للمنشئ مطلوب.</value>
+  </data>
+  <data name="CATALOG_CREATOR_LOGIN_TOO_LONG" xml:space="preserve">
+    <value>اسم المستخدم للمنشئ اطول من المسموح به.</value>
+  </data>
   <data name="PUBLISH_VERSION_ID_REQUIRED" xml:space="preserve">
     <value>معرف الاصدار مطلوب.</value>
   </data>

@@ -120,6 +120,12 @@
   <data name="CATALOG_SLUG_REQUIRED" xml:space="preserve">
     <value>An engineer slug is required.</value>
   </data>
+  <data name="CATALOG_CREATOR_LOGIN_REQUIRED" xml:space="preserve">
+    <value>A creator login is required.</value>
+  </data>
+  <data name="CATALOG_CREATOR_LOGIN_TOO_LONG" xml:space="preserve">
+    <value>That creator login is longer than we allow.</value>
+  </data>
   <data name="PUBLISH_VERSION_ID_REQUIRED" xml:space="preserve">
     <value>A version identifier is required.</value>
   </data>
