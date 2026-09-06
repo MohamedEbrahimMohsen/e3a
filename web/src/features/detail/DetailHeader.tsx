@@ -27,8 +27,10 @@ export function DetailHeader({ item }: { item: CatalogItem }) {
               <span style={{ width: 16, height: 16, borderRadius: '50%', background: 'linear-gradient(135deg,#3f3f46,#26262c)', display: 'inline-block' }} />
               @{item.author}
             </span>
-            <span style={{ color: 'var(--text-muted)' }}>·</span>
-            <span>{formatInstalls(item.installs)}</span>
+            {item.installs !== undefined && <>
+              <span style={{ color: 'var(--text-muted)' }}>·</span>
+              <span>{formatInstalls(item.installs)}</span>
+            </>}
           </div>
         </div>
         <span onClick={() => openReport(item.name)} className="link-danger-hover" style={{ marginLeft: 'auto', fontSize: 13, color: 'var(--text-muted)' }}>Report</span>

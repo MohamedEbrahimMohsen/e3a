@@ -89,6 +89,8 @@ public static class ErrorCodes
     public const string CatalogPageNumberInvalid = "CATALOG_PAGE_NUMBER_INVALID";
     public const string CatalogPageSizeInvalid = "CATALOG_PAGE_SIZE_INVALID";
     public const string CatalogSlugRequired = "CATALOG_SLUG_REQUIRED";
+    public const string CatalogCreatorLoginRequired = "CATALOG_CREATOR_LOGIN_REQUIRED";
+    public const string CatalogCreatorLoginTooLong = "CATALOG_CREATOR_LOGIN_TOO_LONG";
 
     // Publishing
     public const string PublishVersionIdRequired = "PUBLISH_VERSION_ID_REQUIRED";

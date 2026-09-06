@@ -60,8 +60,8 @@ export function EngineerCard({ item }: { item: CatalogItem }) {
           ))}
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
-          {item.installs >= SPARKLINE_THRESHOLD && <Sparkline name={item.name} />}
-          <span style={{ fontSize: 12, color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>{formatInstalls(item.installs)}</span>
+          {(item.installs ?? 0) >= SPARKLINE_THRESHOLD && <Sparkline name={item.name} />}
+          {item.installs !== undefined && <span style={{ fontSize: 12, color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>{formatInstalls(item.installs)}</span>}
         </div>
       </div>
     </div>
