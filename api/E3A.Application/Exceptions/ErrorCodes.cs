@@ -107,4 +107,13 @@ public static class ErrorCodes
     public const string MarketplaceEngineerLimitExceeded = "MARKETPLACE_ENGINEER_LIMIT_EXCEEDED";
     public const string PluginDuplicatePath = "PLUGIN_DUPLICATE_PATH";
     public const string MarketplaceTeamLimitExceeded = "MARKETPLACE_TEAM_LIMIT_EXCEEDED";
+
+    // Reports
+    public const string ReportItemIdRequired = "REPORT_ITEM_ID_REQUIRED";
+    public const string ReportItemTypeInvalid = "REPORT_ITEM_TYPE_INVALID";
+    public const string ReportReasonInvalid = "REPORT_REASON_INVALID";
+    public const string ReportDetailsRequired = "REPORT_DETAILS_REQUIRED";
+    public const string ReportDetailsTooLong = "REPORT_DETAILS_TOO_LONG";
+    public const string ReportItemNotFound = "REPORT_ITEM_NOT_FOUND";
+    public const string ReportLimitReached = "REPORT_LIMIT_REACHED";
 }

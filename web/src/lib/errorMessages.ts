@@ -20,6 +20,13 @@ const errorMessages: Record<string, string> = {
   PLUGIN_TOO_MANY_FILES: 'The plugin contains too many files.',
   PLUGIN_TOO_LARGE: 'The plugin is larger than the allowed size.',
   PLUGIN_DUPLICATE_PATH: 'The plugin contains two files with the same path.',
+  REPORT_ITEM_ID_REQUIRED: 'Please choose the item you are reporting.',
+  REPORT_ITEM_TYPE_INVALID: 'That item cannot be reported.',
+  REPORT_REASON_INVALID: 'Please choose a reason from the list.',
+  REPORT_DETAILS_REQUIRED: 'Please describe what you found.',
+  REPORT_DETAILS_TOO_LONG: 'Those details are too long. Please shorten them.',
+  REPORT_ITEM_NOT_FOUND: 'We could not find the item you are reporting.',
+  REPORT_LIMIT_REACHED: 'This item has already been reported enough times for us to review it. Thank you.',
 };
 
 export function messageForErrorCode(code: string | null | undefined): string {

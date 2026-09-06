@@ -270,6 +270,27 @@
   <data name="GITHUB_PROFILE_INVALID" xml:space="preserve">
     <value>Your GitHub profile is missing the details we need.</value>
   </data>
+  <data name="REPORT_ITEM_ID_REQUIRED" xml:space="preserve">
+    <value>The reported item is required.</value>
+  </data>
+  <data name="REPORT_ITEM_TYPE_INVALID" xml:space="preserve">
+    <value>The reported item type is not valid.</value>
+  </data>
+  <data name="REPORT_REASON_INVALID" xml:space="preserve">
+    <value>The report reason is not valid.</value>
+  </data>
+  <data name="REPORT_DETAILS_REQUIRED" xml:space="preserve">
+    <value>Please describe what you found.</value>
+  </data>
+  <data name="REPORT_DETAILS_TOO_LONG" xml:space="preserve">
+    <value>The report details are too long.</value>
+  </data>
+  <data name="REPORT_ITEM_NOT_FOUND" xml:space="preserve">
+    <value>We couldn't find the item you are reporting.</value>
+  </data>
+  <data name="REPORT_LIMIT_REACHED" xml:space="preserve">
+    <value>This item has already been reported {limit} times and is queued for review.</value>
+  </data>
   <data name="UNHANDLED_EXCEPTION" xml:space="preserve">
     <value>Something went wrong on our side. Please try again.</value>
   </data>

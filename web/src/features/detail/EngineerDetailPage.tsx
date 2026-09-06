@@ -61,7 +61,7 @@ export function EngineerDetailPage() {
             <span>{formatInstalls(engineer.installCount)}</span>
           </div>
         </div>
-        <button type="button" onClick={() => openReport(engineer.slug)} className="link-danger-hover" style={{ marginLeft: 'auto', background: 'transparent', border: 'none', padding: 0, fontSize: 13, color: 'var(--text-muted)' }}>Report</button>
+        <button type="button" onClick={() => openReport({ itemType: 'Engineer', itemId: engineer.id, label: engineer.slug })} className="link-danger-hover" style={{ marginLeft: 'auto', background: 'transparent', border: 'none', padding: 0, fontSize: 13, color: 'var(--text-muted)' }}>Report</button>
       </div>
       <InstallBlock line2={installCommand(engineer.slug)} />
       {engineer.hookWarnings.length > 0 && (

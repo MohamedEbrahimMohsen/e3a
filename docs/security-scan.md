@@ -96,8 +96,11 @@ carries `*` or `+` is prohibited and enforced by a test over the compiled catalo
 - **Block** → version `Rejected`; creator sees per-file, per-line reasons.
 - **Warn** → published, flagged for review (ambiguous single hits).
 - Every rule has positive and negative corpus fixtures in `api/E3A.Tests/Publishing/Security/`.
-- The report button on every catalog item is the human backstop; reported items can
-  be pulled from `marketplace.json` immediately.
+- The report button is the human backstop. It persists a row in the `reports` table via
+  `POST /api/reports` (anonymous or attributed) with `Status = Open`, and is available on
+  engineer detail pages — team reporting is deferred until a team catalog endpoint exists.
+  Pulling a reported item from `marketplace.json` is still a **manual operator action**:
+  there is no moderation UI and no automated takedown in v0.1.
 
 ### Outcomes and report
 

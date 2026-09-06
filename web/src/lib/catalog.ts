@@ -88,8 +88,6 @@ export const faqEntries: FaqEntry[] = [
 
 export const memberSearchPool: CatalogItem[] = [engineers[2], engineers[8], engineers[0], engineers[3]];
 
-export const reportReasons = ['Malicious or unsafe behavior', 'Spam or misleading listing', 'Copyright or license violation', 'Other'];
-
 export function formatInstalls(installs: number): string {
   return `${installs >= 50 ? installs.toLocaleString('en-US') : installs} installs`;
 }
